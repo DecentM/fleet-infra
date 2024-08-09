@@ -1,0 +1,19 @@
+# Refer to https://github.com/openebs/lvm-localpv/blob/HEAD/deploy/helm/charts/values.yaml for complete set of values.
+lvm-localpv:
+  enabled: false
+
+# Refer to https://github.com/openebs/mayastor-extensions/blob/v2.7.0/chart/values.yaml for complete set of values.
+mayastor:
+  enabled: true
+  etcd:
+    # -- Kubernetes Cluster Domain
+    clusterDomain: cluster.local
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+
+engines:
+  local:
+    lvm:
+      enabled: false
