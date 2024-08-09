@@ -49,10 +49,13 @@ spec:
     - protocol: TCP
       port: 2049
       targetPort: 2049
+      name: nfs # Unique name for the NFS port
     - protocol: TCP
       port: 20048
       targetPort: 20048
+      name: mountd # Unique name for the mountd port
     - protocol: TCP
       port: 111
       targetPort: 111
+      name: rpcbind # Unique name for the rpcbind port
   clusterIP: None # This makes it a headless service
