@@ -40,14 +40,14 @@ spec:
             privileged: true
           env:
             - name: SHARED_DIRECTORY
-              value: /mnt/tank/test-fs
+              value: /var/mnt/tank/test-fs
           volumeMounts:
             - name: nfs-data
-              mountPath: /mnt/tank/test-fs
+              mountPath: /var/mnt/tank/test-fs
       volumes:
         - name: nfs-data
           hostPath:
-            path: /mnt/tank/test-fs
+            path: /var/mnt/tank/test-fs
             type: DirectoryOrCreate
 ---
 apiVersion: v1
