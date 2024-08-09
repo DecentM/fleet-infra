@@ -3,13 +3,13 @@ kind: Namespace
 metadata:
   labels:
     k8s-app: openebs
-  name: data-system
+  name: openebs
 ---
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: HelmRepository
 metadata:
   name: openebs
-  namespace: data-system
+  namespace: openebs
 spec:
   url: https://openebs.github.io/openebs
 ---
@@ -17,7 +17,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: openebs
-  namespace: data-system
+  namespace: openebs
 spec:
   interval: 10m
   chart:
