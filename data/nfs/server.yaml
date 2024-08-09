@@ -22,10 +22,10 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: nfs-server
+                  - key: kubernetes.io/hostname
                     operator: In
                     values:
-                      - "true"
+                      - "cluster-0"
       containers:
         - name: nfs-server
           image: itsthenetwork/nfs-server-alpine:12
