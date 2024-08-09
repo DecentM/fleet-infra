@@ -27,10 +27,10 @@ spec:
             privileged: true
           env:
             - name: SHARED_DIRECTORY
-              value: /mnt/test-fs
+              value: /mnt/tank/test-fs
           volumeMounts:
             - name: nfs-data
-              mountPath: /mnt/test-fs
+              mountPath: /mnt/task/test-fs
       volumes:
         - name: nfs-data
           hostPath:
