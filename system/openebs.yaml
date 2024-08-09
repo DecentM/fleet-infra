@@ -13,18 +13,19 @@ metadata:
 spec:
   url: https://openebs.github.io/openebs
 ---
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmChart
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
 metadata:
   name: openebs
   namespace: data-system
 spec:
-  interval: 5m0s
-  chart: openebs
-  reconcileStrategy: ChartVersion
-  sourceRef:
-    kind: HelmRepository
-    name: openebs
+  interval: 10m
+  chart:
+    spec:
+      chart: openebs
+      sourceRef:
+        kind: HelmRepository
+        name: openebs
 ---
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
