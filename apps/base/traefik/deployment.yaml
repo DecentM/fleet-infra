@@ -31,16 +31,12 @@ spec:
             - --api.dashboard=true
             - --accesslog
             - --entrypoints.web.address=:80
-            - --entrypoints.websecure.address=:443
-            - --entrypoints.websecure.http.tls
             - --providers.kubernetescrd
             - --providers.kubernetesingress
             - --providers.kubernetescrd.allowCrossNamespace=true
           ports:
             - name: web
               containerPort: 80
-            - name: websecure
-              containerPort: 443
             - name: admin
               containerPort: 8080
           volumeMounts:
