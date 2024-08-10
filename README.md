@@ -2,7 +2,7 @@
 
 - Get a cluster going
 - Install flannel
-  - `kubectl apply -f system/flannel/index.yaml`
+  - `kubectl apply -f infrastructure/flannel/index.yaml`
 - If the control plane has the pool, remove the control-plane taint
   - `kubectl taint nodes <hostname> node-role.kubernetes.io/control-plane:NoSchedule-`
 - Initialise Flux
