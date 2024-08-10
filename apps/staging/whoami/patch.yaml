@@ -13,17 +13,3 @@ spec:
           args:
             - -ascii
             - -name=STAGING
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
-  name: whoami
-  namespace: whoamiv1
-spec:
-  routes:
-    - kind: Rule
-      match: Host(\`whoami.cluster.decentm.local\`)
-      services:
-        - kind: Service
-          name: whoamiv1
-          port: 80
