@@ -31,9 +31,9 @@ spec:
             - --api.dashboard=true
             - --accesslog
             - --entrypoints.web.address=:80
-            - --providers.kubernetescrd
             - --providers.kubernetesingress
-            - --providers.kubernetescrd.allowCrossNamespace=true
+            - --providers.kubernetesingress.allowEmptyServices=true
+            - --providers.kubernetesingress.ingressclass=traefik
           ports:
             - name: web
               containerPort: 80
