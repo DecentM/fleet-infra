@@ -13,6 +13,6 @@
         --owner=decentm \
         --repository=fleet-infra \
         --branch=main \
-        --path=. \
+        --path=clusters/staging \ # or `clusters/production`
         --personal
     ```
