@@ -8,4 +8,3 @@ resources:
 
 patchesStrategicMerge:
   - whoami-patch.yaml
-  - ingressroute-patch.yaml
