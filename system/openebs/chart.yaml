@@ -16,15 +16,13 @@ spec:
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: openebs
+  name: openebs-operator
   namespace: openebs
 spec:
   interval: 10m
   chart:
     spec:
-      chart: openebs
-      valuesFiles:
-        - values.yaml
+      chart: openebs-operator
       sourceRef:
         kind: HelmRepository
         name: openebs
@@ -32,14 +30,18 @@ spec:
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: openebs-zfspv
-allowVolumeExpansion: true
+  name: openebs-localpv
+  annotations:
+    openebs.io/cas-type: local
+provisioner: openebs.io/local
 parameters:
-  fstype: "zfs"
-  poolname: "tank/pvcs"
-provisioner: zfs.csi.openebs.io
-allowedTopologies:
-  - matchLabelExpressions:
-      - key: kubernetes.io/hostname
-        values:
-          - cluster-0
+  storageType: hostPath
+  basePath: "/var/mnt/tank/test-fs"
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: "openebs-localpv"
+              operator: In
+              values:
+                - "true"
