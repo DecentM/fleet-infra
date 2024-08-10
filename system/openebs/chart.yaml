@@ -36,7 +36,7 @@ metadata:
 allowVolumeExpansion: true
 parameters:
   fstype: "zfs"
-  poolname: "zfspv-pool"
+  poolname: "tank/pvcs"
 provisioner: zfs.csi.openebs.io
 allowedTopologies:
   - matchLabelExpressions:
