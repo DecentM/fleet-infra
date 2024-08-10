@@ -1,29 +1,3 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: traefik
-  namespace: traefik
-spec:
-  template:
-    spec:
-      containers:
-        - name: traefik
-          args:
-            - --api.insecure=true
-            - --api=true
-            - --api.dashboard=true
-            - --accesslog
-            - --entrypoints.web.address=:80
-            - --entrypoints.websecure.address=:443
-            - --entrypoints.websecure.http.tls
-            - --providers.kubernetescrd
-            - --providers.kubernetesingress
-            - --providers.kubernetescrd.allowCrossNamespace=true
-            - --certificatesresolvers.myresolver.acme.storage=/data/acme.json
-            - --certificatesresolvers.myresolver.acme.tlschallenge=true
-            - --certificatesresolvers.myresolver.acme.email=decentm+traefik@decentm.com
-            - --certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
----
 apiVersion: v1
 kind: Service
 metadata:
