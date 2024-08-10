@@ -1,0 +1,7 @@
+# create the "traefik" namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    k8s-app: traefik
+  name: traefik
