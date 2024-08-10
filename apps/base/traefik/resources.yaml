@@ -77,6 +77,7 @@ apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: ingressroute
+  namespace: default
 
 spec:
   entryPoints:
