@@ -40,6 +40,6 @@ parameters:
 provisioner: zfs.csi.openebs.io
 allowedTopologies:
   - matchLabelExpressions:
-      - key: kubernetes.io/hostname
+      - key: openebs-localpv
         values:
-          - cluster-0
+          - "true"
