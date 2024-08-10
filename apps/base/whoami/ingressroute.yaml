@@ -11,6 +11,6 @@ spec:
     - match: Host(`whoami.cluster.decentm.local`)
       kind: Rule
       services:
-        - name: mirror1
-          namespace: default
+        - name: whoamiv1
+          namespace: whoamiv1
           kind: TraefikService
