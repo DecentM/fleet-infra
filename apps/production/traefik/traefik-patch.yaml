@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,7 +16,7 @@ spec:
             - "--api.dashboard=true"
             - "--ping=true"
             - "--providers.kubernetescrd"
-            - "--providers.kubernetescrd.allowCrossNamespace=true"
+            - "--providers.kubernetescrd.allowCrossNamespace=true" 
             - "--certificatesresolvers.myresolver.acme.storage=/data/acme.json"
             - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-            - "--certificatesresolvers.myresolver.acme.email=decentm+traefik@decentm.com"
+            - "--certificatesresolvers.myresolver.acme.email=jakub.hajek@traefik.io"

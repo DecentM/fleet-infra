@@ -4,14 +4,10 @@ kind: IngressRoute
 metadata:
   name: whoami
 spec:
-  entryPoints:
-    - websecure
   routes:
-    - kind: Rule
-      match: Host(`fix.me`)
-      services:
+   - kind: Rule
+     match: Host(`whoami.t2.demo.traefiklabs.tech`)
+     services:
         - kind: Service
           name: whoamiv1
           port: 80
-  tls:
-    certResolver: myresolver
