@@ -38,7 +38,7 @@ parameters:
   storageType: hostPath
   basePath: "/var/mnt/tank/test-fs"
   nodeAffinity:
-    required:
+    requiredDuringSchedulingIgnoredDuringExecution:
       nodeSelectorTerms:
         - matchExpressions:
             - key: "openebs-localpv"
