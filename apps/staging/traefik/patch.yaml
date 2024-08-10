@@ -23,3 +23,13 @@ spec:
             - --certificatesresolvers.myresolver.acme.tlschallenge=true
             - --certificatesresolvers.myresolver.acme.email=decentm+traefik@decentm.com
             - --certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik
+  namespace: traefik
+spec:
+  type: LoadBalancer
+  externalIPs:
+    - 192.168.122.237
