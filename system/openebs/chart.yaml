@@ -23,8 +23,6 @@ spec:
   chart:
     spec:
       chart: openebs
-      valuesFiles:
-        - values.yaml
       sourceRef:
         kind: HelmRepository
         name: openebs
