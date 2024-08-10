@@ -36,6 +36,7 @@ spec:
             - --entryPoints.tcpep.address=:8000
             - --entryPoints.udpep.address=:9000/udp
             - --providers.kubernetescrd
+            - --providers.kubernetescrd.namespaces=traefik,whoamiv1
           ports:
             - name: web
               containerPort: 80
