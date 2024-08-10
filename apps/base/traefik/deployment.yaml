@@ -28,15 +28,15 @@ spec:
         - name: traefik
           image: traefik:v3.1
           args:
-            - --log.level=DEBUG
-            - --api
-            - --api.insecure
-            - --api.dashboard
-            - --entryPoints.web.address=:80
-            - --entryPoints.tcpep.address=:8000
-            - --entryPoints.udpep.address=:9000/udp
-            - --providers.kubernetescrd
-            - --providers.kubernetescrd.namespaces=traefik,whoamiv1
+            - "--log.level=DEBUG"
+            - "--api"
+            - "--api.insecure"
+            - "--api.dashboard"
+            - "--entryPoints.web.address=:80"
+            - "--entryPoints.tcpep.address=:8000"
+            - "--entryPoints.udpep.address=:9000/udp"
+            - "--providers.kubernetescrd"
+            - "--providers.kubernetescrd.allowCrossNamespace=true"
           ports:
             - name: web
               containerPort: 80
