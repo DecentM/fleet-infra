@@ -5,5 +5,7 @@ metadata:
   namespace: traefik
 spec:
   type: LoadBalancer
+  selector:
+    app: traefik
   externalIPs:
     - 192.168.122.237
