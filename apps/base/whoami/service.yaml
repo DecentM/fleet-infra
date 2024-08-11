@@ -2,7 +2,7 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: whoami
-  namespace: default
+  namespace: whoami
   labels:
     app: traefiklabs
     name: whoami
@@ -30,7 +30,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: whoami
-  namespace: default
+  namespace: whoami
 
 spec:
   ports:
@@ -45,7 +45,7 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: whoamitcp
-  namespace: default
+  namespace: whoami
   labels:
     app: traefiklabs
     name: whoamitcp
@@ -73,7 +73,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: whoamitcp
-  namespace: default
+  namespace: whoami
 
 spec:
   ports:
@@ -88,7 +88,7 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: whoamiudp
-  namespace: default
+  namespace: whoami
   labels:
     app: traefiklabs
     name: whoamiudp
@@ -116,7 +116,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: whoamiudp
-  namespace: default
+  namespace: whoami
 
 spec:
   ports:
