@@ -21,3 +21,18 @@ spec:
           image: traefik/whoami
           ports:
             - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: whoami
+  namespace: apps
+
+spec:
+  ports:
+    - name: http
+      port: 80
+  selector:
+    app: traefiklabs
+    task: whoami
