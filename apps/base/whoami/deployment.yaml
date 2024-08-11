@@ -3,9 +3,6 @@ apiVersion: apps/v1
 metadata:
   name: whoami
   namespace: apps
-  labels:
-    app: traefiklabs
-    name: whoami
 
 spec:
   replicas: 1
