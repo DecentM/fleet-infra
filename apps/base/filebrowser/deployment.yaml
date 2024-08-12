@@ -44,18 +44,18 @@ spec:
       volumes:
         - name: storage
           persistentVolumeClaim:
-            claimName: filebrowser-pvc
+            claimName: filebrowser-data
         - name: db
           persistentVolumeClaim:
-            claimName: filebrowser-db-pvc
+            claimName: filebrowser-db
         - name: settings
           persistentVolumeClaim:
-            claimName: filebrowser-settings-pvc
+            claimName: filebrowser-settings
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: filebrowser-pvc
+  name: filebrowser-data
   namespace: apps
 spec:
   accessModes:
@@ -68,7 +68,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: filebrowser-db-pvc
+  name: filebrowser-db
   namespace: apps
 spec:
   accessModes:
@@ -81,7 +81,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: filebrowser-settings-pvc
+  name: filebrowser-settings
   namespace: apps
 spec:
   accessModes:
