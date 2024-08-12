@@ -8,7 +8,6 @@ parameters:
   numberOfReplicas: "1"
   staleReplicaTimeout: "30"
   diskSelector: "zfs-pool"
-  nodeSelector: "zfs-pool=true"
 reclaimPolicy: Retain
 volumeBindingMode: Immediate
 ---
