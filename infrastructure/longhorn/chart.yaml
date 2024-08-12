@@ -21,4 +21,6 @@ spec:
         kind: HelmRepository
         name: longhorn-repo
       version: 1.6.0
+      valuesFiles:
+        - values.yaml
   interval: 1m0s
