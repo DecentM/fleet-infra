@@ -23,4 +23,4 @@ spec:
       version: 1.6.0
       valuesFiles:
         - values.yaml
-  interval: 1m0s
+  interval: 10m0s

@@ -63,7 +63,7 @@ spec:
   resources:
     requests:
       storage: 64Mi
-  storageClassName: openebs-zfspv
+  storageClassName: longhorn-pool
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -76,7 +76,7 @@ spec:
   resources:
     requests:
       storage: 64Mi
-  storageClassName: openebs-zfspv
+  storageClassName: longhorn-local
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -89,7 +89,7 @@ spec:
   resources:
     requests:
       storage: 64Mi
-  storageClassName: openebs-zfspv
+  storageClassName: longhorn-local
 ---
 apiVersion: v1
 kind: Service

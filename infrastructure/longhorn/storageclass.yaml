@@ -1,13 +1,13 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: longhorn-pvc
+  name: longhorn-pool
 provisioner: driver.longhorn.io
 allowVolumeExpansion: true
 parameters:
   numberOfReplicas: "1"
   staleReplicaTimeout: "30"
-  diskSelector: "pool-pvc"
+  diskSelector: "zfs-pool"
   nodeSelector: "zfs-pool=true"
 reclaimPolicy: Retain
 volumeBindingMode: Immediate
@@ -15,7 +15,7 @@ volumeBindingMode: Immediate
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
-  name: longhorn-default
+  name: longhorn-local
   annotations:
     storageclass.kubernetes.io/is-default-class: "true"
 provisioner: driver.longhorn.io
