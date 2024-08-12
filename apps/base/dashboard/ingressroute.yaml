@@ -12,5 +12,5 @@ spec:
     - match: HostRegexp(`^dashboard\..*`)
       kind: Rule
       services:
-        - name: kubernetes-dashboard-kong-proxy
-          port: 80
+        - name: kubernetes-dashboard-web
+          port: 8000
