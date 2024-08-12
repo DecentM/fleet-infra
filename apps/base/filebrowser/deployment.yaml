@@ -18,21 +18,57 @@ spec:
     spec:
       containers:
         - name: filebrowser
-          image: filebrowser/filebrowser
+          image: filebrowser/filebrowser:s6
           ports:
             - containerPort: 80
           volumeMounts:
-            - name: filebrowser-storage
+            - name: storage
               mountPath: /srv
+            - name: db
+              mountPath: /database
+            - name: settings
+              mountPath: /config
       volumes:
-        - name: filebrowser-storage
+        - name: storage
           persistentVolumeClaim:
             claimName: filebrowser-pvc
+        - name: db
+          persistentVolumeClaim:
+            claimName: filebrowser-db-pvc
+        - name: settings
+          persistentVolumeClaim:
+            claimName: filebrowser-settings-pvc
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: filebrowser-pvc
+  namespace: apps
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 64Mi
+  storageClassName: openebs-zfspv
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: filebrowser-db-pvc
+  namespace: apps
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 64Mi
+  storageClassName: openebs-zfspv
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: filebrowser-settings-pvc
   namespace: apps
 spec:
   accessModes:
