@@ -19,8 +19,19 @@ spec:
       containers:
         - name: filebrowser
           image: filebrowser/filebrowser:s6
+          env:
+            - name: FILEBROWSER_DATABASE
+              value: /database/filebrowser.db
+            - name: FILEBROWSER_ROOT
+              value: /srv
+            - name: FILEBROWSER_CONFIG
+              value: /config/filebrowser.json
+            - name: FILEBROWSER_NOAUTH
+              value: "true"
+            - name: FILEBROWSER_PORT
+              value: "8080"
           ports:
-            - containerPort: 80
+            - containerPort: 8080
           volumeMounts:
             - name: storage
               mountPath: /srv
@@ -87,7 +98,7 @@ metadata:
 spec:
   ports:
     - name: http
-      port: 80
+      port: 8080
   selector:
     app: filebrowser
     task: filebrowser
