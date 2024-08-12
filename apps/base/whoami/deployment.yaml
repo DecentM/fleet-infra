@@ -10,6 +10,8 @@ spec:
     matchLabels:
       app: traefiklabs
       task: whoami
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:

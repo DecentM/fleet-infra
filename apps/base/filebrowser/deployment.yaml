@@ -10,6 +10,8 @@ spec:
     matchLabels:
       app: filebrowser
       task: filebrowser
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
