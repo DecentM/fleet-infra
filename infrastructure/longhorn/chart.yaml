@@ -4,7 +4,7 @@ metadata:
   name: longhorn-repo
   namespace: longhorn-system
 spec:
-  interval: 10m0s
+  interval: 1m
   url: https://charts.longhorn.io
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
@@ -23,4 +23,4 @@ spec:
       version: 1.6.0
       valuesFiles:
         - values.yaml
-  interval: 10m0s
+  interval: 1m
