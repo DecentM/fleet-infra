@@ -4,3 +4,4 @@ resources:
   - namespace.yaml
   - sealed-oauth.yaml
   - chart.yaml
+  - proxy-class.yaml
