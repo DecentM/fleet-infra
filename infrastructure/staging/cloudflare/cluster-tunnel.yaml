@@ -8,6 +8,6 @@ spec:
     name: staging-cluster
   size: 1
   cloudflare:
-    domain: stage.decentm.com
+    domain: decentm.com
     secret: cloudflare-secrets
     accountName: DecentM
