@@ -4,7 +4,7 @@ metadata:
   name: sealed-secrets
   namespace: flux-system
 spec:
-  interval: 1m
+  interval: 10m
   url: https://bitnami-labs.github.io/sealed-secrets
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
@@ -13,7 +13,7 @@ metadata:
   name: sealed-secrets-controller
   namespace: flux-system
 spec:
-  interval: 1m
+  interval: 10m
   chart:
     spec:
       chart: sealed-secrets
@@ -22,7 +22,7 @@ spec:
         kind: HelmRepository
         name: sealed-secrets
         namespace: flux-system
-      interval: 1m
+      interval: 10m
   install:
     crds: Create
   upgrade:
