@@ -1,6 +1,8 @@
 # Starting from the ground up
 
 - Get a cluster going
+- Get the ZFS pool going
+  - Create a zvol, format it as XFS, mount it via fstab
 - Install flannel
   - `kubectl apply -f infrastructure/flannel/index.yaml`
 - If the control plane has the pool, remove the control-plane taint
@@ -16,3 +18,6 @@
         --path=clusters/staging \ # or `clusters/production`
         --personal
     ```
+
+- In Longhorn, add a disk on the pool node with the "zfs-pool" tag. Make the
+    host path be the xfs fs's mount path
