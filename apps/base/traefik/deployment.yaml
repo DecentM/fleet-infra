@@ -54,6 +54,7 @@ metadata:
   namespace: apps
 spec:
   type: LoadBalancer
+  loadBalancerClass: tailscale
   selector:
     app: traefik
   ports:
@@ -85,21 +86,3 @@ spec:
       port: 9000
       name: udpep
       targetPort: 9000
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: traefik
-  namespace: apps
-spec:
-  ingressClassName: tailscale
-  rules:
-    - http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: traefik
-                port:
-                  number: 80
