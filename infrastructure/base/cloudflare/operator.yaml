@@ -13,7 +13,10 @@ metadata:
   name: cloudflare-operator
   namespace: cloudflare-system
 spec:
+  interval: 10m
   sourceRef:
     kind: GitRepository
     name: cloudflare-operator
   path: ./config/default
+  prune: true
+  wait: true
