@@ -7,3 +7,4 @@ resources:
   - longhorn
   - sealed-secrets
   - tailscale
+  - cloudflare
