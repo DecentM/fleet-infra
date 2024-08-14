@@ -85,3 +85,42 @@ spec:
       port: 9000
       name: udpep
       targetPort: 9000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: traefik-web
+  namespace: apps
+spec:
+  defaultBackend:
+    service:
+      name: traefik
+      port:
+        number: 80
+  ingressClassName: tailscale
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: traefik-admin
+  namespace: apps
+spec:
+  defaultBackend:
+    service:
+      name: traefik
+      port:
+        number: 8080
+  ingressClassName: tailscale
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: traefik-tcp
+  namespace: apps
+spec:
+  defaultBackend:
+    service:
+      name: traefik
+      port:
+        number: 8000
+  ingressClassName: tailscale
