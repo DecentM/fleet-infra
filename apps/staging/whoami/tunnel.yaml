@@ -1,0 +1,13 @@
+# https://github.com/adyanth/cloudflare-operator/blob/main/docs/configuration.md
+apiVersion: networking.cfargotunnel.com/v1alpha1
+kind: TunnelBinding
+metadata:
+  name: whoami-tunbind
+  namespace: apps
+subjects:
+  - name: whoami
+    spec:
+      fqdn: whoami-stage.decentm.com
+tunnelRef:
+  kind: ClusterTunnel
+  name: cluster-tunnel

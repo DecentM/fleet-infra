@@ -38,14 +38,3 @@ spec:
   selector:
     app: traefiklabs
     task: whoami
----
-apiVersion: networking.cfargotunnel.com/v1alpha1
-kind: TunnelBinding
-metadata:
-  name: whoami-tunbind
-  namespace: apps
-subjects:
-  - name: whoami
-tunnelRef:
-  kind: ClusterTunnel
-  name: cluster-tunnel
