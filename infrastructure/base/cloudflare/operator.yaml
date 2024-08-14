@@ -5,7 +5,8 @@ metadata:
   namespace: cloudflare-system
 spec:
   url: https://github.com/adyanth/cloudflare-operator
-  ref: v0.10.4
+  ref:
+    tag: v0.10.4
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
