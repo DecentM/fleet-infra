@@ -21,5 +21,5 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: kubernetes-dashboard
-        namespace: apps
+        namespace: kube-system
       interval: 1m
