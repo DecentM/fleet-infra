@@ -79,8 +79,11 @@ kind: Service
 metadata:
   name: traefikudp
   namespace: apps
+  labels:
+    tailscale.com/proxy-class: "privileged-proxy"
 spec:
   type: LoadBalancer
+  loadBalancerClass: tailscale
   selector:
     app: traefik
   ports:
