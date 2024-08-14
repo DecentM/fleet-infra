@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
   - ../../base/cloudflare
   - sealed-cloudflare-secrets.yaml
-
+  - cluster-tunnel.yaml
