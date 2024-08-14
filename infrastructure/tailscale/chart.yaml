@@ -23,3 +23,12 @@ spec:
         name: tailscale
         namespace: tailscale-system
       interval: 1m
+  valuesFrom:
+    - kind: Secret
+      name: oauth
+      valuesKey: client-id
+      targetPath: oauth.clientId
+    - kind: Secret
+      name: oauth
+      valuesKey: client-secret
+      targetPath: oauth.clientSecret
