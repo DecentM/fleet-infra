@@ -89,38 +89,17 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: traefik-web
+  name: traefik
   namespace: apps
 spec:
-  defaultBackend:
-    service:
-      name: traefik
-      port:
-        number: 80
   ingressClassName: tailscale
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: traefik-admin
-  namespace: apps
-spec:
-  defaultBackend:
-    service:
-      name: traefik
-      port:
-        number: 8080
-  ingressClassName: tailscale
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: traefik-tcp
-  namespace: apps
-spec:
-  defaultBackend:
-    service:
-      name: traefik
-      port:
-        number: 8000
-  ingressClassName: tailscale
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: traefik
+                port:
+                  number: 80
