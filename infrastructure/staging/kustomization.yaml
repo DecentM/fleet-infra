@@ -4,8 +4,7 @@ resources:
   - namespaces
   - crds
   - flannel
-  # - longhorn
+  - longhorn
   - sealed-secrets
   - tailscale
   - cloudflare
-  - openebs
