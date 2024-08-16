@@ -23,6 +23,6 @@ spec:
         name: cnpg
         namespace: cnpg-system
       interval: 10m
-    values:
-      primaryUpdateStrategy: "unsupervised"
-      primaryUpdateMethod: "restart"
+  values:
+    primaryUpdateStrategy: "unsupervised"
+    primaryUpdateMethod: "restart"

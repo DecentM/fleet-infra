@@ -1,4 +1,3 @@
-# clustertunnel.yaml
 apiVersion: networking.cfargotunnel.com/v1alpha1
 kind: ClusterTunnel
 metadata:
