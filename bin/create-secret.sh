@@ -33,9 +33,6 @@ for word in $input_literals; do
     literals="--from-literal=$word $literals"
 done
 
-# Remove the trailing space
-result="${result% }"
-
 # shellcheck disable=SC2086 # literals is a string of arguments
 kubectl -n "$namespace" create secret generic "$secret_name" $literals --dry-run=client -o yaml >/tmp/secret.yaml
 kubeseal --format=yaml --cert=/tmp/sealed-secrets.pub.pem </tmp/secret.yaml >/tmp/sealed-secret.yaml
