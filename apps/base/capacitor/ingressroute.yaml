@@ -2,7 +2,7 @@ apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: capacitor
-  namespace: app-capacitor
+  namespace: traefik-system
 
 spec:
   entryPoints:
@@ -13,4 +13,5 @@ spec:
       kind: Rule
       services:
         - name: capacitor
+          namespace: app-capacitor
           port: 9000
