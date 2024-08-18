@@ -1,5 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - sealed-cloudflare-secrets.yaml
+  - ../../base/layer1
   - cluster-tunnel.yaml
+  - sealed-cloudflare-secrets.yaml
+  - sealed-tailscale-oauth.yaml
