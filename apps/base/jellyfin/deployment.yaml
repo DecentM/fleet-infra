@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: jellyfin
+  namespace: app-jellyfin
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyfin
+
+  template:
+    metadata:
+      labels:
+        app: jellyfin
+    spec:
+      containers:
+        - name: jellyfin
+          image: lscr.io/linuxserver/jellyfin:latest
+          envFrom:
+            - configMapRef:
+                name: jellyfin-config
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+          ports:
+            - containerPort: 8096
+          volumeMounts:
+            - name: movies
+              mountPath: /movies
+            - name: config
+              mountPath: /config
+            - name: series
+              mountPath: /series
+            - name: youtube
+              mountPath: /youtube
+            - name: music
+              mountPath: /music
+      volumes:
+        - name: movies
+          hostPath:
+            path: /mnt/spike/mass-storage/videos/movies
+            type: Directory
+        - name: series
+          hostPath:
+            path: /mnt/spike/mass-storage/videos/series
+            type: Directory
+        - name: youtube
+          hostPath:
+            path: /mnt/spike/mass-storage/videos/youtube-new
+            type: Directory
+        - name: music
+          hostPath:
+            path: /mnt/spike/mass-storage/music
+            type: Directory
+        - name: config
+          persistentVolumeClaim:
+            claimName: jellyfin-config
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: home.arpa/zfs-pool
+                    operator: In
+                    values:
+                      - "true"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jellyfin-config
+  namespace: app-jellyfin
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: longhorn-local
