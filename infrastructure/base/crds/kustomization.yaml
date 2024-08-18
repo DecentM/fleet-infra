@@ -4,3 +4,4 @@ resources:
   - traefik-crds.yaml
   - tailscale-crds.yaml
   - sealed-secrets-crds.yaml
+  - cloudflare-crds.yaml
