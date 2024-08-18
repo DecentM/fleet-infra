@@ -7,8 +7,5 @@ resources:
   - ../base/longhorn
   - ../base/sealed-secrets
   - ../base/tailscale
-  - tailscale/sealed-oauth.yaml
   - ../base/cloudflare
-  - cloudflare/sealed-cloudflare-secrets.yaml
-  - cloudflare/cluster-tunnel.yaml
   - ../base/cnpg
