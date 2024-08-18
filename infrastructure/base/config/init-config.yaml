@@ -9,3 +9,5 @@ kind: ClusterConfiguration
 controllerManager:
   extraArgs:
     flex-volume-plugin-dir: "/var/usr/libexec/kubernetes/kubelet-plugins/volume/exec/"
+networking:
+  podSubnet: "10.244.0.0/16"
