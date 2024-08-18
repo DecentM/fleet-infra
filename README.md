@@ -1,7 +1,7 @@
 # Starting from the ground up
 
 - Get a cluster going
-  - `kubeadm init --config=infrastructure/base/config/init-config.yaml`
+  - `kubeadm init --config=infrastructure/base/layer0/config/init-config.yaml`
 - Get the ZFS pool going
   - Create a zvol, format it as XFS, mount it via fstab
 - Install flannel
