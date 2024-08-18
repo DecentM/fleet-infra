@@ -3,4 +3,3 @@ kind: Kustomization
 resources:
   - sealed-tailscale-oauth.yaml
   - chart.yaml
-  - proxy-class.yaml

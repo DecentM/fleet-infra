@@ -2,29 +2,45 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
-  name: static-infrastructure
+  name: layer0
   namespace: flux-system
 spec:
   interval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./infrastructure/production/static
+  path: ./infrastructure/production/layer0
   prune: true
   wait: true
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
-  name: dynamic-infrastructure
+  name: layer1
   namespace: flux-system
 spec:
   interval: 1m
   dependsOn:
-    - name: static-infrastructure
+    - name: layer0
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./infrastructure/production/dynamic
+  path: ./infrastructure/production/layer1
+  prune: true
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+kind: Kustomization
+metadata:
+  name: layer2
+  namespace: flux-system
+spec:
+  interval: 1m
+  dependsOn:
+    - name: layer1
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./infrastructure/production/layer2
   prune: true
   wait: true
