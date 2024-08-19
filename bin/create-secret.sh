@@ -18,14 +18,20 @@ kubectl cluster-info || (echo "Cannot connect to the cluster. Check your kubecon
 
 kubeseal --fetch-cert --controller-name=sealed-secrets-controller --controller-namespace=flux-system >/tmp/sealed-secrets.pub.pem
 
-printf "> Namespace: "
-read -r namespace
+if [ $# -eq 0 ]; then
+    printf "> Namespace: "
+    read -r namespace
 
-printf "> Secret name: "
-read -r secret_name
+    printf "> Secret name: "
+    read -r secret_name
 
-printf "> Enter space separated literals (like a=b c=d): "
-read -r input_literals
+    printf "> Enter space separated literals (like a=b c=d): "
+    read -r input_literals
+else
+    namespace="$1"
+    secret_name="$2"
+    input_literals="$3"
+fi
 
 literals=""
 

@@ -4,3 +4,4 @@ resources:
   - longhorn
   - cnpg
   - tailscale
+  - cloudflare
