@@ -23,9 +23,11 @@ spec:
           env:
             - name: NODE_ENV
               value: production
+            - name: HOME
+              value: /config
           volumeMounts:
-            - name: flood-data
-              mountPath: /data
+            - name: flood-config
+              mountPath: /config
 
         - name: qbittorrent
           image: lscr.io/linuxserver/qbittorrent:latest
@@ -59,9 +61,9 @@ spec:
         - name: config
           persistentVolumeClaim:
             claimName: qbittorrent-config
-        - name: flood-data
+        - name: flood-config
           persistentVolumeClaim:
-            claimName: flood-data
+            claimName: flood-config
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -79,12 +81,12 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: flood-data
+  name: flood-config
   namespace: app-servarr
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 64Mi
   storageClassName: longhorn-local
