@@ -36,10 +36,8 @@ spec:
         - name: qbittorrent
           image: lscr.io/linuxserver/qbittorrent:latest
           env:
-            - name: PGID
-              value: "1000"
-            - name: PUID
-              value: "1000"
+            - name: HOME
+              value: /config
             - name: TZ
               value: "Europe/Tallinn"
             - name: WEBUI_PORT
