@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - ../base/capacitor
   - ../base/jellyfin
+  - ../base/sonarr
