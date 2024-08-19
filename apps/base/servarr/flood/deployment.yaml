@@ -18,8 +18,8 @@ spec:
         app: flood
     spec:
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
+        runAsUser: 0
+        runAsGroup: 0
         fsGroup: 1000
       containers:
         - name: flood
@@ -38,6 +38,10 @@ spec:
           env:
             - name: HOME
               value: /config
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
             - name: TZ
               value: "Europe/Tallinn"
             - name: WEBUI_PORT
