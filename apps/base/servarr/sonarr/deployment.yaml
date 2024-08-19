@@ -23,6 +23,12 @@ spec:
           envFrom:
             - configMapRef:
                 name: sonarr-config
+          env:
+            - name: SONARR__AUTH__APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: servarr-api-key
+                  key: value
           ports:
             - containerPort: 8096
           volumeMounts:

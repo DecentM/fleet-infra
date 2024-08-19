@@ -1,0 +1,15 @@
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: servarr-api-key
+  namespace: app-servarr
+spec:
+  encryptedData:
+    value: AgAIBDWU3b4mBEmgaUuIbpYKP87XgwKAKKzivbly02LLVYDtMPiaCQMHbB/TSwu3dncsRKFs6KeZCJbYNl4uDuFZKBvz6896SyqNVicFQh+O4/6ic91erjWmP3VIDUphDihJkHjQ2GJD8UQSWdxG0FhzX0jdRQCg9sBi7P6zS4YflD0nrVR5ezAZj/1NBXaWJv1CCvy+GC5wAulLOWGH9UJpVCXVLqDIw3KcamB5slkIhvYaQiqdQO6EMf7nX+h53VM/mMMsZDpMrpkKSTmgN48DDAedIo/wXtj8Q0um2qk5PmfTYIvqQBMPWWjTUXVkNRhIhcozs6yjrhie+9sRlXRCQj5jpJRueoACgdd8Zbqj5kfJRzIdMzbgyQxfL1kAW8L2TUVW4fEQuvg/9gLscTde0lA62lUdEcBY/yY0No9XmNWA+1eYkklt5cT2k/B/nZJAPvPKM6SHabvt7e7b8Tj7uxhunEi46fV4daz+L0SEHjCJ/M2l+iidgIsVdUand63wHbrKalB/EVRzTILTRx56jhMDqtFzFbXQf1DazofU2oGydT+Cw18CufKVdLUGgfWjOWsaEHnObCJVLT7FyIpahJ4glZrAFuty3UDmmLKMthGg/PRBsFE3U4xiydkQlJoqp22WoLp6DvcCJb3KrsC7rIQR2BUa4DZwHz2WMbWJHbirrHBkxR7JJqLC36AB4BTvRTR/rNOUdZou9RaKbnn4Z37kfysLgS1Zcte8HSA9QQ==
+  template:
+    metadata:
+      creationTimestamp: null
+      name: servarr-api-key
+      namespace: app-servarr
