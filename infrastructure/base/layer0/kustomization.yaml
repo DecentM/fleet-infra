@@ -9,3 +9,4 @@ resources:
   - traefik
   - sealed-secrets
   - tailscale
+  - nvidia

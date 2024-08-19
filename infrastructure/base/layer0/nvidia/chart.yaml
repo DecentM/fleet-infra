@@ -1,0 +1,29 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: nvidia-repo
+  namespace: nvidia-system
+spec:
+  interval: 10m
+  url: https://helm.ngc.nvidia.com/nvidia
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nvidia-gpu-operator
+  namespace: nvidia-system
+spec:
+  chart:
+    spec:
+      chart: gpu-operator
+      reconcileStrategy: ChartVersion
+      sourceRef:
+        kind: HelmRepository
+        name: nvidia-repo
+  values:
+    driver:
+      enabled: false
+    operator:
+      enabled: true
+      defaultRuntime: crio
+  interval: 10m
