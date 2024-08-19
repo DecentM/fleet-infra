@@ -23,6 +23,8 @@ spec:
   values:
     driver:
       enabled: false
+    toolkit:
+      enabled: false
     operator:
       enabled: true
       defaultRuntime: crio
