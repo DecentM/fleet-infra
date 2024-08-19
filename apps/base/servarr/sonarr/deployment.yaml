@@ -3,7 +3,7 @@ kind: Deployment
 
 metadata:
   name: sonarr
-  namespace: app-sonarr
+  namespace: app-servarr
 
 spec:
   replicas: 1
@@ -30,6 +30,8 @@ spec:
               mountPath: /config
             - name: series
               mountPath: /series
+            - name: downloads
+              mountPath: /downloads
       volumes:
         - name: series
           hostPath:
@@ -38,6 +40,9 @@ spec:
         - name: config
           persistentVolumeClaim:
             claimName: sonarr-config
+        - name: downloads
+          persistentVolumeClaim:
+            claimName: downloads
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -52,11 +57,11 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: sonarr-config
-  namespace: app-sonarr
+  namespace: app-servarr
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi
+      storage: 1Gi
   storageClassName: longhorn-local

@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: sonarr-config
-  namespace: app-sonarr
+  namespace: app-servarr
 data:
   PUID: "1000"
   PGID: "1000"
