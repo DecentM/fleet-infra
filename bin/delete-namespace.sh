@@ -1,5 +1,12 @@
 #!/bin/sh
 
+set -eu
+
+if ! command -v kubectl >/dev/null; then
+    echo "kubectl is not installed. Please install it to continue."
+    exit 1
+fi
+
 kubectl proxy &
 
 sleep 0.1
