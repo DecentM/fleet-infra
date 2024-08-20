@@ -7,6 +7,6 @@ metadata:
 spec:
   ports:
     - name: http
-      port: 9696
+      port: 6969
   selector:
     app: prowlarr
