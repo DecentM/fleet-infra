@@ -52,6 +52,24 @@ spec:
           namespace: app-servarr
           port: 6969
 ---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: radarr
+  namespace: app-servarr
+
+spec:
+  entryPoints:
+    - web
+
+  routes:
+    - match: HostRegexp(`^radarr\..*`)
+      kind: Rule
+      services:
+        - name: radarr
+          namespace: app-servarr
+          port: 7878
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
