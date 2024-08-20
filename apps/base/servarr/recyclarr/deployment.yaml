@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: recyclarr
+  namespace: app-servarr
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: recyclarr
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: recyclarr
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: recyclarr
+          image: ghcr.io/recyclarr/recyclarr:latest
+          env:
+            - name: TZ
+              value: Europe/Tallinn
+            - name: SERVARR_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: servarr-api-key
+                  key: value
+          volumeMounts:
+            - name: config
+              mountPath: /config
+      volumes:
+        - name: config
+          configMap:
+            name: recyclarr-config
