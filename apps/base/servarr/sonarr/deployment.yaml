@@ -17,10 +17,6 @@ spec:
       labels:
         app: sonarr
     spec:
-      securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
       containers:
         - name: sonarr
           image: lscr.io/linuxserver/sonarr:latest
@@ -28,6 +24,10 @@ spec:
             - configMapRef:
                 name: sonarr-config
           env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
             - name: SONARR__AUTH__APIKEY
               valueFrom:
                 secretKeyRef:
