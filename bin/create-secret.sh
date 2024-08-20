@@ -14,7 +14,7 @@ fi
 
 trap 'rm -f /tmp/sealed-secrets.pub.pem /tmp/secret.yaml /tmp/sealed-secret.yaml' EXIT
 
-kubectl cluster-info || (echo "Cannot connect to the cluster. Check your kubeconfig or the kube-system namespace. We need the cluster to be online to create secrets in it." && exit 1)
+kubectl cluster-info >/dev/null || (echo "Cannot connect to the cluster. Check your kubeconfig or the kube-system namespace. We need the cluster to be online to create secrets in it." && exit 1)
 
 kubeseal --fetch-cert --controller-name=sealed-secrets-controller --controller-namespace=flux-system >/tmp/sealed-secrets.pub.pem
 
@@ -45,9 +45,12 @@ kubeseal --format=yaml --cert=/tmp/sealed-secrets.pub.pem </tmp/secret.yaml >/tm
 
 rm -f /tmp/sealed-secrets.pub.pem /tmp/secret.yaml
 
-echo "Secret created in /tmp. Pwd is $(pwd)"
-
-printf "> Output path (relative): "
-read -r output_path
+if [ $# -eq 0 ]; then
+    echo "Secret created in /tmp. Pwd is $(pwd)"
+    printf "> Output path (relative): "
+    read -r output_path
+else
+    output_path="$4"
+fi
 
 mv /tmp/sealed-secret.yaml "$output_path"

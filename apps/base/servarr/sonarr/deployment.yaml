@@ -23,6 +23,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: sonarr-config
+            - secretRef:
+                name: sonarr-postgres-credentials
           env:
             - name: PUID
               value: "1000"

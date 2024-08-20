@@ -2,6 +2,11 @@
 
 set -eu
 
+if ! command -v kubectl >/dev/null; then
+    echo "kubectl is not installed. Please install it and try again."
+    exit 1
+fi
+
 if [ ! -f bin/create-secret.sh ]; then
     echo "This script must be run from the root of the repository."
     exit 1
@@ -15,6 +20,14 @@ create_secret() {
 
     input_literals=""
 
+    exists=$(kubectl get secret -n "$namespace" "$secret_name" >/dev/null 2>/dev/null && echo 1 || echo 0)
+
+    if [ "$exists" = "1" ]; then
+        echo "Skipping $namespace/$secret_name"
+        return
+    fi
+
+    echo
     echo "$namespace ➜ $secret_name"
     echo "===================="
 
@@ -28,7 +41,7 @@ create_secret() {
 
     bin/create-secret.sh "$namespace" "$secret_name" "$input_literals" "$output_path"
 
-    printf "\r✓\n\n"
+    printf "\r✓\n"
 }
 
 create_secret \
@@ -48,3 +61,9 @@ create_secret \
     servarr-api-key \
     "value" \
     "apps/base/servarr/sealed-api-key.yaml"
+
+create_secret \
+    app-servarr \
+    sonarr-postgres-credentials \
+    "POSTGRES_USER POSTGRES_PASSWORD POSTGRES_DB" \
+    "apps/base/servarr/sealed-sonarr-postgres-credentials.yaml"

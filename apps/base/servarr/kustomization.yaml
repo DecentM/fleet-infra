@@ -3,7 +3,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - ingressroutes.yaml
-  - sealed-api-key.yaml
   - pvcs.yaml
+  - secrets
   - sonarr
   - flood
