@@ -16,7 +16,8 @@ data:
 
     # Configuration specific to Sonarr
     sonarr:
-      - base_url: http://sonarr.app-servarr.svc:8989
+      series:
+        base_url: http://sonarr.app-servarr.svc:8989
         api_key: !env_var SERVARR_API_KEY
 
         # Quality definitions from the guide to sync to Sonarr. Choices: series, anime
@@ -35,7 +36,8 @@ data:
 
     # Configuration specific to Radarr.
     radarr:
-      - base_url: http://radarr.app-servarr.svc:7878
+      movies:
+        base_url: http://radarr.app-servarr.svc:7878
         api_key: !env_var SERVARR_API_KEY
 
         quality_definition:
