@@ -40,14 +40,14 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /config
-            - name: series
-              mountPath: /series
+            - name: movies
+              mountPath: /movies
             - name: downloads
               mountPath: /downloads
       volumes:
-        - name: series
+        - name: movies
           hostPath:
-            path: /mnt/spike/mass-storage/videos/series
+            path: /mnt/spike/mass-storage/videos/movies
             type: Directory
         - name: config
           persistentVolumeClaim:
