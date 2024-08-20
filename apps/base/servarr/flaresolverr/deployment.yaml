@@ -11,7 +11,7 @@ spec:
     matchLabels:
       app: flaresolverr
   strategy:
-    type: Recreate
+    type: RollingUpdate
   template:
     metadata:
       labels:
