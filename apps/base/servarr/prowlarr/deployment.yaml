@@ -2,56 +2,56 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: sonarr
+  name: prowlarr
   namespace: app-servarr
 
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sonarr
+      app: prowlarr
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: sonarr
+        app: prowlarr
     spec:
       containers:
-        - name: sonarr
-          image: lscr.io/linuxserver/sonarr:latest
+        - name: prowlarr
+          image: lscr.io/linuxserver/prowlarr:latest
           envFrom:
             - configMapRef:
-                name: sonarr-config
+                name: prowlarr-config
             - secretRef:
-                name: sonarr-postgres-credentials
+                name: prowlarr-postgres-credentials
           env:
             - name: PUID
               value: "1000"
             - name: PGID
               value: "1000"
-            - name: SONARR__AUTH__APIKEY
+            - name: PROWLARR__AUTH__APIKEY
               valueFrom:
                 secretKeyRef:
                   name: servarr-api-key
                   key: value
           ports:
-            - containerPort: 8989
+            - containerPort: 9696
           volumeMounts:
             - name: config
               mountPath: /config
-            - name: series
-              mountPath: /series
+            - name: movies
+              mountPath: /movies
             - name: downloads
               mountPath: /downloads
       volumes:
-        - name: series
+        - name: movies
           hostPath:
-            path: /mnt/spike/mass-storage/videos/series
+            path: /mnt/spike/mass-storage/videos/movies
             type: Directory
         - name: config
           persistentVolumeClaim:
-            claimName: sonarr-config
+            claimName: prowlarr-config
         - name: downloads
           persistentVolumeClaim:
             claimName: downloads
@@ -68,7 +68,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: sonarr-config
+  name: prowlarr-config
   namespace: app-servarr
 spec:
   accessModes:

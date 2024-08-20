@@ -7,3 +7,4 @@ resources:
   - secrets
   - sonarr
   - flood
+  - prowlarr
