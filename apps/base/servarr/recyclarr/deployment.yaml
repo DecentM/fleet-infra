@@ -43,6 +43,8 @@ spec:
               mountPath: /config/configs
             - name: includes
               mountPath: /config/includes
+            - name: repositories
+              mountPath: /config/repositories
       volumes:
         - name: config
           configMap:
@@ -59,6 +61,9 @@ spec:
         - name: includes
           persistentVolumeClaim:
             claimName: recyclarr-includes
+        - name: repositories
+          persistentVolumeClaim:
+            claimName: recyclarr-repositories
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -110,4 +115,17 @@ spec:
   resources:
     requests:
       storage: 16Mi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: recyclarr-repositories
+  namespace: app-servarr
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
   storageClassName: longhorn-local
