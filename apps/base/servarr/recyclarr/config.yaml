@@ -4,14 +4,19 @@ metadata:
   name: recyclarr-config
   namespace: app-servarr
 data:
-  recyclarr.yaml: |
+  settings.yml: |
+    # yaml-language-server: $schema=https://raw.githubusercontent.com/recyclarr/recyclarr/master/schemas/settings-schema.json
+
+    enable_ssl_certificate_validation: true
+    git_path: /usr/bin/git
+
+  recyclarr.yml: |
     # yaml-language-server: $schema=https://raw.githubusercontent.com/recyclarr/recyclarr/master/schemas/config-schema.json
     # https://recyclarr.dev/wiki/yaml/config-reference/
 
     # Configuration specific to Sonarr
     sonarr:
-      series:
-        base_url: http://sonarr.app-servarr.svc:8989
+      - base_url: http://sonarr.app-servarr.svc:8989
         api_key: !env_var SERVARR_API_KEY
 
         # Quality definitions from the guide to sync to Sonarr. Choices: series, anime
@@ -30,8 +35,7 @@ data:
 
     # Configuration specific to Radarr.
     radarr:
-      movies:
-        base_url: http://radarr.app-servarr.svc:7878
+      - base_url: http://radarr.app-servarr.svc:7878
         api_key: !env_var SERVARR_API_KEY
 
         quality_definition:
