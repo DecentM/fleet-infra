@@ -66,3 +66,16 @@ subjects:
   - kind: ServiceAccount
     name: traefik-ingress-controller
     namespace: traefik-system
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: qbittorrent-tcp-ingress
+spec:
+  entryPoints:
+    - torrent
+  routes:
+    - match: HostSNI(`*`)
+      services:
+      - name: qbittorrent-torrent
+        port: 6881

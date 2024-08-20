@@ -10,3 +10,29 @@ spec:
       port: 3000
   selector:
     app: flood
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qbittorrent-web
+  namespace: app-servarr
+
+spec:
+  ports:
+    - name: http
+      port: 8080
+  selector:
+    app: flood
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qbittorrent-torrent
+  namespace: app-servarr
+
+spec:
+  ports:
+    - name: torrent
+      port: 6881
+  selector:
+    app: flood
