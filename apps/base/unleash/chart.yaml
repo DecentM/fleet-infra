@@ -30,6 +30,8 @@ spec:
     dbConfig:
       host: cnpg-db.app-unleash.svc
       port: 5432
+    image:
+      pullPolicy: IfNotPresent
   valuesFrom:
     - kind: Secret
       name: postgres-credentials
