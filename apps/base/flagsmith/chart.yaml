@@ -1,0 +1,37 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: flagsmith
+  namespace: app-flagsmith
+spec:
+  interval: 10m
+  url: https://flagsmith.github.io/flagsmith-charts
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: flagsmith
+  namespace: app-flagsmith
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: flagsmith
+      version: ">=0.53.0"
+      sourceRef:
+        kind: HelmRepository
+        name: flagsmith
+        namespace: app-flagsmith
+      interval: 10m
+
+  values:
+    postgresql:
+      enabled: false
+    databaseExternal:
+      enabled: true
+
+  valuesFrom:
+    - kind: Secret
+      name: postgres-cluster-app
+      valuesKey: uri
+      targetPath: databaseExternal.url

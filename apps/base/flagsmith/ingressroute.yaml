@@ -1,26 +1,26 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: unleash
-  namespace: app-unleash
+  name: flagsmith
+  namespace: app-flagsmith
 
 spec:
   entryPoints:
     - web
 
   routes:
-    - match: HostRegexp(`^unleash\..*`)
+    - match: HostRegexp(`^flagsmith\..*`)
       kind: Rule
       services:
-        - name: unleash
-          namespace: app-unleash
-          port: 4242
+        - name: flagsmith-frontend
+          namespace: app-flagsmith
+          port: 8080
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: traefik-ingress-controller
-  namespace: app-unleash
+  namespace: app-flagsmith
 
 roleRef:
   apiGroup: rbac.authorization.k8s.io
