@@ -4,3 +4,4 @@ resources:
   - ../base/capacitor
   - ../base/jellyfin
   - ../base/servarr
+  - ../base/unleash

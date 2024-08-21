@@ -1,0 +1,45 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: unleash
+  namespace: app-unleash
+spec:
+  interval: 10m
+  url: https://docs.getunleash.io/helm-charts
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: unleash
+  namespace: app-unleash
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: unleash
+      version: ">=5.1.6"
+      sourceRef:
+        kind: HelmRepository
+        name: unleash
+        namespace: app-unleash
+      interval: 10m
+  values:
+    replicaCount: 1
+    postgresql:
+      enabled: false
+    dbConfig:
+      host: cnpg-db.app-unleash.svc
+      port: 5432
+  valuesFrom:
+    - kind: Secret
+      name: postgres-credentials
+      valuesKey: POSTGRES_USER
+      targetPath: dbConfig.user
+    - kind: Secret
+      name: postgres-credentials
+      valuesKey: POSTGRES_PASSWORD
+      targetPath: dbConfig.pass
+    - kind: Secret
+      name: postgres-credentials
+      valuesKey: POSTGRES_DB
+      targetPath: dbConfig.database
