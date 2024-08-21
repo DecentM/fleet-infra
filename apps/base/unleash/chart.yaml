@@ -27,21 +27,26 @@ spec:
     replicaCount: 1
     postgresql:
       enabled: false
-    dbConfig:
-      host: cnpg-db.app-unleash.svc
-      port: 5432
     image:
       pullPolicy: IfNotPresent
   valuesFrom:
     - kind: Secret
-      name: postgres-credentials
-      valuesKey: POSTGRES_USER
+      name: postgres-cluster-app
+      valuesKey: username
       targetPath: dbConfig.user
     - kind: Secret
-      name: postgres-credentials
-      valuesKey: POSTGRES_PASSWORD
+      name: postgres-cluster-app
+      valuesKey: password
       targetPath: dbConfig.pass
     - kind: Secret
-      name: postgres-credentials
-      valuesKey: POSTGRES_DB
+      name: postgres-cluster-app
+      valuesKey: dbname
       targetPath: dbConfig.database
+    - kind: Secret
+      name: postgres-cluster-app
+      valuesKey: host
+      targetPath: dbConfig.host
+    - kind: Secret
+      name: postgres-cluster-app
+      valuesKey: port
+      targetPath: dbConfig.port

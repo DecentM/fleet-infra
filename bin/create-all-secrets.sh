@@ -61,27 +61,3 @@ create_secret \
     servarr-api-key \
     "value" \
     "apps/base/servarr/secrets/sealed-api-key.yaml"
-
-create_secret \
-    app-servarr \
-    sonarr-postgres-credentials \
-    "POSTGRES_USER POSTGRES_PASSWORD POSTGRES_DB" \
-    "apps/base/servarr/secrets/sealed-sonarr-postgres-credentials.yaml"
-
-create_secret \
-    app-servarr \
-    prowlarr-postgres-credentials \
-    "POSTGRES_USER POSTGRES_PASSWORD POSTGRES_DB" \
-    "apps/base/servarr/secrets/sealed-prowlarr-postgres-credentials.yaml"
-
-create_secret \
-    app-servarr \
-    radarr-postgres-credentials \
-    "POSTGRES_USER POSTGRES_PASSWORD POSTGRES_DB" \
-    "apps/base/servarr/secrets/sealed-radarr-postgres-credentials.yaml"
-
-create_secret \
-    app-unleash \
-    postgres-credentials \
-    "POSTGRES_USER POSTGRES_PASSWORD POSTGRES_DB" \
-    "apps/base/unleash/sealed-postgres-credentials.yaml"
