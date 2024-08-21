@@ -1,12 +1,11 @@
-apiVersion: v1
-kind: Service
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
 metadata:
-  name: cnpg-db
+  name: postgres-cluster
   namespace: app-unleash
 spec:
-  ports:
-    - port: 5432
-      targetPort: 5432
-  selector:
-    app: cnpg
-  type: ClusterIP
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:13.16
+  storage:
+    storageClass: longhorn-local
+    size: 1Gi
