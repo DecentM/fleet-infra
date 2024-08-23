@@ -26,8 +26,10 @@ spec:
           ports:
             - containerPort: 25565
           volumeMounts:
-            - name: data
+            - name: empty-dir
               mountPath: /data
+            - name: data
+              mountPath: /import-target
             - name: import-data
               mountPath: /import
               readOnly: true
@@ -40,6 +42,8 @@ spec:
           hostPath:
             path: /mnt/spike/containers/ftb-revelations
             type: Directory
+        - name: empty-dir
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -51,5 +55,5 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi
+      storage: 15Gi
   storageClassName: longhorn-local
