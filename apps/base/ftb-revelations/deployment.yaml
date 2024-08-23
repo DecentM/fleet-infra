@@ -28,10 +28,18 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
+            - name: import-data
+              mountPath: /import
+              readOnly: true
+              recursiveReadOnly: "Enabled"
       volumes:
         - name: data
           persistentVolumeClaim:
             claimName: ftb-revelations-data
+        - name: import-data
+          hostPath:
+            path: /mnt/spike/containers/ftb-revelations
+            type: Directory
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
