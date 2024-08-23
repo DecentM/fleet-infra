@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: ftb-revelations
+  namespace: app-ftb-revelations
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ftb-revelations
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: ftb-revelations
+    spec:
+      containers:
+        - name: ftb-revelations
+          image: itzg/minecraft-server:java8-multiarch
+          envFrom:
+            - configMapRef:
+                name: ftb-revelations-config
+          ports:
+            - containerPort: 25565
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: ftb-revelations-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ftb-revelations-data
+  namespace: app-ftb-revelations
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: longhorn-local

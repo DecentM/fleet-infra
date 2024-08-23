@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ftb-revelations-config
+  namespace: app-ftb-revelations
+data:
+  # System stuff
+  EULA: "true"
+  UID: "1000"
+  GID: "1000"
+  TZ: "Europe/Tallinn"
+
+  # Minecraft stuff
+  INIT_MEMORY: "4G"
+  MAX_MEMORY: "12G"
+  ENABLE_ROLLING_LOGS: "true"
+  MOD_PLATFORM: "FTBA"
+  FTB_MODPACK_ID: "35" # FTB Revelations
+  FTB_MODPACK_VERSION_ID: "12180" # 3.7.0
+
+  # Server stuff
+  DIFFICULTY: "normal"
+  MAX_PLAYERS: "5"
+  SNOOPER_ENABLED: "false"
+  SPAWN_PROTECTION: "16"
+  VIEW_DISTANCE: "10"
+  ALLOW_FLIGHT: "true"
+  MOTD: "Everyone is welcome, except those who aren't"
+  SERVER_NAME: "The Valley"
+  ENABLE_AUTOPAUSE: "false"
+  AUTOPAUSE_TIMEOUT_EST: "1800"
+  AUTOPAUSE_TIMEOUT_INIT: "600"
+  AUTOPAUSE_TIMEOUT_KN: "300"

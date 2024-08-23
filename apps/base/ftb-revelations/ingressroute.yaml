@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ftb-revelations
+  namespace: app-ftb-revelations
+
+spec:
+  ports:
+    - name: tcp
+      port: 25565
+  selector:
+    app: ftb-revelations
