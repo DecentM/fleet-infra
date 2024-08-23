@@ -34,6 +34,7 @@ spec:
             - "--entryPoints.web.address=:80"
             - "--entryPoints.tcpep.address=:8000"
             - "--entryPoints.torrent.address=:6881"
+            - "--entryPoints.minecraft.address=:25565"
             - "--entryPoints.udpep.address=:9000/udp"
             - "--providers.kubernetescrd"
             - "--providers.kubernetescrd.allowCrossNamespace=true"
@@ -48,6 +49,8 @@ spec:
               containerPort: 9000
             - name: torrent
               containerPort: 6881
+            - name: minecraft
+              containerPort: 25565
 ---
 apiVersion: v1
 kind: Service
@@ -78,3 +81,7 @@ spec:
       port: 6881
       name: torrent
       targetPort: 6881
+    - protocol: TCP
+      port: 25565
+      name: minecraft
+      targetPort: 25565
