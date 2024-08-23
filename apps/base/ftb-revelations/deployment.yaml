@@ -26,24 +26,12 @@ spec:
           ports:
             - containerPort: 25565
           volumeMounts:
-            - name: empty-dir
-              mountPath: /data
             - name: data
-              mountPath: /import-target
-            - name: import-data
-              mountPath: /import
-              readOnly: true
-              recursiveReadOnly: "Enabled"
+              mountPath: /data
       volumes:
         - name: data
           persistentVolumeClaim:
             claimName: ftb-revelations-data
-        - name: import-data
-          hostPath:
-            path: /mnt/spike/containers/ftb-revelations
-            type: Directory
-        - name: empty-dir
-          emptyDir: {}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
