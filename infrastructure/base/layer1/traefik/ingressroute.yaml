@@ -1,0 +1,17 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: dashboard
+  namespace: traefik-system
+
+spec:
+  entryPoints:
+    - web
+
+  routes:
+    - match: HostRegexp(`^traefik\..*`)
+      kind: Rule
+      services:
+        - name: dashboard
+          namespace: traefik-system
+          port: 8080
