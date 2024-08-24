@@ -6,3 +6,4 @@ resources:
   - ../base/servarr
   - ../base/flagsmith
   - ../base/ftb-revelations
+  - ../base/joplin

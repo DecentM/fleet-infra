@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: joplin
+  namespace: app-joplin
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: joplin
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: joplin
+    spec:
+      containers:
+        - name: joplin
+          image: joplin/server:latest
+          env:
+            - name: DB_CLIENT
+              value: pg
+            - name: POSTGRES_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-cluster-app
+                  key: uri
+          ports:
+            - containerPort: 22300
