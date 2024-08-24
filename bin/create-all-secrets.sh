@@ -61,3 +61,9 @@ create_secret \
     servarr-api-key \
     "value" \
     "apps/base/servarr/secrets/sealed-api-key.yaml"
+
+create_secret \
+    app-joplin \
+    joplin-secrets \
+    "baseurl" \
+    "apps/base/joplin/sealed-joplin-secrets.yaml"
