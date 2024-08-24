@@ -27,7 +27,7 @@ data:
   ALLOW_FLIGHT: "true"
   MOTD: "Everyone is welcome, except those who aren't"
   SERVER_NAME: "The Valley"
-  ENABLE_AUTOPAUSE: "false"
+  ENABLE_AUTOPAUSE: "true"
   AUTOPAUSE_TIMEOUT_EST: "1800"
   AUTOPAUSE_TIMEOUT_INIT: "600"
   AUTOPAUSE_TIMEOUT_KN: "300"
