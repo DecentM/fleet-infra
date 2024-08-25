@@ -45,11 +45,19 @@ spec:
                   key: password
             - name: PAPERLESS_URL
               value: http://paperless-ngx.cluster.arpa
+            - name: PAPERLESS_MEDIA_ROOT
+              value: /media
+            - name: PAPERLESS_DATA_DIR
+              value: /data
+            - name: PAPERLESS_EMPTY_TRASH_DIR
+              value: "/trash"
           volumeMounts:
-            - mountPath: /usr/src/paperless/data
+            - mountPath: /data
               name: data
-            - mountPath: /usr/src/paperless/media
+            - mountPath: /media
               name: media
+            - mountPath: /trash
+              name: trash
           ports:
             - containerPort: 8000
       volumes:
@@ -98,3 +106,16 @@ spec:
     requests:
       storage: 5Gi
   storageClassName: longhorn-pool
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: trash
+  namespace: app-paperless-ngx
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: longhorn-local
