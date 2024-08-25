@@ -1,0 +1,15 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: paperless-db
+  namespace: app-paperless-ngx
+spec:
+  instances: 1
+  storage:
+    size: 5Gi
+    storageClassName: longhorn-pool
+  postgresql:
+    version: "16"
+  monitoring:
+    enablePodMonitor: false
+    enablePGMonitor: false

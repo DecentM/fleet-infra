@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: broker
+  namespace: app-paperless-ngx
+  labels:
+    app: paperless-ngx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paperless-ngx
+      component: broker
+  template:
+    metadata:
+      labels:
+        app: paperless-ngx
+        component: broker
+    spec:
+      containers:
+        - name: redis
+          image: docker.io/library/redis:7
+          volumeMounts:
+            - mountPath: /data
+              name: redisdata
+          ports:
+            - containerPort: 6379
+      volumes:
+        - name: redisdata
+          persistentVolumeClaim:
+            claimName: redisdata
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: broker
+  namespace: app-paperless-ngx
+spec:
+  ports:
+    - port: 6379
+  selector:
+    app: paperless-ngx
+    component: broker
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redisdata
+  namespace: app-paperless-ngx
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+    storageClassName: longhorn-local
