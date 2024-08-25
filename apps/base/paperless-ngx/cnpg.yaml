@@ -5,11 +5,7 @@ metadata:
   namespace: app-paperless-ngx
 spec:
   instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:13.16
   storage:
-    size: 5Gi
-    storageClassName: longhorn-pool
-  postgresql:
-    version: "16"
-  monitoring:
-    enablePodMonitor: false
-    enablePGMonitor: false
+    storageClass: longhorn-pool
+    size: 1Gi
