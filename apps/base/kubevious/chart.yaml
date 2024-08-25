@@ -1,0 +1,28 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: kubevious
+  namespace: app-kubevious
+spec:
+  interval: 10m
+  url: https://helm.kubevious.io
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kubevious
+  namespace: app-kubevious
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: kubevious
+      version: ">=1.2.1"
+      sourceRef:
+        kind: HelmRepository
+        name: kubevious
+        namespace: app-kubevious
+      interval: 10m
+  valuesFrom:
+    - kind: ConfigMap
+      name: kubevious-values

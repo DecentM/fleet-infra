@@ -7,3 +7,4 @@ resources:
   - ../base/flagsmith
   - ../base/ftb-revelations
   - ../base/joplin
+  - ../base/kubevious

@@ -1,0 +1,6 @@
+mysql:
+  persistence:
+    enabled: true
+    storageClass: longhorn-local
+    accessMode: ReadWriteOnce
+    size: 1Gi
