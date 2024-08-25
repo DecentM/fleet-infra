@@ -12,9 +12,9 @@ spec:
     - match: HostRegexp(`^kubevious\..*`)
       kind: Rule
       services:
-        - name: kubevious-frontend
+        - name: kubevious-ui-clusterip
           namespace: app-kubevious
-          port: 8080
+          port: 80
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
