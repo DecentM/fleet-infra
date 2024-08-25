@@ -7,5 +7,5 @@ spec:
   instances: 1
   imageName: ghcr.io/cloudnative-pg/postgresql:13.16
   storage:
-    storageClass: longhorn-pool
+    storageClass: longhorn-local
     size: 1Gi
