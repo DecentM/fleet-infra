@@ -45,6 +45,19 @@ spec:
     concourse:
       web:
         enableRedactSecrets: true
+        enableAcrossStep: true
+        enablePipelineInstances: true
+        enablep2pVolumeStreaming: true
+        enableCacheStreamedVolumes: true
+        enableGlobalResources: true
+        enableBuildRerunWhenWorkerDisappears: true
+        enableResourceCausality: true
+        jobSchedulingMaxInFlight: 5
+        secretRetryAttempts: 5
+        secretRetryInterval: 5s
+        containerPlacementStrategies:
+          - fewest-build-containers
+          - volume-locality
 
     web:
       replicas: 1
