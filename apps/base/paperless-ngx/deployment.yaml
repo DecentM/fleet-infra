@@ -67,6 +67,9 @@ spec:
         - name: media
           persistentVolumeClaim:
             claimName: media
+        - name: trash
+          persistentVolumeClaim:
+            claimName: trash
 ---
 apiVersion: v1
 kind: Service
