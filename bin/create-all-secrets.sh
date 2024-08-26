@@ -79,4 +79,10 @@ create_secret \
     app-concourse \
     local-users \
     "value main-team-members" \
-    "apps/base/concourse/sealed-local-users.yaml"
+    "apps/base/concourse/secrets/sealed-local-users.yaml"
+
+create_secret \
+    app-concourse-main \
+    npm \
+    "automation-token" \
+    "apps/base/concourse/secrets/sealed-npm.yaml"

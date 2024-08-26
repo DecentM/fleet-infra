@@ -68,6 +68,12 @@ spec:
 
     web:
       replicas: 1
+      kubernetes:
+        namespacePrefix: app-
+      teams:
+        - main
+      createTeamNamespaces: false
+      keepNamespaces: true
 
     worker:
       replicas: 1
