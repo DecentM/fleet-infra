@@ -24,8 +24,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: radarr-config
-            - secretRef:
-                name: radarr-postgres-credentials
           env:
             - name: PUID
               value: "1000"

@@ -24,8 +24,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: prowlarr-config
-            - secretRef:
-                name: prowlarr-postgres-credentials
           env:
             - name: PUID
               value: "1000"
