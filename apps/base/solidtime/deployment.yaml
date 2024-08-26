@@ -27,27 +27,27 @@ spec:
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: solidtime-db
+                  name: solidtime-db-app
                   key: username
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: solidtime-db
+                  name: solidtime-db-app
                   key: password
             - name: DB_NAME
               valueFrom:
                 secretKeyRef:
-                  name: solidtime-db
+                  name: solidtime-db-app
                   key: dbname
             - name: DB_HOST
               valueFrom:
                 secretKeyRef:
-                  name: solidtime-db
+                  name: solidtime-db-app
                   key: host
             - name: DB_PORT
               valueFrom:
                 secretKeyRef:
-                  name: solidtime-db
+                  name: solidtime-db-app
                   key: port
           volumeMounts:
             - name: app-storage
