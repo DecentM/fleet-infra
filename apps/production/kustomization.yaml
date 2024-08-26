@@ -9,3 +9,7 @@ resources:
   - ../base/joplin
   - ../base/paperless-ngx
   - ../base/concourse
+patches:
+  - path: patches/concourse.yaml
+    target:
+      kind: HelmRelease

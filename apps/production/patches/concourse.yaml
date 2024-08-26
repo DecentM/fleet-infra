@@ -1,0 +1,10 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: concourse
+  namespace: app-concourse
+spec:
+  values:
+    concourse:
+      web:
+        externalUrl: http://concourse.cluster.arpa

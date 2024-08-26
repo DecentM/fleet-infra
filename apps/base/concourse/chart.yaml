@@ -26,10 +26,10 @@ spec:
 
   # get localUsers from secret
   valuesFrom:
-    - secretKeyRef:
-        name: concourse-local-users
-        key: value
-        targetPath: secrets.localUsers
+    - kind: Secret
+      name: local-users
+      valuesKey: value
+      targetPath: secrets.localUsers
 
   values:
     ## https://github.com/concourse/concourse-chart/blob/master/values.yaml
@@ -42,12 +42,15 @@ spec:
     imageDigest:
     imagePullPolicy: IfNotPresent
 
+    concourse:
+      web:
+        enableRedactSecrets: true
+
     web:
       replicas: 1
 
     worker:
       replicas: 1
-
       updateStrategy:
         type: RollingUpdate
 
