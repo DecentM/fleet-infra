@@ -2,38 +2,26 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: torrent-flood
+  name: qbittorrent
   namespace: app-servarr
 
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: flood
+      app: qbittorrent
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: flood
+        app: qbittorrent
     spec:
       securityContext:
         runAsUser: 0
         runAsGroup: 0
         fsGroup: 1000
       containers:
-        - name: flood
-          image: jesec/flood:latest
-          imagePullPolicy: IfNotPresent
-          env:
-            - name: NODE_ENV
-              value: production
-            - name: HOME
-              value: /config
-          volumeMounts:
-            - name: flood-config
-              mountPath: /config
-
         - name: qbittorrent
           image: lscr.io/linuxserver/qbittorrent:latest
           imagePullPolicy: IfNotPresent
@@ -69,9 +57,6 @@ spec:
         - name: config
           persistentVolumeClaim:
             claimName: qbittorrent-config
-        - name: flood-config
-          persistentVolumeClaim:
-            claimName: flood-config
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -84,17 +69,4 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  storageClassName: longhorn-local
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: flood-config
-  namespace: app-servarr
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 64Mi
   storageClassName: longhorn-local

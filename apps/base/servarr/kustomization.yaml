@@ -6,7 +6,7 @@ resources:
   - pvcs.yaml
   - secrets
   - sonarr
-  - flood
+  - qbittorrent
   - prowlarr
   - flaresolverr
   - recyclarr
