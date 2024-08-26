@@ -20,6 +20,7 @@ spec:
       containers:
         - name: radarr
           image: lscr.io/linuxserver/radarr:latest
+          imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
                 name: radarr-config

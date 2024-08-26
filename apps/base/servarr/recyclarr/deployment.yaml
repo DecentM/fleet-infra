@@ -24,6 +24,7 @@ spec:
       containers:
         - name: recyclarr
           image: ghcr.io/recyclarr/recyclarr:latest
+          imagePullPolicy: IfNotPresent
           env:
             - name: TZ
               value: Europe/Tallinn

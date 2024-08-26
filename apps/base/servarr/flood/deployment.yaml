@@ -24,6 +24,7 @@ spec:
       containers:
         - name: flood
           image: jesec/flood:latest
+          imagePullPolicy: IfNotPresent
           env:
             - name: NODE_ENV
               value: production
@@ -35,6 +36,7 @@ spec:
 
         - name: qbittorrent
           image: lscr.io/linuxserver/qbittorrent:latest
+          imagePullPolicy: IfNotPresent
           env:
             - name: HOME
               value: /config

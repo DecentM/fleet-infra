@@ -20,6 +20,7 @@ spec:
       containers:
         - name: prowlarr
           image: lscr.io/linuxserver/prowlarr:latest
+          imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
                 name: prowlarr-config
