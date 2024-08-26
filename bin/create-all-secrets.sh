@@ -20,9 +20,10 @@ create_secret() {
 
     input_literals=""
 
-    exists=$(kubectl get secret -n "$namespace" "$secret_name" >/dev/null 2>/dev/null && echo 1 || echo 0)
+    secret_exists=$(kubectl get secret -n "$namespace" "$secret_name" >/dev/null 2>/dev/null && echo 1 || echo 0)
+    output_exists=$(test -f "$output_path" && echo 1 || echo 0)
 
-    if [ "$exists" = "1" ]; then
+    if [ "$secret_exists" = "1" ] && [ "$output_exists" = "1" ]; then
         echo "Skipping $namespace/$secret_name"
         return
     fi
@@ -71,5 +72,5 @@ create_secret \
 create_secret \
     longhorn-system \
     s3-secret \
-    "AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY" \
+    "AWS_ACCESS_KEY_ID AWS_ENDPOINTS AWS_SECRET_ACCESS_KEY" \
     "infrastructure/production/layer1/sealed-s3-secret.yaml"
