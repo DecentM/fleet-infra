@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - ../../base/layer1
   - cluster-tunnel.yaml
+  - sealed-s3-secret.yaml
