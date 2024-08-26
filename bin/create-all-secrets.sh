@@ -78,5 +78,5 @@ create_secret \
 create_secret \
     app-concourse \
     local-users \
-    "value" \
+    "value main-team-members" \
     "apps/base/concourse/sealed-local-users.yaml"

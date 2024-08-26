@@ -30,6 +30,10 @@ spec:
       name: local-users
       valuesKey: value
       targetPath: secrets.localUsers
+    - kind: Secret
+      name: local-users
+      valuesKey: main-team-members
+      targetPath: concourse.web.auth.mainTeam.localUser
 
   values:
     ## https://github.com/concourse/concourse-chart/blob/master/values.yaml
