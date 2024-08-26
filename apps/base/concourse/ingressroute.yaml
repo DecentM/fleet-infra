@@ -1,0 +1,32 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: concourse
+  namespace: app-concourse
+
+spec:
+  entryPoints:
+    - web
+
+  routes:
+    - match: HostRegexp(`^concourse\..*`)
+      kind: Rule
+      services:
+        - name: concourse-web
+          namespace: app-concourse
+          port: 8080
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: traefik-ingress-controller
+  namespace: app-concourse
+
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: traefik-ingress-controller
+subjects:
+  - kind: ServiceAccount
+    name: traefik-ingress-controller
+    namespace: traefik-system

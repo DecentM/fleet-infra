@@ -1,0 +1,71 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: concourse
+  namespace: app-concourse
+spec:
+  interval: 10m
+  url: https://concourse-charts.storage.googleapis.com
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: concourse
+  namespace: app-concourse
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: concourse
+      version: ">=9.1.3"
+      sourceRef:
+        kind: HelmRepository
+        name: concourse
+        namespace: app-concourse
+      interval: 10m
+
+  # get localUsers from secret
+  valuesFrom:
+    - secretKeyRef:
+        name: concourse-local-users
+        key: value
+        targetPath: secrets.localUsers
+
+  values:
+    ## https://github.com/concourse/concourse-chart/blob/master/values.yaml
+    image: concourse/concourse
+
+    ## https://hub.docker.com/r/concourse/concourse/tags/
+    imageTag: "7.11.0"
+
+    ## https://kubernetes.io/docs/concepts/configuration/overview/#container-images
+    imageDigest:
+    imagePullPolicy: IfNotPresent
+
+    web:
+      replicas: 1
+
+    worker:
+      replicas: 1
+
+      updateStrategy:
+        type: RollingUpdate
+
+    persistence:
+      enabled: true
+
+      worker:
+        storageClass: longhorn-local-nobackup
+        accessMode: ReadWriteOnce
+        size: 20Gi
+
+      primary:
+        persistence:
+          enabled: true
+          storageClass: longhorn-local
+          accessModes:
+            - ReadWriteOnce
+          size: 8Gi
+
+    secrets:
+      create: true

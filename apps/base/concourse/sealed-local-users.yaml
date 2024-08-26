@@ -1,0 +1,15 @@
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: local-users
+  namespace: app-concourse
+spec:
+  encryptedData:
+    value: AgBroiK1k5Dw2i7G9WhDiX4HsH2Z3Eq3L8fmQKTXSAIcIOhnUhwOKAkJrg8aYh0ZRWq4ARp49KRybQ38ou9ALoUb5pu4/LqX55xbtlcM/X+s3Im4QakCaQqaU0aUsQX7AudTcHT6yOiFbkuSHHdVzacY7pYNGCAWfK8p+PzNFCxPRCH4t4aEDQ9V40064kwGLy3HV3P5561CkZbQD57IoSrip3CMbnI2z32iqSlkHuM43RBN4mkhKOE2WJmm02cIZhCPCghh25XrM+hk/FbqmOybs+YiOgDxPrVfxyuMj99KBboPUdzjUHLg1FiOjFd3i82iSriiWRnxvvfQ/o9Igv0WVt+eUee/YuoO07b6mriMdGaz+GICVN9n7XSaV8ANzY25xJu80jD5Rzwi6b0rQEGV5rVOPpxckMWrAWI7hFNHEvEskipbnaJZcm6EuiodaKbDyvOUEaWBKBYceFRZR/KxzJ2hyOmzmisiDlf3zjb02UBib8XIh41Lj9kES667Pg5SK/f/KzJpq9BHTUMWSwiTW3i8vo37wSaJ9jX6A+D14VQOQk+cG6PX/92gi2GgaBDWFoKTEe8XeJzk+/+xoEqkyd5iHx12oXx0G2eCOrZCrbqqyu3KKeDLzOBFMvesLAWfYymk+GnUBsEaJZf7FzF5Wb61dqovxlzWh2gE1IyZhrsS5k7q3byz7jqX4fDaFOLixrzABFPoaeG6Awh8TQLc9L4Ag029Dg6rGL0ETpDW0oGbED3KTiS5JwJgMdAicNKJ4la3phbRx6CmZVxAzUo7zTuCUTmsa9A=
+  template:
+    metadata:
+      creationTimestamp: null
+      name: local-users
+      namespace: app-concourse

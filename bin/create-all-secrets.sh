@@ -74,3 +74,9 @@ create_secret \
     s3-secret \
     "AWS_ACCESS_KEY_ID AWS_ENDPOINTS AWS_SECRET_ACCESS_KEY" \
     "infrastructure/production/layer1/sealed-s3-secret.yaml"
+
+create_secret \
+    app-concourse \
+    local-users \
+    "value" \
+    "apps/base/concourse/sealed-local-users.yaml"
