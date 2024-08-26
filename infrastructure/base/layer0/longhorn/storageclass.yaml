@@ -22,5 +22,34 @@ allowVolumeExpansion: true
 parameters:
   numberOfReplicas: "1"
   staleReplicaTimeout: "30"
-reclaimPolicy: "Delete"
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: longhorn-local-nobackup
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+parameters:
+  numberOfReplicas: "1"
+  staleReplicaTimeout: "30"
+  fromBackup: ""
+  recurringJobs: "[]"
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: longhorn-pool-nobackup
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+parameters:
+  numberOfReplicas: "1"
+  staleReplicaTimeout: "30"
+  diskSelector: "zfs-pool"
+  fromBackup: ""
+  recurringJobs: "[]"
+reclaimPolicy: Delete
 volumeBindingMode: Immediate

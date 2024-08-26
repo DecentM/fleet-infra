@@ -42,7 +42,7 @@ spec:
               mountPath: /config
             - name: series
               mountPath: /series
-            - name: downloads
+            - name: downloads-nobackup
               mountPath: /downloads
       volumes:
         - name: series
@@ -52,9 +52,9 @@ spec:
         - name: config
           persistentVolumeClaim:
             claimName: sonarr-config
-        - name: downloads
+        - name: downloads-nobackup
           persistentVolumeClaim:
-            claimName: downloads
+            claimName: downloads-nobackup
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
