@@ -10,14 +10,12 @@ spec:
   selector:
     matchLabels:
       app: paperless-ngx
-      component: paperless-ngx
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
         app: paperless-ngx
-        component: paperless-ngx
     spec:
       securityContext:
         fsGroup: 1000
