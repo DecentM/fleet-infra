@@ -82,7 +82,7 @@ create_secret \
     "apps/base/concourse/secrets/sealed-local-users.yaml"
 
 create_secret \
-    app-concourse-main \
+    concourse-main \
     npm \
     "automation-token" \
     "apps/base/concourse/secrets/sealed-npm.yaml"
