@@ -19,10 +19,15 @@ spec:
         app: paperless-ngx
         component: paperless-ngx
     spec:
+      securityContext:
+        fsGroup: 1000
       containers:
         - name: paperless-ngx
           image: ghcr.io/paperless-ngx/paperless-ngx:latest
           imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
           env:
             - name: PAPERLESS_REDIS
               value: redis://broker:6379

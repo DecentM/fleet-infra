@@ -15,10 +15,15 @@ spec:
       labels:
         app: solidtime
     spec:
+      securityContext:
+        fsGroup: 1000
       containers:
         - name: app
           image: solidtime/solidtime:latest
           imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
           ports:
             - containerPort: 8000
           env:
@@ -55,6 +60,9 @@ spec:
         - name: scheduler
           image: solidtime/solidtime:latest
           imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
           env:
             - name: CONTAINER_MODE
               value: scheduler
@@ -64,6 +72,9 @@ spec:
         - name: queue
           image: solidtime/solidtime:latest
           imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
           env:
             - name: CONTAINER_MODE
               value: worker
