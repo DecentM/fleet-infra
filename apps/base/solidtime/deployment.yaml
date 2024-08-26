@@ -8,6 +8,8 @@ spec:
   selector:
     matchLabels:
       app: solidtime
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -16,6 +18,7 @@ spec:
       containers:
         - name: app
           image: solidtime/solidtime:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
           env:
@@ -51,6 +54,7 @@ spec:
               mountPath: /var/www/html/storage
         - name: scheduler
           image: solidtime/solidtime:latest
+          imagePullPolicy: IfNotPresent
           env:
             - name: CONTAINER_MODE
               value: scheduler
@@ -59,6 +63,7 @@ spec:
               mountPath: /var/www/html/storage
         - name: queue
           image: solidtime/solidtime:latest
+          imagePullPolicy: IfNotPresent
           env:
             - name: CONTAINER_MODE
               value: worker

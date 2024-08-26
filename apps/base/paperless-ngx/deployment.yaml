@@ -11,6 +11,8 @@ spec:
     matchLabels:
       app: paperless-ngx
       component: webserver
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -20,6 +22,7 @@ spec:
       containers:
         - name: webserver
           image: ghcr.io/paperless-ngx/paperless-ngx:latest
+          imagePullPolicy: IfNotPresent
           env:
             - name: PAPERLESS_REDIS
               value: redis://broker:6379
