@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: webserver
+  name: paperless-ngx
   namespace: app-paperless-ngx
   labels:
     app: paperless-ngx
@@ -10,17 +10,17 @@ spec:
   selector:
     matchLabels:
       app: paperless-ngx
-      component: webserver
+      component: paperless-ngx
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
         app: paperless-ngx
-        component: webserver
+        component: paperless-ngx
     spec:
       containers:
-        - name: webserver
+        - name: paperless-ngx
           image: ghcr.io/paperless-ngx/paperless-ngx:latest
           imagePullPolicy: IfNotPresent
           env:
@@ -73,19 +73,6 @@ spec:
         - name: trash
           persistentVolumeClaim:
             claimName: trash
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: webserver
-  namespace: app-paperless-ngx
-spec:
-  ports:
-    - port: 8000
-      targetPort: 8000
-  selector:
-    app: paperless-ngx
-    component: webserver
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
