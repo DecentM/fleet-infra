@@ -80,7 +80,7 @@ spec:
       worker:
         storageClass: longhorn-local-nobackup
         accessMode: ReadWriteOnce
-        size: 20Gi
+        size: 40Gi
 
       primary:
         persistence:
