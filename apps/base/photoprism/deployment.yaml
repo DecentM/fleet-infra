@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: photoprism
   namespace: app-photoprism
@@ -7,8 +7,9 @@ spec:
   selector:
     matchLabels:
       app: photoprism
-  serviceName: photoprism
   replicas: 1
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -19,11 +20,11 @@ spec:
           image: mariadb:11-ubi
           imagePullPolicy: IfNotPresent
           env:
-            - name: PHOTOPRISM_DATABASE_PASSWORD
+            - name: MYSQL_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: photoprism-db-secrets
-                  key: root-password
+                  key: PHOTOPRISM_DATABASE_PASSWORD
             - name: MYSQL_DATABASE
               value: photoprism
 
@@ -37,7 +38,7 @@ spec:
           image: photoprism/photoprism:latest
           imagePullPolicy: IfNotPresent
           envFrom:
-            - configMap:
+            - configMapRef:
                 name: photoprism-config
             - secretRef:
                 name: photoprism-admin-secrets
@@ -67,6 +68,9 @@ spec:
         - name: storage
           persistentVolumeClaim:
             claimName: storage
+        - name: mariadb
+          persistentVolumeClaim:
+            claimName: mariadb
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
