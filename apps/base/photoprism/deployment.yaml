@@ -56,6 +56,8 @@ spec:
               name: originals
             - mountPath: /photoprism/import
               name: import
+              readOnly: true
+              recursiveReadOnly: Enabled
             - mountPath: /photoprism/storage
               name: storage
       volumes:
@@ -63,8 +65,9 @@ spec:
           persistentVolumeClaim:
             claimName: originals
         - name: import
-          persistentVolumeClaim:
-            claimName: import
+          hostPath:
+            path: /mnt/spike/app-pvcs/pvc-45927172-cd18-43f1-b1a3-774f22dba437
+            type: Directory
         - name: storage
           persistentVolumeClaim:
             claimName: storage
