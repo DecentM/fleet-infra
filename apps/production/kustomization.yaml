@@ -9,7 +9,11 @@ resources:
   - ../base/joplin
   - ../base/paperless-ngx
   - ../base/concourse
+  - ../base/photoprism
 patches:
   - path: patches/concourse.yaml
+    target:
+      kind: HelmRelease
+  - path: patches/photoprism.yaml
     target:
       kind: HelmRelease

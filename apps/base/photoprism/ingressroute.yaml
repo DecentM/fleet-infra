@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: photoprism
+  namespace: app-photoprism
+
+spec:
+  ports:
+    - name: http
+      port: 2342
+  selector:
+    app: photoprism
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: photoprism
+  namespace: app-photoprism
+
+spec:
+  entryPoints:
+    - web
+
+  routes:
+    - match: HostRegexp(`^photoprism\..*`)
+      kind: Rule
+      services:
+        - name: photoprism
+          namespace: app-photoprism
+          port: 2342
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: traefik-ingress-controller
+  namespace: app-photoprism
+
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: traefik-ingress-controller
+subjects:
+  - kind: ServiceAccount
+    name: traefik-ingress-controller
+    namespace: traefik-system

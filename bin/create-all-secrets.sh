@@ -86,3 +86,15 @@ create_secret \
     npm \
     "automation-token" \
     "apps/base/concourse/secrets/sealed-npm.yaml"
+
+create_secret \
+    app-photoprism \
+    photoprism-admin-secrets \
+    "PHOTOPRISM_ADMIN_PASSWORD PHOTOPRISM_ADMIN_USER" \
+    "apps/base/photoprism/sealed-admin-secrets.yaml"
+
+create_secret \
+    app-photoprism \
+    photoprism-db-secrets \
+    "PHOTOPRISM_DATABASE_PASSWORD" \
+    "apps/base/photoprism/sealed-db-secrets.yaml"

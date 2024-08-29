@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: photoprism-config
+  namespace: app-photoprism
+data:
+  PHOTOPRISM_SITE_URL: "http://photoprism.cluster.arpa/"

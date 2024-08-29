@@ -1,0 +1,121 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: photoprism
+  namespace: app-photoprism
+spec:
+  selector:
+    matchLabels:
+      app: photoprism
+  serviceName: photoprism
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: photoprism
+    spec:
+      containers:
+        - name: mariadb
+          image: mariadb:11-ubi
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PHOTOPRISM_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: photoprism-db-secrets
+                  key: root-password
+            - name: MYSQL_DATABASE
+              value: photoprism
+
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mariadb
+
+        - name: photoprism
+          image: photoprism/photoprism:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMap:
+                name: photoprism-config
+            - secretRef:
+                name: photoprism-admin-secrets
+            - secretRef:
+                name: photoprism-db-secrets
+          ports:
+            - containerPort: 2342
+              name: http
+          volumeMounts:
+            - mountPath: /photoprism/originals
+              name: originals
+            - mountPath: /photoprism/import
+              name: import
+            - mountPath: /photoprism/storage
+              name: storage
+          readinessProbe:
+            httpGet:
+              path: /api/v1/status
+              port: http
+      volumes:
+        - name: originals
+          persistentVolumeClaim:
+            claimName: originals
+        - name: import
+          persistentVolumeClaim:
+            claimName: import
+        - name: storage
+          persistentVolumeClaim:
+            claimName: storage
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: originals
+  namespace: app-photoprism
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: longhorn-pool
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: import
+  namespace: app-photoprism
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: storage
+  namespace: app-photoprism
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mariadb
+  namespace: app-photoprism
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: longhorn-local
