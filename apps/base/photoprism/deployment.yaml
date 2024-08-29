@@ -99,7 +99,7 @@ spec:
   resources:
     requests:
       storage: 2Gi
-  storageClassName: longhorn-local
+  storageClassName: longhorn-local-nobackup
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -111,7 +111,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi
+      storage: 15Gi
   storageClassName: longhorn-local
 ---
 apiVersion: v1
