@@ -1,7 +1,7 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: flood
+  name: qbittorrent
   namespace: app-servarr
 
 spec:
@@ -12,7 +12,7 @@ spec:
     - match: HostRegexp(`^qbittorrent\..*`)
       kind: Rule
       services:
-        - name: qbittorrent
+        - name: qbittorrent-web
           namespace: app-servarr
           port: 8080
 ---
