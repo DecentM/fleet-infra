@@ -25,6 +25,11 @@ spec:
         - name: strapi
           image: ghcr.io/eesti-transinimeste-uhing/website-strapi:latest
           imagePullPolicy: IfNotPresent
+          command: /bin/sh
+          args:
+            - -c
+            - |
+              cd /app/apps/strapi/ && node_modules/.bin/strapi start
           envFrom:
             - configMapRef:
                 name: strapi-config
