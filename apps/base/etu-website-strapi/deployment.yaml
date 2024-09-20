@@ -15,10 +15,6 @@ spec:
       labels:
         app: strapi
     spec:
-      securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
       containers:
         - name: strapi
           image: ghcr.io/eesti-transinimeste-uhing/website-strapi:latest
@@ -38,10 +34,10 @@ spec:
             - containerPort: 1337
               name: http
           volumeMounts:
-            - mountPath: /db
-              name: db
             - mountPath: /app/apps/strapi/public/uploads
               name: uploads
+            - mountPath: /app/apps/strapi/db
+              name: db
       volumes:
         - name: db
           persistentVolumeClaim:
