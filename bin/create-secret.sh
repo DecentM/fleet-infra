@@ -25,22 +25,32 @@ if [ $# -eq 0 ]; then
     printf "> Secret name: "
     read -r secret_name
 
+    printf "> Secret type (e.g. generic, docker-registry, etc.): "
+    read -r secret_type
+
     printf "> Enter space separated literals (like a=b c=d): "
     read -r input_literals
 else
     namespace="$1"
     secret_name="$2"
-    input_literals="$3"
+    secret_type="$3"
+    input_literals="$4"
 fi
 
 literals=""
 
-for word in $input_literals; do
-    literals="--from-literal=$word $literals"
-done
+if [ "$secret_type" = "docker-registry" ]; then
+    for word in $input_literals; do
+        literals="--$word $literals"
+    done
+else
+    for word in $input_literals; do
+        literals="--from-literal=$word $literals"
+    done
+fi
 
 # shellcheck disable=SC2086 # literals is a string of arguments
-kubectl -n "$namespace" create secret generic "$secret_name" $literals --dry-run=client -o yaml >/tmp/secret.yaml
+kubectl -n "$namespace" create secret "$secret_type" "$secret_name" $literals --dry-run=client -o yaml >/tmp/secret.yaml
 kubeseal --format=yaml --cert=/tmp/sealed-secrets.pub.pem </tmp/secret.yaml >/tmp/sealed-secret.yaml
 
 rm -f /tmp/sealed-secrets.pub.pem /tmp/secret.yaml
@@ -50,7 +60,7 @@ if [ $# -eq 0 ]; then
     printf "> Output path (relative): "
     read -r output_path
 else
-    output_path="$4"
+    output_path="$5"
 fi
 
 mv /tmp/sealed-secret.yaml "$output_path"

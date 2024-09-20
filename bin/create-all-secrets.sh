@@ -15,8 +15,9 @@ fi
 create_secret() {
     namespace="$1"
     secret_name="$2"
-    input_keys="$3"
-    output_path="$4"
+    secret_type="$3"
+    input_keys="$4"
+    output_path="$5"
 
     input_literals=""
 
@@ -29,7 +30,7 @@ create_secret() {
     fi
 
     echo
-    echo "$namespace ➜ $secret_name"
+    echo "$namespace ➜ $secret_type/$secret_name"
     echo "===================="
 
     for key in $input_keys; do
@@ -40,7 +41,7 @@ create_secret() {
 
     printf "…"
 
-    bin/create-secret.sh "$namespace" "$secret_name" "$input_literals" "$output_path"
+    bin/create-secret.sh "$namespace" "$secret_name" "$secret_type" "$input_literals" "$output_path"
 
     printf "\r✓\n"
 }
@@ -48,53 +49,76 @@ create_secret() {
 create_secret \
     cloudflare-operator-system \
     cloudflare-secrets \
+    generic \
     "CLOUDFLARE_API_TOKEN" \
     "infrastructure/base/layer1/cloudflare/sealed-cloudflare-secrets.yaml"
 
 create_secret \
     tailscale-system \
     oauth \
+    generic \
     "client-id client-secret" \
     "infrastructure/base/layer1/tailscale/sealed-tailscale-oauth.yaml"
 
 create_secret \
     app-servarr \
     servarr-api-key \
+    generic \
     "value" \
     "apps/base/servarr/secrets/sealed-api-key.yaml"
 
 create_secret \
     app-joplin \
     joplin-secrets \
+    generic \
     "baseurl" \
     "apps/base/joplin/sealed-joplin-secrets.yaml"
 
 create_secret \
     longhorn-system \
     s3-secret \
+    generic \
     "AWS_ACCESS_KEY_ID AWS_ENDPOINTS AWS_SECRET_ACCESS_KEY" \
     "infrastructure/production/layer1/sealed-s3-secret.yaml"
 
 create_secret \
     app-concourse \
     local-users \
+    generic \
     "value main-team-members" \
     "apps/base/concourse/secrets/sealed-local-users.yaml"
 
 create_secret \
     concourse-main \
     npm \
+    generic \
     "automation-token" \
     "apps/base/concourse/secrets/sealed-npm.yaml"
 
 create_secret \
     app-photoprism \
     photoprism-admin-secrets \
+    generic \
     "PHOTOPRISM_ADMIN_PASSWORD PHOTOPRISM_ADMIN_USER" \
     "apps/base/photoprism/sealed-admin-secrets.yaml"
 
 create_secret \
     app-photoprism \
     photoprism-db-secrets \
+    generic \
     "PHOTOPRISM_DATABASE_PASSWORD" \
     "apps/base/photoprism/sealed-db-secrets.yaml"
+
+create_secret \
+    app-etu-website-strapi \
+    strapi-secrets \
+    generic \
+    "ADMIN_JWT_SECRET JWT_SECRET API_TOKEN_SALT TRANSFER_TOKEN_SALT APP_KEYS" \
+    "apps/base/etu-website-strapi/sealed-strapi-secrets.yaml"
+
+create_secret \
+    app-etu-website-strapi \
+    etu-ghcr-secrets \
+    docker-registry \
+    "docker-server docker-username docker-password docker-email" \
+    "apps/base/etu-website-strapi/sealed-ghcr-secrets.yaml"

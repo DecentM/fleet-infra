@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: strapi
+  namespace: app-etu-website-strapi
+spec:
+  selector:
+    matchLabels:
+      app: strapi
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: strapi
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      imagePullSecrets:
+        - name: etu-ghcr-secrets
+      containers:
+        - name: strapi
+          image: ghcr.io/eesti-transinimeste-uhing/website-strapi:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: strapi-config
+            - secretRef:
+                name: strapi-secrets
+          ports:
+            - containerPort: 1337
+              name: http
+          volumeMounts:
+            - mountPath: /db
+              name: db
+      volumes:
+        - name: db
+          persistentVolumeClaim:
+            claimName: db
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: db
+  namespace: app-etu-website-strapi
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: longhorn-local

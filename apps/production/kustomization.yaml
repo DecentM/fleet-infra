@@ -10,6 +10,8 @@ resources:
   - ../base/paperless-ngx
   - ../base/concourse
   - ../base/photoprism
+  - ../base/etu-website-strapi
+  - etu-website-strapi/tunnel.yaml
 patches:
   - path: patches/concourse.yaml
   - path: patches/photoprism.yaml
