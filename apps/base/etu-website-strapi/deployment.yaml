@@ -40,10 +40,15 @@ spec:
           volumeMounts:
             - mountPath: /db
               name: db
+            - mountPath: /app/apps/strapi/public/uploads
+              name: uploads
       volumes:
         - name: db
           persistentVolumeClaim:
             claimName: db
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: uploads
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -57,3 +62,16 @@ spec:
     requests:
       storage: 1Gi
   storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: uploads
+  namespace: app-etu-website-strapi
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: longhorn-pool
