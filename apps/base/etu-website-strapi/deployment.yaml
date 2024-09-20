@@ -19,13 +19,12 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
-      imagePullSecrets:
-        - name: etu-ghcr-secrets
       containers:
         - name: strapi
           image: ghcr.io/eesti-transinimeste-uhing/website-strapi:latest
           imagePullPolicy: Always
-          command: /bin/sh
+          command:
+            - /bin/sh
           args:
             - -c
             - |
