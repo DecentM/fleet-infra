@@ -115,10 +115,3 @@ create_secret \
     generic \
     "ADMIN_JWT_SECRET JWT_SECRET API_TOKEN_SALT TRANSFER_TOKEN_SALT APP_KEYS" \
     "apps/base/etu-website-strapi/sealed-strapi-secrets.yaml"
-
-create_secret \
-    app-etu-website-strapi \
-    etu-ghcr-secrets \
-    docker-registry \
-    "docker-server docker-username docker-password docker-email" \
-    "apps/base/etu-website-strapi/sealed-ghcr-secrets.yaml"

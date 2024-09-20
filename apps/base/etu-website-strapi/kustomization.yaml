@@ -4,6 +4,5 @@ resources:
   - namespace.yaml
   - config.yaml
   - sealed-strapi-secrets.yaml
-  - sealed-ghcr-secrets.yaml
   - deployment.yaml
   - ingressroute.yaml
