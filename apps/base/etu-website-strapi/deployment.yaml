@@ -24,7 +24,7 @@ spec:
       containers:
         - name: strapi
           image: ghcr.io/eesti-transinimeste-uhing/website-strapi:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command: /bin/sh
           args:
             - -c
