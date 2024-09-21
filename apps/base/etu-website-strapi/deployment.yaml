@@ -1,3 +1,24 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: strapi-repo
+  namespace: app-etu-website-strapi
+spec:
+  image: ghcr.io/eesti-transinimeste-uhing/website-strapi
+  interval: 10m
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: strapi-image-policy
+  namespace: app-etu-website-strapi
+spec:
+  imageRepositoryRef:
+    name: strapi-repo
+  policy:
+    tag:
+      pattern: "latest"
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
