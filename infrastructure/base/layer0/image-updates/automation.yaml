@@ -20,4 +20,4 @@ spec:
     push:
       branch: main
   update:
-    strategy: Digest
+    strategy: Setters
