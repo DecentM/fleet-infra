@@ -38,8 +38,8 @@ spec:
     spec:
       containers:
         - name: strapi
-          image: ghcr.io/eesti-transinimeste-uhing/website-strapi:latest
-          imagePullPolicy: Always
+          image: ghcr.io/eesti-transinimeste-uhing/website-strapi:20240921043159
+          imagePullPolicy: IfNotPresent
           command:
             - /bin/sh
           args:
