@@ -17,7 +17,7 @@ spec:
     name: strapi-repo
   policy:
     numerical:
-      order: desc
+      order: asc
 ---
 apiVersion: apps/v1
 kind: Deployment
