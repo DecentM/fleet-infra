@@ -10,3 +10,4 @@ resources:
   - sealed-secrets
   - tailscale
   - nvidia
+  - image-updates
