@@ -16,8 +16,8 @@ spec:
   imageRepositoryRef:
     name: strapi-repo
   policy:
-    tag:
-      pattern: "latest"
+    alphabetical:
+      order: asc
 ---
 apiVersion: apps/v1
 kind: Deployment
