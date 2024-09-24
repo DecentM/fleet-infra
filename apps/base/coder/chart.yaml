@@ -31,6 +31,9 @@ spec:
         sessionAffinity: None
 
       env:
+        - name: "CODER_ACCESS_URL"
+          value: http://coder.cluster.arpa
+
         - name: CODER_PG_CONNECTION_URL
           valueFrom:
             secretKeyRef:
