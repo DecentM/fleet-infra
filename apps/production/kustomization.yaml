@@ -12,6 +12,7 @@ resources:
   - ../base/photoprism
   - ../base/etu-website-strapi
   - etu-website-strapi/tunnel.yaml
+  - ../base/coder
 patches:
   - path: patches/concourse.yaml
   - path: patches/photoprism.yaml
