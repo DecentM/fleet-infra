@@ -17,7 +17,8 @@
         --repository=fleet-infra \
         --branch=main \
         --path=clusters/staging \ # or `clusters/production`
-        --personal
+        --personal \
+        --components-extra=image-reflector-controller,image-automation-controller
     ```
 
 - In Longhorn, add a disk on the pool node with the "zfs-pool" tag. Make the

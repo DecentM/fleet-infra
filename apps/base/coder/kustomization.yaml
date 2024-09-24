@@ -4,4 +4,4 @@ resources:
   - namespace.yaml
   - cnpg.yaml
   - chart.yaml
-  - ingressroute.yaml
+  - service.yaml
