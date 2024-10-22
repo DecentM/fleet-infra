@@ -13,6 +13,7 @@ resources:
   - ../base/etu-website-strapi
   - etu-website-strapi/tunnel.yaml
   - ../base/coder
+  - ../base/whoami
 patches:
   - path: patches/concourse.yaml
   - path: patches/photoprism.yaml

@@ -32,10 +32,12 @@ spec:
             - "--api.insecure"
             - "--api.dashboard"
             - "--entryPoints.web.address=:80"
+            - "--entryPoints.websecure.address=:443"
             - "--entryPoints.torrent.address=:6881"
             - "--entryPoints.minecraft.address=:25565"
             - "--providers.kubernetescrd"
             - "--providers.kubernetescrd.allowCrossNamespace=true"
+            - "--certificatesresolvers.tailscale.tailscale=true"
           ports:
             - name: web
               containerPort: 80
