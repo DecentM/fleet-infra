@@ -8,5 +8,5 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 90Gi
+      storage: 200Gi
   storageClassName: longhorn-pool-nobackup
