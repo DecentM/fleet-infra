@@ -20,6 +20,7 @@ spec:
       containers:
         - name: jellyfin
           image: lscr.io/linuxserver/jellyfin:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: jellyfin-config
