@@ -85,7 +85,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 70Gi
+      storage: 100Gi
   storageClassName: longhorn-pool
 ---
 apiVersion: v1
@@ -111,7 +111,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 15Gi
+      storage: 60Gi
   storageClassName: longhorn-local
 ---
 apiVersion: v1
