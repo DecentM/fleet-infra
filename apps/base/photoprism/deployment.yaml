@@ -54,20 +54,12 @@ spec:
           volumeMounts:
             - mountPath: /photoprism/originals
               name: originals
-            - mountPath: /photoprism/import
-              name: import
-              readOnly: true
-              recursiveReadOnly: Enabled
             - mountPath: /photoprism/storage
               name: storage
       volumes:
         - name: originals
           persistentVolumeClaim:
             claimName: originals
-        - name: import
-          hostPath:
-            path: /mnt/spike/app-pvcs/pvc-45927172-cd18-43f1-b1a3-774f22dba437
-            type: Directory
         - name: storage
           persistentVolumeClaim:
             claimName: storage
@@ -85,7 +77,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 100Gi
+      storage: 150Gi
   storageClassName: longhorn-pool
 ---
 apiVersion: v1
@@ -111,7 +103,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 60Gi
+      storage: 100Gi
   storageClassName: longhorn-local
 ---
 apiVersion: v1
