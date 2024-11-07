@@ -122,3 +122,10 @@ create_secret \
     generic \
     "INVIDIOUS_HMAC_KEY" \
     "apps/base/invidious/sealed-invidious-secrets.yaml"
+
+create_secret \
+    app-samba \
+    samba-secrets \
+    generic \
+    "SAMBA_USERNAME SAMBA_PASSWORD" \
+    "apps/base/samba/sealed-samba-secrets.yaml"

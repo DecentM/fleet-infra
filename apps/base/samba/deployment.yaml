@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: samba
+  namespace: app-samba
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: samba
+  template:
+    metadata:
+      labels:
+        app: samba
+    spec:
+      initContainers:
+        - name: volume-permission-setup
+          image: busybox
+          command: ["sh", "-c", "chown -R 1000:1000 /mnt/share"] # Set the correct ownership to user1
+          volumeMounts:
+            - mountPath: /mnt/share
+              name: samba-share
+      containers:
+        - name: samba
+          image: dperson/samba
+          args:
+            - "-u"
+            - "$(SAMBA_USERNAME);$(SAMBA_PASSWORD)"
+            - "-s"
+            - "private;/mnt/share;no;no;no;$(SAMBA_USERNAME)"
+          envFrom:
+            - secretRef:
+                name: samba-secrets
+          ports:
+            - containerPort: 445
+              name: samba-tcp-445
+          volumeMounts:
+            - mountPath: /mnt/share
+              name: samba-share
+      volumes:
+        - name: samba-share
+          emptyDir: {} # Use PersistentVolumeClaim for persistent storage
