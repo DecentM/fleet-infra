@@ -115,3 +115,10 @@ create_secret \
     generic \
     "ADMIN_JWT_SECRET JWT_SECRET API_TOKEN_SALT TRANSFER_TOKEN_SALT APP_KEYS" \
     "apps/base/etu-website-strapi/sealed-strapi-secrets.yaml"
+
+create_secret \
+    app-invidious \
+    invidious-secrets \
+    generic \
+    "INVIDIOUS_HMAC_KEY" \
+    "apps/base/invidious/sealed-invidious-secrets.yaml"

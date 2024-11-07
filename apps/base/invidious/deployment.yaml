@@ -28,6 +28,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: invidious-config
+            - secretRef:
+                name: invidious-secrets
           ports:
             - containerPort: 3000
           resources:
