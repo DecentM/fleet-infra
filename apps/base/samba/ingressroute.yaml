@@ -19,7 +19,7 @@ metadata:
 
 spec:
   entryPoints:
-    - minecraft
+    - samba
   routes:
     - match: HostSNI(`*`)
       services:

@@ -35,6 +35,7 @@ spec:
             - "--entryPoints.websecure.address=:443"
             - "--entryPoints.torrent.address=:6881"
             - "--entryPoints.minecraft.address=:25565"
+            - "--entryPoints.samba.address=:445"
             - "--providers.kubernetescrd"
             - "--providers.kubernetescrd.allowCrossNamespace=true"
             - "--certificatesresolvers.tailscale.tailscale=true"
