@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: invidious-config
+  namespace: app-invidious
+data:
+  INVIDIOUS_DOMAIN: invidious.cluster.arpa

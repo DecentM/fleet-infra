@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: invidious-config
+  namespace: app-invidious
+data:
+  INVIDIOUS_PORT: "3000"
+  INVIDIOUS_EXTERNAL_PORT: "80"
+  INVIDIOUS_CHECK_TABLES: "true"
+  INVIDIOUS_SIGNATURE_SERVER: inv-sig-helper:12999
