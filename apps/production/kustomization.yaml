@@ -12,6 +12,7 @@ resources:
   - ../base/etu-website-strapi
   - etu-website-strapi/tunnel.yaml
   - ../base/whoami
+  - ../base/invidious
 patches:
   - path: patches/concourse.yaml
   - path: patches/photoprism.yaml
