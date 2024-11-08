@@ -13,27 +13,6 @@ spec:
       labels:
         app: samba
     spec:
-      initContainers:
-        - name: volume-permission-setup
-          image: busybox
-          command:
-            - sh
-            - -c
-            - |
-              chown -R 1000:1000 /mnt/movies /mnt/series /mnt/youtube /mnt/music /mnt/downloads /mnt/games
-          volumeMounts:
-            - mountPath: /mnt/movies
-              name: movies
-            - mountPath: /mnt/series
-              name: series
-            - mountPath: /mnt/youtube
-              name: youtube
-            - mountPath: /mnt/music
-              name: music
-            - mountPath: /mnt/downloads
-              name: downloads
-            - mountPath: /mnt/games
-              name: games
       containers:
         - name: samba
           image: dperson/samba
