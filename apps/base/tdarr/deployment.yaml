@@ -55,6 +55,8 @@ spec:
               name: movies
             - mountPath: /series
               name: series
+            - mountPath: /transcode
+              name: transcode
       volumes:
         - name: logs
           emptyDir: {}
@@ -72,6 +74,9 @@ spec:
           hostPath:
             path: /mnt/spike/mass-storage/videos/series
             type: Directory
+        - name: transcode
+          persistentVolumeClaim:
+            claimName: tdarr-transcode
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -97,4 +102,17 @@ spec:
   resources:
     requests:
       storage: 1Gi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tdarr-transcode
+  namespace: app-tdarr
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 15Gi
   storageClassName: longhorn-local
