@@ -4,7 +4,6 @@ resources:
   - ../base/jellyfin
   - ../base/servarr
   - ../base/flagsmith
-  - ../base/ftb-revelations
   - ../base/joplin
   - ../base/paperless-ngx
   - ../base/concourse
