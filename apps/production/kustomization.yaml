@@ -14,6 +14,7 @@ resources:
   - ../base/whoami
   - ../base/invidious
   - ../base/samba
+  - ../base/tdarr
 patches:
   - path: patches/concourse.yaml
   - path: patches/photoprism.yaml

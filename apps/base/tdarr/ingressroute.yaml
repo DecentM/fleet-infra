@@ -1,0 +1,48 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: tdarr
+  namespace: app-tdarr
+spec:
+  selector:
+    app: tdarr
+  ports:
+    - protocol: TCP
+      name: ui
+      port: 8265
+    - protocol: TCP
+      name: server
+      port: 8266
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: tdarr
+  namespace: app-tdarr
+
+spec:
+  entryPoints:
+    - web
+
+  routes:
+    - match: HostRegexp(`^tdarr\..*`)
+      kind: Rule
+      services:
+        - name: tdarr
+          namespace: app-tdarr
+          port: ui
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: traefik-ingress-controller
+  namespace: app-tdarr
+
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: traefik-ingress-controller
+subjects:
+  - kind: ServiceAccount
+    name: traefik-ingress-controller
+    namespace: traefik-system
