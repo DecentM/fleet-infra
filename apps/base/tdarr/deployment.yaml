@@ -36,6 +36,9 @@ spec:
           envFrom:
             - configMapRef:
                 name: tdarr-config
+          resources:
+            limits:
+              nvidia.com/gpu: 1
           ports:
             - containerPort: 8265
               name: ui
