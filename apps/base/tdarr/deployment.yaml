@@ -33,9 +33,6 @@ spec:
         - name: tdarr
           image: haveagitgat/tdarr:latest
           imagePullPolicy: Always
-          resources:
-            limits:
-              nvidia.com/gpu: 1
           envFrom:
             - configMapRef:
                 name: tdarr-config
