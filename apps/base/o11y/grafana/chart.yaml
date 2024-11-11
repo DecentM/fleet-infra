@@ -24,4 +24,5 @@ spec:
         namespace: app-o11y
       interval: 10m
 
-  values:
+  valuesFiles:
+    - values.yaml

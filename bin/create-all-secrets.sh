@@ -129,3 +129,10 @@ create_secret \
     generic \
     "SAMBA_USERNAME SAMBA_PASSWORD" \
     "apps/base/samba/sealed-samba-secrets.yaml"
+
+create_secret \
+    app-o11y \
+    grafana-secrets \
+    generic \
+    "admin-user admin-password" \
+    "apps/base/o11y/grafana/sealed-grafana-secrets.yaml"
