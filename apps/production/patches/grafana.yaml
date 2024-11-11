@@ -6,4 +6,7 @@ metadata:
 spec:
   values:
     grafana.ini:
-      root_url: http://grafana.cluster.arpa
+      server:
+        domain: grafana.cluster.arpa
+        root_url: http://grafana.cluster.arpa
+        serve_from_sub_path: false
