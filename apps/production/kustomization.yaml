@@ -16,4 +16,3 @@ resources:
 patches:
   - path: patches/concourse.yaml
   - path: patches/photoprism.yaml
-  - path: patches/grafana.yaml

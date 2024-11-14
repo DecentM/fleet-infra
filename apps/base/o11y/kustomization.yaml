@@ -5,5 +5,4 @@ resources:
   - ingressroutes.yaml
   - prometheus-community.yaml
   - sealed-grafana-secrets.yaml
-  - grafana
   - prometheus-stack
