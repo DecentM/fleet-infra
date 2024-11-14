@@ -12,6 +12,8 @@ resources:
   - ../base/whoami
   - ../base/samba
   - ../base/tdarr
+  - ../base/o11y
 patches:
   - path: patches/concourse.yaml
   - path: patches/photoprism.yaml
+  - path: patches/grafana.yaml

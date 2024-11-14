@@ -3,4 +3,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - ingressroutes.yaml
+  - prometheus-community.yaml
+  - sealed-grafana-secrets.yaml
   - grafana
+  - prometheus-stack
