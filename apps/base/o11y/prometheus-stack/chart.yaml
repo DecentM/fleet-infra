@@ -22,6 +22,70 @@ spec:
       targetPath: grafana.adminPassword
 
   values:
+    alertmanager:
+      alertmanagerSpec:
+        storage:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: longhorn-local
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 5Gi
+
+    prometheus:
+      prometheusSpec:
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: longhorn-local
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 15Gi
+
+        additionalScrapeConfigs: []
+        # - job_name: kube-etcd
+        #   kubernetes_sd_configs:
+        #     - role: node
+        #   scheme: https
+        #   tls_config:
+        #     ca_file:   /etc/prometheus/secrets/etcd-client-cert/etcd-ca
+        #     cert_file: /etc/prometheus/secrets/etcd-client-cert/etcd-client
+        #     key_file:  /etc/prometheus/secrets/etcd-client-cert/etcd-client-key
+        #   relabel_configs:
+        #   - action: labelmap
+        #     regex: __meta_kubernetes_node_label_(.+)
+        #   - source_labels: [__address__]
+        #     action: replace
+        #     targetLabel: __address__
+        #     regex: ([^:;]+):(\d+)
+        #     replacement: ${1}:2379
+        #   - source_labels: [__meta_kubernetes_node_name]
+        #     action: keep
+        #     regex: .*mst.*
+        #   - source_labels: [__meta_kubernetes_node_name]
+        #     action: replace
+        #     targetLabel: node
+        #     regex: (.*)
+        #     replacement: ${1}
+        #   metric_relabel_configs:
+        #   - regex: (kubernetes_io_hostname|failure_domain_beta_kubernetes_io_region|beta_kubernetes_io_os|beta_kubernetes_io_arch|beta_kubernetes_io_instance_type|failure_domain_beta_kubernetes_io_zone)
+        #     action: labeldrop
+        #
+        ## If scrape config contains a repetitive section, you may want to use a template.
+        ## In the following example, you can see how to define `gce_sd_configs` for multiple zones
+        # additionalScrapeConfigs: |
+        #  - job_name: "node-exporter"
+        #    gce_sd_configs:
+        #    {{range $zone := .Values.gcp_zones}}
+        #    - project: "project1"
+        #      zone: "{{$zone}}"
+        #      port: 9100
+        #    {{end}}
+        #    relabel_configs:
+        #    ...
+
     ## Using default values from https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
     ##
     grafana:
@@ -46,6 +110,17 @@ spec:
       # It takes no effect if data sources are already listed in the deleteDatasources section.
       # ref: https://grafana.com/docs/grafana/latest/administration/provisioning/#example-data-source-config-file
       prune: true
+
+      ## Editable flag for the default dashboards
+      ##
+      defaultDashboardsEditable: true
+
+      persistence:
+        storageClassName: longhorn-local
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 5Gi
 
     ## Setting to true produces cleaner resource names, but requires a data migration because the name of the persistent volume changes. Therefore this should only be set once on initial installation.
     ##
