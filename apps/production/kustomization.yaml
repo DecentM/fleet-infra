@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - ../base/jellyfin
   - ../base/servarr
-  - ../base/flagsmith
   - ../base/joplin
   - ../base/paperless-ngx
   - ../base/concourse
