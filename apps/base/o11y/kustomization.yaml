@@ -6,3 +6,4 @@ resources:
   - prometheus-community.yaml
   - sealed-grafana-secrets.yaml
   - prometheus-stack
+  - smartctl-exporter
