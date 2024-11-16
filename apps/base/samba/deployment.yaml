@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
         - name: samba
-          image: dperson/samba
+          image: dperson/samba:latest
+          imagePullPolicy: Always
           args:
             - "-u"
             - "$(SAMBA_USERNAME);$(SAMBA_PASSWORD)"

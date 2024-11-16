@@ -21,6 +21,7 @@ spec:
       containers:
         - name: filebrowser
           image: filebrowser/filebrowser:s6
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           volumeMounts:

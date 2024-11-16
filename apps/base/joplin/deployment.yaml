@@ -20,6 +20,7 @@ spec:
       containers:
         - name: joplin
           image: joplin/server:latest
+          imagePullPolicy: Always
           env:
             - name: APP_BASE_URL
               valueFrom:

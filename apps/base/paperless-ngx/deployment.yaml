@@ -22,7 +22,7 @@ spec:
       containers:
         - name: paperless-ngx
           image: ghcr.io/paperless-ngx/paperless-ngx:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000

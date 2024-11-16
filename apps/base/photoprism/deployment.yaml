@@ -40,7 +40,7 @@ spec:
 
         - name: photoprism
           image: photoprism/photoprism:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: photoprism-config
