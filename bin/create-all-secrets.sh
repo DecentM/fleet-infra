@@ -136,10 +136,3 @@ create_secret \
     generic \
     "admin-user admin-password" \
     "apps/base/o11y/sealed-grafana-secrets.yaml"
-
-create_secret \
-    app-o11y \
-    jellyfin-exporter-secrets \
-    generic \
-    "JELLYFIN_API_KEY" \
-    "apps/base/o11y/jellyfin-exporter/sealed-jellyfin-exporter-secrets.yaml"
