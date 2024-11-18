@@ -7,3 +7,4 @@ resources:
   - sealed-grafana-secrets.yaml
   - prometheus-stack
   - smartctl-exporter
+  - jellyfin-exporter

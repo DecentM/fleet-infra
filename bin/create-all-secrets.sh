@@ -30,7 +30,7 @@ create_secret() {
     fi
 
     echo
-    echo "$namespace ➜ $secret_type/$secret_name"
+    echo "$namespace ➜ $secret_name ($secret_type)"
     echo "===================="
 
     for key in $input_keys; do
@@ -81,19 +81,19 @@ create_secret \
     "AWS_ACCESS_KEY_ID AWS_ENDPOINTS AWS_SECRET_ACCESS_KEY" \
     "infrastructure/production/layer1/sealed-s3-secret.yaml"
 
-create_secret \
-    app-concourse \
-    local-users \
-    generic \
-    "value main-team-members" \
-    "apps/base/concourse/secrets/sealed-local-users.yaml"
+# create_secret \
+#     app-concourse \
+#     local-users \
+#     generic \
+#     "value main-team-members" \
+#     "apps/base/concourse/secrets/sealed-local-users.yaml"
 
-create_secret \
-    concourse-main \
-    npm \
-    generic \
-    "automation-token" \
-    "apps/base/concourse/secrets/sealed-npm.yaml"
+# create_secret \
+#     concourse-main \
+#     npm \
+#     generic \
+#     "automation-token" \
+#     "apps/base/concourse/secrets/sealed-npm.yaml"
 
 create_secret \
     app-photoprism \
@@ -116,12 +116,12 @@ create_secret \
     "ADMIN_JWT_SECRET JWT_SECRET API_TOKEN_SALT TRANSFER_TOKEN_SALT APP_KEYS" \
     "apps/base/etu-website-strapi/sealed-strapi-secrets.yaml"
 
-create_secret \
-    app-invidious \
-    invidious-secrets \
-    generic \
-    "INVIDIOUS_HMAC_KEY" \
-    "apps/base/invidious/sealed-invidious-secrets.yaml"
+# create_secret \
+#     app-invidious \
+#     invidious-secrets \
+#     generic \
+#     "INVIDIOUS_HMAC_KEY" \
+#     "apps/base/invidious/sealed-invidious-secrets.yaml"
 
 create_secret \
     app-samba \
@@ -135,4 +135,11 @@ create_secret \
     grafana-secrets \
     generic \
     "admin-user admin-password" \
-    "apps/base/o11y/grafana/sealed-grafana-secrets.yaml"
+    "apps/base/o11y/sealed-grafana-secrets.yaml"
+
+create_secret \
+    app-o11y \
+    jellyfin-exporter-secrets \
+    generic \
+    "JELLYFIN_API_KEY" \
+    "apps/base/o11y/jellyfin-exporter/sealed-jellyfin-exporter-secrets.yaml"

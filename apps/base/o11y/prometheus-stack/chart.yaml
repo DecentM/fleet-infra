@@ -49,6 +49,9 @@ spec:
             static_configs:
               - targets:
                   - smartctl-exporter:9633
+
+              - targets:
+                  - jellyfin-exporter:9027
         # - job_name: kube-etcd
         #   kubernetes_sd_configs:
         #     - role: node
