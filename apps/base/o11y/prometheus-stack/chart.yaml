@@ -47,13 +47,18 @@ spec:
         additionalScrapeConfigs:
           - job_name: smartctl-exporter
             static_configs:
-              - job_name: smartctl
-                targets:
+              - targets:
                   - smartctl-exporter:9633
 
-              - job_name: jellyfin
-                targets:
+          - job_name: jellyfin
+            static_configs:
+              - targets:
                   - jellyfin.app-jellyfin:8096
+
+          - job_name: traefik
+            static_configs:
+              - targets:
+                  - traefik.traefik-system:80
         # - job_name: kube-etcd
         #   kubernetes_sd_configs:
         #     - role: node
