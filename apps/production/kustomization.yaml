@@ -5,7 +5,6 @@ resources:
   - ../base/servarr
   - ../base/joplin
   - ../base/paperless-ngx
-  - ../base/concourse
   - ../base/photoprism
   - ../base/etu-website-strapi
   - etu-website-strapi/tunnel.yaml
@@ -14,5 +13,4 @@ resources:
   - ../base/tdarr
   - ../base/o11y
 patches:
-  - path: patches/concourse.yaml
   - path: patches/photoprism.yaml
