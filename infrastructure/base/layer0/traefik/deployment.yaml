@@ -25,7 +25,8 @@ spec:
       serviceAccountName: traefik-ingress-controller
       containers:
         - name: traefik
-          image: traefik:v3.1
+          image: traefik:v3.2
+          imagePullPolicy: IfNotPresent
           args:
             - "--log.level=DEBUG"
             - "--api"
