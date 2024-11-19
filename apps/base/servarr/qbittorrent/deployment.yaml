@@ -27,7 +27,7 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
-            - containerPort: 6881
+            - containerPort: 30688
           env:
             - name: HOME
               value: /config
@@ -40,7 +40,7 @@ spec:
             - name: WEBUI_PORT
               value: "8080"
             - name: TORRENTING_PORT
-              value: "6881"
+              value: "30688"
             # From `qbittorrent --help`
             - name: QBT_NO_SPLASH
               value: "true"

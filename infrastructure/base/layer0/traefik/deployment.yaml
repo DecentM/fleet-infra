@@ -34,7 +34,7 @@ spec:
             - "--api.dashboard"
             - "--entryPoints.web.address=:80"
             - "--entryPoints.websecure.address=:443"
-            - "--entryPoints.torrent.address=:6881"
+            - "--entryPoints.torrent.address=:30688"
             - "--entryPoints.minecraft.address=:25565"
             - "--entryPoints.samba.address=:445"
             - "--providers.kubernetescrd"
@@ -45,7 +45,7 @@ spec:
             - name: web
               containerPort: 80
             - name: torrent
-              containerPort: 6881
+              containerPort: 30688
             - name: minecraft
               containerPort: 25565
             - name: samba
@@ -88,10 +88,10 @@ spec:
     app: traefik
   ports:
     - protocol: TCP
-      port: 6881
+      port: 30688
       name: torrent
-      targetPort: 6881
-      nodePort: 6881
+      targetPort: 30688
+      nodePort: 30688
 ---
 apiVersion: v1
 kind: Service

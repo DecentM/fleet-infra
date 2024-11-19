@@ -20,6 +20,6 @@ metadata:
 spec:
   ports:
     - name: torrent
-      port: 6881
+      port: 30688
   selector:
     app: qbittorrent
