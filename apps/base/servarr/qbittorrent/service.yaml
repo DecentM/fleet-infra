@@ -16,10 +16,13 @@ kind: Service
 metadata:
   name: qbittorrent-torrent
   namespace: app-servarr
-
 spec:
-  ports:
-    - name: torrent
-      port: 30688
+  type: NodePort
   selector:
     app: qbittorrent
+  ports:
+    - protocol: TCP
+      port: 30688
+      name: torrent
+      targetPort: 30688
+      nodePort: 30688
