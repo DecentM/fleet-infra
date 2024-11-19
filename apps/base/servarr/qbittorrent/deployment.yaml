@@ -17,6 +17,7 @@ spec:
       labels:
         app: qbittorrent
     spec:
+      hostNetwork: true
       securityContext:
         runAsUser: 0
         runAsGroup: 0

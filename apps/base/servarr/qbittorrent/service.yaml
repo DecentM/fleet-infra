@@ -10,19 +10,3 @@ spec:
       port: 8080
   selector:
     app: qbittorrent
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: qbittorrent-torrent
-  namespace: app-servarr
-spec:
-  type: NodePort
-  selector:
-    app: qbittorrent
-  ports:
-    - protocol: TCP
-      port: 30688
-      name: torrent
-      targetPort: 30688
-      nodePort: 30688
