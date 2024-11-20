@@ -20,7 +20,6 @@ spec:
           args:
             - "-u"
             - "$(SAMBA_USERNAME);$(SAMBA_PASSWORD)"
-            - "-p"
             - "-s"
             - "movies;/mnt/movies;no;no;no;$(SAMBA_USERNAME)"
             - "-s"
