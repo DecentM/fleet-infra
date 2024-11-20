@@ -41,7 +41,7 @@ spec:
               mountPath: /config
             - name: movies
               mountPath: /movies
-            - name: downloads-nobackup
+            - name: downloads
               mountPath: /downloads
       volumes:
         - name: movies
@@ -51,9 +51,10 @@ spec:
         - name: config
           persistentVolumeClaim:
             claimName: radarr-config
-        - name: downloads-nobackup
-          persistentVolumeClaim:
-            claimName: downloads-nobackup
+        - name: downloads
+          hostPath:
+            path: /mnt/spike/mass-storage/downloads
+            type: Directory
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

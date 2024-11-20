@@ -49,14 +49,15 @@ spec:
             - name: QBT_PROFILE
               value: "/config"
           volumeMounts:
-            - name: downloads-nobackup
+            - name: downloads
               mountPath: /downloads
             - name: config
               mountPath: /config
       volumes:
-        - name: downloads-nobackup
-          persistentVolumeClaim:
-            claimName: downloads-nobackup
+        - name: downloads
+          hostPath:
+            path: /mnt/spike/mass-storage/downloads
+            type: Directory
         - name: config
           persistentVolumeClaim:
             claimName: qbittorrent-config

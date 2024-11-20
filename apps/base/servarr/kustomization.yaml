@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - ingressroutes.yaml
-  - pvcs.yaml
   - secrets
   - sonarr
   - qbittorrent

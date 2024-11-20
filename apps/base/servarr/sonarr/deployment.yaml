@@ -41,7 +41,7 @@ spec:
               mountPath: /config
             - name: series
               mountPath: /series
-            - name: downloads-nobackup
+            - name: downloads
               mountPath: /downloads
       volumes:
         - name: series
@@ -51,9 +51,10 @@ spec:
         - name: config
           persistentVolumeClaim:
             claimName: sonarr-config
-        - name: downloads-nobackup
-          persistentVolumeClaim:
-            claimName: downloads-nobackup
+        - name: downloads
+          hostPath:
+            path: /mnt/spike/mass-storage/downloads
+            type: Directory
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
