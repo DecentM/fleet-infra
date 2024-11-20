@@ -43,7 +43,7 @@ spec:
           imagePullPolicy: Always
           env:
             - name: PHOTOPRISM_ORIGINALS_PATH
-              value: /photoprism/originals
+              value: /photoprism/originals/originals
             - name: PHOTOPRISM_SIDECAR_PATH
               value: /photoprism/originals/.sidecar
             - name: PHOTOPRISM_BACKUP_PATH
