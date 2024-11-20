@@ -41,6 +41,19 @@ spec:
         - name: photoprism
           image: photoprism/photoprism:latest
           imagePullPolicy: Always
+          env:
+            - name: PHOTOPRISM_ORIGINALS_PATH
+              value: /photoprism/originals
+            - name: PHOTOPRISM_SIDECAR_PATH
+              value: /photoprism/originals/.sidecar
+            - name: PHOTOPRISM_BACKUP_PATH
+              value: /photoprism/originals/.backup
+            - name: PHOTOPRISM_CACHE_PATH
+              value: /photoprism/storage/cache
+            - name: PHOTOPRISM_CONFIG_PATH
+              value: /photoprism/storage/config
+            - name: PHOTOPRISM_TEMP_PATH
+              value: /photoprism/storage/temp
           envFrom:
             - configMapRef:
                 name: photoprism-config
