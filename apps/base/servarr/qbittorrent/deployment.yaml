@@ -27,7 +27,6 @@ spec:
           image: lscr.io/linuxserver/qbittorrent:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 8080
             - containerPort: 30688
           env:
             - name: HOME
