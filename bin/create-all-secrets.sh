@@ -136,3 +136,10 @@ create_secret \
     generic \
     "admin-user admin-password" \
     "apps/base/o11y/sealed-grafana-secrets.yaml"
+
+create_secret \
+    app-o11y \
+    qbittorrent-exporter-secrets \
+    generic \
+    "QBITTORRENT_USERNAME QBITTORRENT_PASSWORD" \
+    "apps/base/o11y/qbittorrent-exporter/sealed-qbittorrent-exporter-secrets.yaml"
