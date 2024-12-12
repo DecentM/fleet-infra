@@ -8,4 +8,4 @@ spec:
   imageName: ghcr.io/cloudnative-pg/postgresql:13.16
   storage:
     storageClass: longhorn-local
-    size: 1Gi
+    size: 5Gi
