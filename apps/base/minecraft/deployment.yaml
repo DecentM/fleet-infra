@@ -2,24 +2,24 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: ftb-revelations
-  namespace: app-ftb-revelations
+  name: 1-12-2-pack
+  namespace: app-minecraft
 
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ftb-revelations
+      app: 1-12-2-pack
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: ftb-revelations
+        app: 1-12-2-pack
     spec:
       containers:
-        - name: ftb-revelations
-          image: itzg/minecraft-server:java8-multiarch
+        - name: server
+          image: ghcr.io/decentm/minecraft-servers
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
@@ -38,7 +38,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: ftb-revelations-data
-  namespace: app-ftb-revelations
+  namespace: app-minecraft
 spec:
   accessModes:
     - ReadWriteOnce

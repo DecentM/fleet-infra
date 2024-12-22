@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: ftb-revelations-config
-  namespace: app-ftb-revelations
+  namespace: app-minecraft
 data:
   # System stuff
   EULA: "true"
