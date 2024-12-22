@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: ftb-revelations-config
+  name: 1-12-2-config
   namespace: app-minecraft
 data:
   # System stuff
