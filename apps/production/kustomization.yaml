@@ -12,5 +12,6 @@ resources:
   - ../base/samba
   - ../base/tdarr
   - ../base/o11y
+  - ../base/minecraft
 patches:
   - path: patches/photoprism.yaml

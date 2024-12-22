@@ -19,30 +19,30 @@ spec:
     spec:
       containers:
         - name: server
-          image: ghcr.io/decentm/minecraft-servers
+          image: ghcr.io/decentm/minecraft-servers:1-12-2-pack
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
-                name: ftb-revelations-config
+                name: 1-12-2-config
           ports:
             - containerPort: 25565
           volumeMounts:
-            - name: data
-              mountPath: /data
+            - name: world
+              mountPath: /data/world
       volumes:
-        - name: data
+        - name: world
           persistentVolumeClaim:
-            claimName: ftb-revelations-data
+            claimName: 1-12-2-world
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: ftb-revelations-data
+  name: 1-12-2-world
   namespace: app-minecraft
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 15Gi
+      storage: 10Gi
   storageClassName: longhorn-local

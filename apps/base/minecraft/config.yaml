@@ -14,9 +14,6 @@ data:
   INIT_MEMORY: "4G"
   MAX_MEMORY: "12G"
   ENABLE_ROLLING_LOGS: "true"
-  MOD_PLATFORM: "FTBA"
-  FTB_MODPACK_ID: "35" # FTB Revelations
-  FTB_MODPACK_VERSION_ID: "12180" # 3.7.0
 
   # Server stuff
   DIFFICULTY: "normal"
