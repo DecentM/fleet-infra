@@ -28,19 +28,11 @@ spec:
             - containerPort: 25565
           volumeMounts:
             - name: world
-              mountPath: /data/world-import
-            - name: import
-              mountPath: /data/import
+              mountPath: /data/world
       volumes:
         - name: world
           persistentVolumeClaim:
             claimName: 1-12-2-world
-        - name: import
-          hostPath:
-            path: /mnt/spike/containers/ftb-revelations/world
-            type: Directory
-            readOnly: true
-            recursiveReadOnly: Enabled
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
