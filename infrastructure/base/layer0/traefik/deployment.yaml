@@ -38,11 +38,12 @@ spec:
             - "--entryPoints.samba.address=:445"
             - "--providers.kubernetescrd"
             - "--providers.kubernetescrd.allowCrossNamespace=true"
-            - "--certificatesresolvers.tailscale.tailscale=true"
             - "--metrics.prometheus=true"
           ports:
             - name: web
               containerPort: 80
+            - name: websecure
+              containerPort: 443
             - name: minecraft
               containerPort: 25565
             - name: samba
@@ -65,6 +66,10 @@ spec:
       port: 80
       name: web
       targetPort: 80
+    - protocol: TCP
+      port: 443
+      name: websecure
+      targetPort: 443
     - protocol: TCP
       port: 25565
       name: minecraft
