@@ -11,3 +11,4 @@ resources:
   - tailscale
   - nvidia
   - image-updates
+  - cert-manager
