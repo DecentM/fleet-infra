@@ -7,7 +7,6 @@ resources:
   - ../base/paperless-ngx
   - ../base/photoprism
   - ../base/etu-website-strapi
-  - etu-website-strapi/tunnel.yaml
   - ../base/whoami
   - ../base/samba
   - ../base/tdarr
