@@ -12,16 +12,24 @@ if [ ! -f bin/create-secret.sh ]; then
     exit 1
 fi
 
+secret_exists() {
+    namespace="$1"
+    secret_name="$2"
+
+    kubectl get secret -n "$namespace" "$secret_name" >/dev/null 2>/dev/null
+}
+
 create_secret() {
     namespace="$1"
     secret_name="$2"
     secret_type="$3"
     input_keys="$4"
     output_path="$5"
+    extra="${6:-''}"
 
     input_literals=""
 
-    secret_exists=$(kubectl get secret -n "$namespace" "$secret_name" >/dev/null 2>/dev/null && echo 1 || echo 0)
+    secret_exists=$(secret_exists "$namespace" "$secret_name" && echo 1 || echo 0)
     output_exists=$(test -f "$output_path" && echo 1 || echo 0)
 
     if [ "$secret_exists" = "1" ] && [ "$output_exists" = "1" ]; then
@@ -33,15 +41,23 @@ create_secret() {
     echo "$namespace ➜ $secret_name ($secret_type)"
     echo "===================="
 
-    for key in $input_keys; do
-        printf "> %s: " "$key"
-        read -r value
-        input_literals="$key=$value $input_literals"
-    done
+    if [ "$secret_type" = "tls" ]; then
+        printf "> TLS cert (PEM encoded content, press CTRL+D to submit):\n"
+        input_literals=$(cat)
+
+        printf "> TLS key (PEM encoded conten, press CTRL+D to submit):\n"
+        extra=$(cat)
+    else
+        for key in $input_keys; do
+            printf "> %s: " "$key"
+            read -r value
+            input_literals="$key=$value $input_literals"
+        done
+    fi
 
     printf "…"
 
-    bin/create-secret.sh "$namespace" "$secret_name" "$secret_type" "$input_literals" "$output_path"
+    bin/create-secret.sh "$namespace" "$secret_name" "$secret_type" "$input_literals" "$output_path" "$extra"
 
     printf "\r✓\n"
 }
@@ -143,3 +159,10 @@ create_secret \
     generic \
     "QBITTORRENT_USERNAME QBITTORRENT_PASSWORD" \
     "apps/base/o11y/qbittorrent-exporter/sealed-qbittorrent-exporter-secrets.yaml"
+
+create_secret \
+    cert-manager-system \
+    ca-issuer \
+    tls \
+    "" \
+    "infrastructure/base/layer1/cert-manager/sealed-ca-issuer.yaml"
