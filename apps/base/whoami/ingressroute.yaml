@@ -15,3 +15,21 @@ spec:
       services:
         - name: whoami
           port: 80
+  tls:
+    secretName: traefik-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: traefik-cert
+  namespace: app-whoami
+spec:
+  secretName: traefik-tls
+  duration: 4w
+  renewBefore: 1w
+  issuerRef:
+    name: custom-ca-cluster-issuer
+    kind: ClusterIssuer
+  commonName: "whoami.cluster.arpa"
+  dnsNames:
+    - "whoami.cluster.arpa"
