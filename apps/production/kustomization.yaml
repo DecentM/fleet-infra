@@ -12,5 +12,6 @@ resources:
   - ../base/tdarr
   - ../base/o11y
   - ../base/minecraft
+  - ../base/coder
 patches:
   - path: patches/photoprism.yaml
