@@ -9,7 +9,7 @@ spec:
     - web
 
   routes:
-    - match: HostRegexp(`^capacitor\..*`)
+    - match: Host(`capacitor.cluster.arpa`)
       kind: Rule
       services:
         - name: capacitor

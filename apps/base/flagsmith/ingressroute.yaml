@@ -9,7 +9,7 @@ spec:
     - web
 
   routes:
-    - match: HostRegexp(`^flagsmith\..*`)
+    - match: Host(`flagsmith.cluster.arpa`)
       kind: Rule
       services:
         - name: flagsmith-frontend

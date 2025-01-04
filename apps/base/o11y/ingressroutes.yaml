@@ -9,7 +9,7 @@ spec:
     - web
 
   routes:
-    - match: HostRegexp(`^grafana\..*`)
+    - match: Host(`grafana.cluster.arpa`)
       kind: Rule
       services:
         - name: prometheus-stack-grafana

@@ -22,7 +22,7 @@ spec:
     - web
 
   routes:
-    - match: HostRegexp(`^joplin\..*`)
+    - match: Host(`joplin.cluster.arpa`)
       kind: Rule
       services:
         - name: joplin

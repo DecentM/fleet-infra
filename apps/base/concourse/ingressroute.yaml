@@ -9,7 +9,7 @@ spec:
     - web
 
   routes:
-    - match: HostRegexp(`^concourse\..*`)
+    - match: Host(`concourse.cluster.arpa`)
       kind: Rule
       services:
         - name: concourse-web

@@ -25,7 +25,7 @@ spec:
     - web
 
   routes:
-    - match: HostRegexp(`^tdarr\..*`)
+    - match: Host(`tdarr.cluster.arpa`)
       kind: Rule
       services:
         - name: tdarr

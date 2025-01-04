@@ -24,7 +24,7 @@ spec:
     - web
 
   routes:
-    - match: HostRegexp(`^qbittorrent\..*`)
+    - match: Host(`qbittorrent.cluster.arpa`)
       kind: Rule
       services:
         - name: qbittorrent-web
@@ -56,7 +56,7 @@ spec:
     - web
 
   routes:
-    - match: HostRegexp(`^sonarr\..*`)
+    - match: Host(`sonarr.cluster.arpa`)
       kind: Rule
       services:
         - name: sonarr
@@ -74,7 +74,7 @@ spec:
     - web
 
   routes:
-    - match: HostRegexp(`^prowlarr\..*`)
+    - match: Host(`prowlarr.cluster.arpa`)
       kind: Rule
       services:
         - name: prowlarr
@@ -92,7 +92,7 @@ spec:
     - web
 
   routes:
-    - match: HostRegexp(`^radarr\..*`)
+    - match: Host(`radarr.cluster.arpa`)
       kind: Rule
       services:
         - name: radarr

@@ -20,7 +20,7 @@ spec:
   entryPoints:
     - web
   routes:
-    - match: HostRegexp(`^paperless-ngx\..*`)
+    - match: Host(`paperless-ngx.cluster.arpa`)
       kind: Rule
       services:
         - name: webserver

@@ -9,7 +9,7 @@ spec:
     - web
 
   routes:
-    - match: HostRegexp(`^filebrowser\..*`)
+    - match: Host(`filebrowser.cluster.arpa`)
       kind: Rule
       services:
         - name: filebrowser

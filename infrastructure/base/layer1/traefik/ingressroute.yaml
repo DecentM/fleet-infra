@@ -9,7 +9,7 @@ spec:
     - web
 
   routes:
-    - match: HostRegexp(`^traefik\..*`)
+    - match: Host(`traefik.cluster.arpa`)
       kind: Rule
       services:
         - name: dashboard

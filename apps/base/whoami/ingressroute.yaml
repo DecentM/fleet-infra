@@ -10,7 +10,7 @@ spec:
     - websecure
 
   routes:
-    - match: HostRegexp(`^whoami\..*`)
+    - match: Host(`whoami.cluster.arpa`)
       kind: Rule
       services:
         - name: whoami

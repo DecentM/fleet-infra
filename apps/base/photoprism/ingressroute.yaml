@@ -22,7 +22,7 @@ spec:
     - web
 
   routes:
-    - match: HostRegexp(`^photoprism\..*`)
+    - match: Host(`photoprism.cluster.arpa`)
       kind: Rule
       services:
         - name: photoprism
