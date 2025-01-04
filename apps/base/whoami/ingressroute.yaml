@@ -25,8 +25,8 @@ metadata:
   namespace: app-whoami
 spec:
   secretName: traefik-tls
-  duration: 4w
-  renewBefore: 1w
+  duration: 672h # 28d
+  renewBefore: 168h # 7d
   issuerRef:
     name: custom-ca-cluster-issuer
     kind: ClusterIssuer
