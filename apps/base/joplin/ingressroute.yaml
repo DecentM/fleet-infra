@@ -19,7 +19,7 @@ metadata:
 
 spec:
   entryPoints:
-    - web
+    - websecure
 
   routes:
     - match: Host(`joplin.cluster.arpa`)
@@ -28,6 +28,24 @@ spec:
         - name: joplin
           namespace: app-joplin
           port: 22300
+  tls:
+    secretName: traefik-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: traefik-cert
+  namespace: app-joplin
+spec:
+  secretName: traefik-tls
+  duration: 672h # 28d
+  renewBefore: 168h # 7d
+  issuerRef:
+    name: custom-ca-cluster-issuer
+    kind: ClusterIssuer
+  commonName: "joplin.cluster.arpa"
+  dnsNames:
+    - "joplin.cluster.arpa"
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding

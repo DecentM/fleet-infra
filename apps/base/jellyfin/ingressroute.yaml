@@ -19,7 +19,7 @@ metadata:
 
 spec:
   entryPoints:
-    - web
+    - websecure
 
   routes:
     - match: Host(`jellyfin.cluster.arpa`)
@@ -28,6 +28,24 @@ spec:
         - name: jellyfin
           namespace: app-jellyfin
           port: 8096
+  tls:
+    secretName: traefik-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: traefik-cert
+  namespace: app-jellyfin
+spec:
+  secretName: traefik-tls
+  duration: 672h # 28d
+  renewBefore: 168h # 7d
+  issuerRef:
+    name: custom-ca-cluster-issuer
+    kind: ClusterIssuer
+  commonName: "jellyfin.cluster.arpa"
+  dnsNames:
+    - "jellyfin.cluster.arpa"
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding

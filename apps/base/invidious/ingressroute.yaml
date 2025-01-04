@@ -6,7 +6,7 @@ metadata:
 
 spec:
   entryPoints:
-    - web
+    - websecure
 
   routes:
     - match: Host(`invidious.cluster.arpa`)
@@ -15,6 +15,24 @@ spec:
         - name: invidious
           namespace: app-invidious
           port: 3000
+  tls:
+    secretName: traefik-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: traefik-cert
+  namespace: app-invidious
+spec:
+  secretName: traefik-tls
+  duration: 672h # 28d
+  renewBefore: 168h # 7d
+  issuerRef:
+    name: custom-ca-cluster-issuer
+    kind: ClusterIssuer
+  commonName: "invidious.cluster.arpa"
+  dnsNames:
+    - "invidious.cluster.arpa"
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding

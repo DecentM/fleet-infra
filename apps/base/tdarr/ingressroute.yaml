@@ -22,7 +22,7 @@ metadata:
 
 spec:
   entryPoints:
-    - web
+    - websecure
 
   routes:
     - match: Host(`tdarr.cluster.arpa`)
@@ -31,6 +31,24 @@ spec:
         - name: tdarr
           namespace: app-tdarr
           port: ui
+  tls:
+    secretName: traefik-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: traefik-cert
+  namespace: app-tdarr
+spec:
+  secretName: traefik-tls
+  duration: 672h # 28d
+  renewBefore: 168h # 7d
+  issuerRef:
+    name: custom-ca-cluster-issuer
+    kind: ClusterIssuer
+  commonName: "tdarr.cluster.arpa"
+  dnsNames:
+    - "tdarr.cluster.arpa"
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
