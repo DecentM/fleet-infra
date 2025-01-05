@@ -38,3 +38,6 @@ spec:
 
         - name: CODER_TELEMETRY_ENABLE
           value: "false"
+
+        - name: CODER_ACCESS_URL
+          value: "https://coder.cluster.arpa"
