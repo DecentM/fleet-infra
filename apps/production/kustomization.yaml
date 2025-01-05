@@ -13,5 +13,6 @@ resources:
   - ../base/o11y
   - ../base/minecraft
   - ../base/coder
+  - ../base/nextcloud
 patches:
   - path: patches/photoprism.yaml

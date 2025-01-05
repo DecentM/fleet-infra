@@ -166,3 +166,10 @@ create_secret \
     tls \
     "" \
     "infrastructure/base/layer1/cert-manager/sealed-ca-issuer.yaml"
+
+create_secret \
+    app-nextcloud \
+    nextcloud-secrets \
+    generic \
+    "username password" \
+    "apps/base/nextcloud/sealed-nextcloud-secrets.yaml"
