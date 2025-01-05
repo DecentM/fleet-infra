@@ -14,5 +14,6 @@ resources:
   - ../base/minecraft
   - ../base/coder
   - ../base/nextcloud
+  - ../base/authentik
 patches:
   - path: patches/photoprism.yaml

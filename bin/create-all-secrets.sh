@@ -173,3 +173,10 @@ create_secret \
     generic \
     "username password" \
     "apps/base/nextcloud/sealed-nextcloud-secrets.yaml"
+
+create_secret \
+    app-authentik \
+    authentik-secrets \
+    generic \
+    "db-password secret-key" \
+    "apps/base/authentik/sealed-authentik-secrets.yaml"
