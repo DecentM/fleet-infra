@@ -41,3 +41,6 @@ spec:
 
         - name: CODER_ACCESS_URL
           value: "https://coder.cluster.arpa"
+
+        - name: CODER_WILDCARD_ACCESS_URL
+          value: "*.coder.cluster.arpa"
