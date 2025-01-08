@@ -5,3 +5,4 @@ resources:
   - cnpg.yaml
   - chart.yaml
   - ingressroute.yaml
+  - tailscale-service.yaml
