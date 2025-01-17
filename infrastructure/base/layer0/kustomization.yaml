@@ -12,3 +12,4 @@ resources:
   - nvidia
   - image-updates
   - cert-manager
+  - kubevirt
