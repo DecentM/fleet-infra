@@ -15,5 +15,6 @@ resources:
   - ../base/coder
   - ../base/nextcloud
   - ../base/authentik
+  - ../base/test-vm
 patches:
   - path: patches/photoprism.yaml
