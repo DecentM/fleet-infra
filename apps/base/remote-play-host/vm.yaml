@@ -1,0 +1,72 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: remote-play-host
+  namespace: app-remote-play-host
+spec:
+  running: true
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: remote-play-host
+    spec:
+      domain:
+        cpu:
+          cores: 6
+          sockets: 1
+          threads: 2
+          model: host-passthrough
+        devices:
+          disks:
+            - name: iso-disk
+              cdrom:
+                bus: sata
+            - name: home-disk
+              disk:
+                bus: virtio
+          gpus:
+            - deviceName: nvidia.com/gpu
+          interfaces:
+            - name: default
+              masquerade: {}
+        resources:
+          requests:
+            memory: 8Gi
+            cpu: "6"
+            nvidia.com/gpu: "1"
+      volumes:
+        - name: iso-disk
+          persistentVolumeClaim:
+            claimName: vm-iso-pvc
+        - name: home-disk
+          persistentVolumeClaim:
+            claimName: vm-home-pvc
+      networks:
+        - name: default
+          pod: {}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vm-home-pvc
+  namespace: app-remote-play-host
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vm-iso-pvc
+  namespace: app-remote-play-host
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 7Gi
+  storageClassName: longhorn-local

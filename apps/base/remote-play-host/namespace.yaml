@@ -1,4 +1,4 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: app-test-vm
+  name: app-remote-play-host

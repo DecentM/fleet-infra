@@ -15,6 +15,6 @@ resources:
   - ../base/coder
   - ../base/nextcloud
   - ../base/authentik
-  - ../base/test-vm
+  - ../base/remote-play-host
 patches:
   - path: patches/photoprism.yaml
