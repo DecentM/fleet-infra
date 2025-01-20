@@ -18,6 +18,9 @@ spec:
           model: host-passthrough
         devices:
           disks:
+            - name: iso-disk
+              http:
+                url: "https://productionresultssa15.blob.core.windows.net/actions-results/9196baf9-f0f0-4022-8797-f2de05685bb4/workflow-job-run-ba73d270-8eea-5079-dddd-2c2a9360cc25/artifacts/6ef4d2ea35a824e871c9ea4f8767d96ef1e6ce8c91f30ab993d46b96ae3176fa.zip?rscd=attachment%3B+filename%3D%22bazzite-latest-x86_64.iso.zip%22&se=2025-01-20T23%3A50%3A24Z&sig=z3lPgbYJYVsxtDWD4tywmFglIxkPGMfJK94AWYOWqs8%3D&ske=2025-01-21T10%3A53%3A46Z&skoid=ca7593d4-ee42-46cd-af88-8b886a2f84eb&sks=b&skt=2025-01-20T22%3A53%3A46Z&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skv=2024-11-04&sp=r&spr=https&sr=b&st=2025-01-20T23%3A40%3A19Z&sv=2024-11-04"
             - name: home-disk
               disk:
                 bus: virtio
