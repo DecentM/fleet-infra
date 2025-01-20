@@ -13,3 +13,4 @@ resources:
   - image-updates
   - cert-manager
   - kubevirt
+  - cdi
