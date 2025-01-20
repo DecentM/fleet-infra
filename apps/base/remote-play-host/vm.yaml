@@ -24,8 +24,6 @@ spec:
             - name: home-disk
               disk:
                 bus: virtio
-          gpus:
-            - deviceName: nvidia.com/gpu
           interfaces:
             - name: default
               masquerade: {}
@@ -33,7 +31,6 @@ spec:
           requests:
             memory: 8Gi
             cpu: "6"
-            nvidia.com/gpu: "1"
       volumes:
         - name: iso-disk
           persistentVolumeClaim:
