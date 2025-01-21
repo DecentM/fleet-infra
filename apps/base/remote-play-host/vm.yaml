@@ -11,8 +11,6 @@ spec:
         kubevirt.io/domain: remote-play-host
     spec:
       domain:
-        machine:
-          type: pc-q35-2.10
         cpu:
           cores: 6
           sockets: 1
@@ -26,6 +24,7 @@ spec:
             efi:
               persistent: true
         devices:
+          autoattachGraphicsDevice: true
           hostDevices:
             - deviceName: nvidia.com/GP107_GeForce_GTX_1050_Ti
               name: gpu
