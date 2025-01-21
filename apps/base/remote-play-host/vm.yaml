@@ -34,9 +34,9 @@ spec:
           tpm:
             persistent: true
           disks:
-            # - name: cdrom
-            #   disk:
-            #     bus: sata
+            - name: cdrom
+              disk:
+                bus: sata
             - name: home-disk
               disk:
                 bus: virtio
