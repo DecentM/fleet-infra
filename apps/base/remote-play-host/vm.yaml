@@ -35,6 +35,11 @@ spec:
       networks:
         - name: default
           pod: {}
+      configuration:
+        developerConfiguration:
+          featureGates:
+            - ExpandDisks
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
