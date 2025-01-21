@@ -23,9 +23,9 @@ spec:
             - deviceName: nvidia.com/GP107GL_High_Definition_Audio_Controller
               name: gpuaudio
           disks:
-            - name: cdrom
-              disk:
-                bus: sata
+            # - name: cdrom
+            #   disk:
+            #     bus: sata
             - name: home-disk
               disk:
                 bus: virtio
