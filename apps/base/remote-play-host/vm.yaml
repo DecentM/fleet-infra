@@ -17,6 +17,11 @@ spec:
           threads: 2
           model: host-passthrough
         devices:
+          hostDevices:
+            - deviceName: nvidia.com/GP107_GeForce_GTX_1050_Ti
+              name: gpu
+            - deviceName: nvidia.com/GP107GL_High_Definition_Audio_Controller
+              name: gpuaudio
           disks:
             - name: home-disk
               disk:
