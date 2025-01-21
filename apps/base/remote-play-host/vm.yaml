@@ -18,9 +18,6 @@ spec:
           model: host-passthrough
         devices:
           disks:
-            - name: cdrom
-              disk:
-                bus: sata
             - name: home-disk
               disk:
                 bus: virtio
@@ -32,9 +29,6 @@ spec:
             memory: 8Gi
             cpu: "6"
       volumes:
-        - name: cdrom
-          persistentVolumeClaim:
-            claimName: gparted-iso
         - name: home-disk
           persistentVolumeClaim:
             claimName: vm-home-pvc
