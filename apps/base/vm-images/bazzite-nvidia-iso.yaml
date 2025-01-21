@@ -1,8 +1,8 @@
 apiVersion: cdi.kubevirt.io/v1beta1
 kind: DataVolume
 metadata:
-  name: bazzite-iso
-  namespace: app-remote-play-host
+  name: bazzite-nvidia-iso
+  namespace: app-vm-images
 spec:
   source:
     http:
@@ -13,4 +13,4 @@ spec:
     resources:
       requests:
         storage: 9Gi
-    storageClassName: "longhorn-local"
+    storageClassName: "longhorn-pool"
