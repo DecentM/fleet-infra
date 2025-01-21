@@ -6,7 +6,7 @@ metadata:
 spec:
   source:
     http:
-      url: "https://mirrors.xtom.ee/archlinux/iso/2025.01.01/archlinux-2025.01.01-x86_64.iso"
+      url: "https://download.bazzite.gg/bazzite-nvidia-stable.iso"
   pvc:
     accessModes:
       - ReadWriteOnce
