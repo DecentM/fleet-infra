@@ -24,7 +24,7 @@ spec:
             efi:
               persistent: true
         devices:
-          autoattachGraphicsDevice: true
+          autoattachGraphicsDevice: false
           hostDevices:
             - deviceName: nvidia.com/GP107_GeForce_GTX_1050_Ti
               name: gpu
