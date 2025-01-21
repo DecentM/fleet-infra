@@ -11,17 +11,28 @@ spec:
         kubevirt.io/domain: remote-play-host
     spec:
       domain:
+        machine:
+          type: pc-q35-2.10
         cpu:
           cores: 6
           sockets: 1
           threads: 2
           model: host-passthrough
+        features:
+          smm:
+            enabled: true
+        firmware:
+          bootloader:
+            efi:
+              persistent: true
         devices:
           hostDevices:
             - deviceName: nvidia.com/GP107_GeForce_GTX_1050_Ti
               name: gpu
             - deviceName: nvidia.com/GP107GL_High_Definition_Audio_Controller
               name: gpuaudio
+          tpm:
+            persistent: true
           disks:
             # - name: cdrom
             #   disk:

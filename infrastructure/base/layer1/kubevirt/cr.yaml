@@ -7,12 +7,16 @@ metadata:
 spec:
   certificateRotateStrategy: {}
   configuration:
+    vmRolloutStrategy: "LiveUpdate"
+    vmStateStorageClass: "longhorn-pool"
     developerConfiguration:
       featureGates:
         - ExpandDisks
         - HostDevices
         - HotplugVolumes
         - AutoResourceLimitsGate
+        - VMLiveUpdateFeatures
+        - VMPersistentState
     permittedHostDevices:
       pciHostDevices:
         - pciVendorSelector: "10DE:1C82"
@@ -22,4 +26,6 @@ spec:
 
   customizeComponents: {}
   imagePullPolicy: IfNotPresent
-  workloadUpdateStrategy: {}
+  workloadUpdateStrategy:
+    workloadUpdateMethods:
+      - LiveMigrate
