@@ -1,0 +1,16 @@
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: DataVolume
+metadata:
+  name: bazzite-iso
+  namespace: app-remote-play-host
+spec:
+  source:
+    http:
+      url: "https://mirrors.xtom.ee/archlinux/iso/2025.01.01/archlinux-2025.01.01-x86_64.iso"
+  pvc:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 6Gi
+    storageClassName: "longhorn-local"
