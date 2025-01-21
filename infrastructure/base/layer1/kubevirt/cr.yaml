@@ -10,6 +10,9 @@ spec:
     developerConfiguration:
       featureGates:
         - ExpandDisks
+        - HostDevices
+        - HotplugVolumes
+        - AutoResourceLimitsGate
     permittedHostDevices:
       pciHostDevices:
         - pciVendorSelector: "10DE:1C82"
