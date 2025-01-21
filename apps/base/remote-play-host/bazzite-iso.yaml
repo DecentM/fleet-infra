@@ -1,0 +1,16 @@
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: DataVolume
+metadata:
+  name: bazzite-nvidia-iso
+  namespace: app-remote-play-host
+spec:
+  source:
+    http:
+      url: "https://download.bazzite.gg/bazzite-nvidia-stable.iso"
+  pvc:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 9Gi
+    storageClassName: "longhorn-pool"

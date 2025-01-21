@@ -4,4 +4,5 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - gparted-iso.yaml
+  - bazzite-iso.yaml
   - vm.yaml
