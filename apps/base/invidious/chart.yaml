@@ -80,10 +80,12 @@ spec:
     postgresql:
       enabled: true
       image:
-        tag: 17.2-alpine
+        tag: 17
       auth:
         database: invidious
       primary:
+        extendedConfiguration: |
+          max_connections = 100
         initdb:
           scriptsConfigMap: invidious-postgresql-init
 
