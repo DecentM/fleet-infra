@@ -4,12 +4,14 @@ metadata:
   name: invidious-config
   namespace: app-invidious
 data:
-  INVIDIOUS_PORT: "3000"
-  INVIDIOUS_EXTERNAL_PORT: "80"
-  INVIDIOUS_CHECK_TABLES: "true"
-  INVIDIOUS_SIGNATURE_SERVER: inv-sig-helper:12999
-  INVIDIOUS_REGISTRATION_ENABLED: "false"
-  INVIDIOUS_CAPTCHA_ENABLED: "false"
-  INVIDIOUS_ADMINS: "decentm"
-  INVIDIOUS_HTTPS_ONLY: "true"
-  INVIDIOUS_HTTP_PROXY_HOST: ""
+  INVIDIOUS_CONFIG: |
+    signature_server: inv-sig-helper:12999
+    external_port: 80
+    check_tables: true
+    registration_enabled: false
+    captcha_enabled: false
+    admins:
+      - decentm
+    https_only: true
+    http_proxy:
+    domain: invidious.cluster.arpa
