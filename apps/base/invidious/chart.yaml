@@ -1,0 +1,84 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: invidious
+  namespace: app-invidious
+spec:
+  interval: 10m
+  url: https://charts-helm.invidious.io
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: invidious
+  namespace: app-invidious
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: invidious
+      version: "2.0.5"
+      sourceRef:
+        kind: HelmRepository
+        name: invidious
+        namespace: app-invidious
+      interval: 10m
+
+  valuesFrom:
+    - kind: Secret
+      name: invidious-db-app
+      valuesKey: host
+      targetPath: config.db.host
+    - kind: Secret
+      name: invidious-db-app
+      valuesKey: port
+      targetPath: config.db.port
+    - kind: Secret
+      name: invidious-db-app
+      valuesKey: dbname
+      targetPath: config.db.dbname
+    - kind: Secret
+      name: invidious-db-app
+      valuesKey: user
+      targetPath: config.db.user
+    - kind: Secret
+      name: invidious-db-app
+      valuesKey: password
+      targetPath: config.db.password
+
+    - kind: Secret
+      name: invidious-secrets
+      valuesKey: INVIDIOUS_HMAC_KEY
+      targetPath: config.hmac_key
+
+  values:
+    name: invidious
+
+    image:
+      repository: quay.io/invidious/invidious
+      tag: latest
+      pullPolicy: Always
+
+    # Setting replicaCount higher than 1 may cause PostgreSQL database deadlocks.
+    # This happens when multiple Invidious processes simultaneously attempt to refresh channel subscriptions for users.
+    replicaCount: 1
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 64Mi
+      limits:
+        cpu: 800m
+        memory: 512Mi
+
+    postgresql:
+      enabled: false
+
+    # Reference: https://github.com/iv-org/invidious/blob/master/config/config.example.yml
+    config:
+      port: 3000
+      domain: "invidious.cluster.arpa"
+      https_only: true
+      channel_threads: 1
+      full_refresh: false
+      feed_threads: 1
