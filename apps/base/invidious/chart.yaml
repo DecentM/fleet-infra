@@ -26,29 +26,35 @@ spec:
 
   valuesFrom:
     - kind: Secret
-      name: invidious-db-app
-      valuesKey: host
-      targetPath: config.db.host
-    - kind: Secret
-      name: invidious-db-app
-      valuesKey: port
-      targetPath: config.db.port
-    - kind: Secret
-      name: invidious-db-app
-      valuesKey: dbname
-      targetPath: config.db.dbname
-    - kind: Secret
-      name: invidious-db-app
-      valuesKey: user
+      name: invidious-secrets
+      valuesKey: db_user
       targetPath: config.db.user
     - kind: Secret
-      name: invidious-db-app
-      valuesKey: password
+      name: invidious-secrets
+      valuesKey: db_password
       targetPath: config.db.password
 
     - kind: Secret
       name: invidious-secrets
-      valuesKey: INVIDIOUS_HMAC_KEY
+      valuesKey: db_user
+      targetPath: postgresql.auth.username
+    - kind: Secret
+      name: invidious-secrets
+      valuesKey: db_password
+      targetPath: postgresql.auth.password
+
+    - kind: Secret
+      name: invidious-secrets
+      valuesKey: db_user
+      targetPath: postgresql.primary.initdb.username
+    - kind: Secret
+      name: invidious-secrets
+      valuesKey: db_password
+      targetPath: postgresql.primary.initdb.password
+
+    - kind: Secret
+      name: invidious-secrets
+      valuesKey: hmac_key
       targetPath: config.hmac_key
 
   values:
@@ -72,7 +78,14 @@ spec:
         memory: 512Mi
 
     postgresql:
-      enabled: false
+      enabled: true
+      image:
+        tag: 17.2-alpine
+      auth:
+        database: invidious
+      primary:
+        initdb:
+          scriptsConfigMap: invidious-postgresql-init
 
     # Reference: https://github.com/iv-org/invidious/blob/master/config/config.example.yml
     config:

@@ -2,9 +2,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - namespace.yaml
-  #- config.yaml
   - chart.yaml
   - sealed-invidious-secrets.yaml
-  - cnpg.yaml
-  #- deployment.yaml
   - ingressroute.yaml
