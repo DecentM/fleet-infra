@@ -32,7 +32,7 @@ spec:
               name: server
       containers:
         - name: tdarr
-          image: haveagitgat/tdarr:latest
+          image: ghcr.io/haveagitgat/tdarr:latest
           imagePullPolicy: Always
           resources:
           limits:
