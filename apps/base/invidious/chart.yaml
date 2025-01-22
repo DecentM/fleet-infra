@@ -87,6 +87,8 @@ spec:
 
     postgresql:
       enabled: true
+      global:
+        defaultStorageClass: "longhorn-local"
       image:
         tag: 17
       auth:
