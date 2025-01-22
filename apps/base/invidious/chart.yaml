@@ -102,6 +102,7 @@ spec:
     # Reference: https://github.com/iv-org/invidious/blob/master/config/config.example.yml
     config:
       port: 3000
+      external_port: 443
       domain: "invidious.cluster.arpa"
       https_only: true
       channel_threads: 1
