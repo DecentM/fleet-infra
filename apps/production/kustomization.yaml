@@ -17,5 +17,6 @@ resources:
   - ../base/authentik
   - ../base/remote-play-host
   - ../base/home-assistant
+  - ../base/invidious
 patches:
   - path: patches/photoprism.yaml
