@@ -56,6 +56,14 @@ spec:
       name: invidious-secrets
       valuesKey: hmac_key
       targetPath: config.hmac_key
+    - kind: Secret
+      name: invidious-secrets
+      valuesKey: po_token
+      targetPath: config.po_token
+    - kind: Secret
+      name: invidious-secrets
+      valuesKey: visitor_data
+      targetPath: config.visitor_data
 
   values:
     name: invidious

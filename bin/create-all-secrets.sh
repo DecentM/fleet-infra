@@ -136,7 +136,7 @@ create_secret \
     app-invidious \
     invidious-secrets \
     generic \
-    "hmac_key db_user db_password" \
+    "hmac_key db_user db_password po_token visitor_data" \
     "apps/base/invidious/sealed-invidious-secrets.yaml"
 
 create_secret \
