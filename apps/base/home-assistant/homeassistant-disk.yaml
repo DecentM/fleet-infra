@@ -6,7 +6,7 @@ metadata:
 spec:
   source:
     http:
-      url: "https://github.com/home-assistant/operating-system/releases/download/14.1/haos_generic-x86-64-14.1.img.xz"
+      url: "https://github.com/home-assistant/operating-system/releases/download/14.1/haos_ova-14.1.qcow2.xz"
   pvc:
     accessModes:
       - ReadWriteOnce
