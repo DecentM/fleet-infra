@@ -12,7 +12,7 @@ spec:
     spec:
       domain:
         cpu:
-          cores: 2
+          cores: 1
           sockets: 1
           threads: 2
           model: host-passthrough
@@ -37,7 +37,7 @@ spec:
         resources:
           requests:
             memory: 2Gi
-            cpu: "2"
+            cpu: "1"
       volumes:
         - name: home-disk
           persistentVolumeClaim:
