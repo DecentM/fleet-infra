@@ -1,7 +1,7 @@
 apiVersion: cdi.kubevirt.io/v1beta1
 kind: DataVolume
 metadata:
-  name: homeassistant-image
+  name: homeassistant-disk
   namespace: app-home-assistant
 spec:
   source:
