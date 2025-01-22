@@ -6,3 +6,4 @@ resources:
   - gparted-iso.yaml
   - homeassistant-disk.yaml
   - vm.yaml
+  - ingressroute.yaml

@@ -8,7 +8,7 @@ spec:
   template:
     metadata:
       labels:
-        kubevirt.io/domain: home-assistant
+        app: home-assistant
     spec:
       domain:
         cpu:
