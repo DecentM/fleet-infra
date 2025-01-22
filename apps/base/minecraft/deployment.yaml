@@ -20,6 +20,10 @@ spec:
       containers:
         - name: server
           image: ghcr.io/decentm/minecraft-servers:1-12-2-pack
+          securityContext:
+            capabilities:
+              add:
+                - CAP_NET_RAW
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
