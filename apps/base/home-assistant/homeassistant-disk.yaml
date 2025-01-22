@@ -1,0 +1,16 @@
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: DataVolume
+metadata:
+  name: homeassistant-image
+  namespace: app-home-assistant
+spec:
+  source:
+    http:
+      url: "https://github.com/home-assistant/operating-system/releases/download/14.1/haos_generic-x86-64-14.1.img.xz"
+  pvc:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 10Gi
+    storageClassName: "longhorn-local"

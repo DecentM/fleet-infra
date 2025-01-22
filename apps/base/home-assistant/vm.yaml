@@ -1,0 +1,47 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: home-assistant
+  namespace: app-home-assistant
+spec:
+  running: true
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: home-assistant
+    spec:
+      domain:
+        cpu:
+          cores: 2
+          sockets: 1
+          threads: 2
+          model: host-passthrough
+        features:
+          smm:
+            enabled: true
+        firmware:
+          bootloader:
+            efi:
+              persistent: true
+        devices:
+          autoattachGraphicsDevice: true
+          tpm:
+            persistent: true
+          disks:
+            - name: home-disk
+              disk:
+                bus: virtio
+          interfaces:
+            - name: default
+              masquerade: {}
+        resources:
+          requests:
+            memory: 2Gi
+            cpu: "2"
+      volumes:
+        - name: home-disk
+          persistentVolumeClaim:
+            claimName: homeassistant-disk
+      networks:
+        - name: default
+          pod: {}

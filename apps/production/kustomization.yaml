@@ -16,5 +16,6 @@ resources:
   - ../base/nextcloud
   - ../base/authentik
   - ../base/remote-play-host
+  - ../base/home-assistant
 patches:
   - path: patches/photoprism.yaml
