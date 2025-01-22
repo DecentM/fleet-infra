@@ -97,3 +97,4 @@ spec:
       channel_threads: 1
       full_refresh: false
       feed_threads: 1
+      signature_server: "inv-sig-helper:12999"
