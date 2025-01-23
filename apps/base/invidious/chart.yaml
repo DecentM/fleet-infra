@@ -94,6 +94,8 @@ spec:
       auth:
         database: invidious
       primary:
+        persistence:
+          storageClass: "longhorn-local"
         extendedConfiguration: |
           max_connections = 100
         initdb:
