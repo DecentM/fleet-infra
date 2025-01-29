@@ -48,6 +48,7 @@ spec:
 
     concourse:
       web:
+        externalUrl: https://concourse.cluster.arpa
         enableRedactSecrets: true
         enableAcrossStep: true
         enablePipelineInstances: true
