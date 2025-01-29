@@ -15,8 +15,8 @@ importers:
         specifier: 0.15.2
         version: 0.15.2(@decentm/concourse-ts@0.19.1(typescript@5.7.3))(typescript@5.7.3)
       '@decentm/concourse-ts-recipe-auto-pipeline':
-        specifier: 0.2.0
-        version: 0.2.0(@decentm/concourse-ts@0.19.1(typescript@5.7.3))
+        specifier: 0.2.1
+        version: 0.2.1(@decentm/concourse-ts@0.19.1(typescript@5.7.3))
       '@decentm/concourse-ts-resource-git':
         specifier: 0.3.1
         version: 0.3.1(@decentm/concourse-ts-resource-registry-image@0.3.0(@decentm/concourse-ts@0.19.1(typescript@5.7.3)))(@decentm/concourse-ts@0.19.1(typescript@5.7.3))
@@ -49,8 +49,8 @@ packages:
     peerDependencies:
       '@decentm/concourse-ts': 0.x
 
-  '@decentm/concourse-ts-recipe-auto-pipeline@0.2.0':
-    resolution: {integrity: sha512-dNky1S5ls118DIy5NalOkcKezkCsaxfow/BkEGJI04H3AYdLmoEKoMYTNgrOBQtpztBABVOt9bqKf60J6UKvLg==}
+  '@decentm/concourse-ts-recipe-auto-pipeline@0.2.1':
+    resolution: {integrity: sha512-z7+R/SVn/fgU8FJOVvkLS1cwTEvxSJbfqRuKhojitJU1BHgbYpdp0zhByUeBwjnloGcqGfLT8h8EH03o1ORt+g==}
     peerDependencies:
       '@decentm/concourse-ts': 0.x
 
@@ -493,7 +493,7 @@ snapshots:
       '@decentm/concourse-ts': 0.19.1(typescript@5.7.3)
     optional: true
 
-  '@decentm/concourse-ts-recipe-auto-pipeline@0.2.0(@decentm/concourse-ts@0.19.1(typescript@5.7.3))':
+  '@decentm/concourse-ts-recipe-auto-pipeline@0.2.1(@decentm/concourse-ts@0.19.1(typescript@5.7.3))':
     dependencies:
       '@decentm/concourse-ts': 0.19.1(typescript@5.7.3)
 

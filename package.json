@@ -13,7 +13,7 @@
   "devDependencies": {
     "@decentm/concourse-ts": "0.19.1",
     "@decentm/concourse-ts-cli": "0.15.2",
-    "@decentm/concourse-ts-recipe-auto-pipeline": "0.2.0",
+    "@decentm/concourse-ts-recipe-auto-pipeline": "0.2.1",
     "@decentm/concourse-ts-resource-git": "0.3.1",
     "@decentm/concourse-ts-resource-registry-image": "0.3.0",
     "@types/node": "22.12.0"

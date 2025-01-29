@@ -1,3 +1,5 @@
+import './configure'
+
 import * as ConcourseTs from '@decentm/concourse-ts'
 import { create_auto_pipeline } from '@decentm/concourse-ts-recipe-auto-pipeline'
 

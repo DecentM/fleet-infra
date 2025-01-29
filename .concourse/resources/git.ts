@@ -25,6 +25,7 @@ const create_git_resource = (input: GitInput): Git.Resource =>
       branch: input.branch,
       ignore_paths: input.ignore_paths,
       paths: input.paths,
+      username: 'DecentM',
     }
 
     r.icon = 'github'
@@ -32,14 +33,14 @@ const create_git_resource = (input: GitInput): Git.Resource =>
 
 export const git = create_git_resource({
   branch: 'main',
-  repo: 'DecentM/infra-stuff',
+  repo: 'DecentM/fleet-infra',
   name: 'git',
   ignore_paths: ['ci', '.ci'],
 })
 
 export const git_ci = create_git_resource({
   branch: 'main',
-  repo: 'DecentM/infra-stuff',
+  repo: 'DecentM/fleet-infra',
   name: 'git-ci',
   paths: ['ci', '.ci'],
 })
