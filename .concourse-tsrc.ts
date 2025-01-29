@@ -2,8 +2,8 @@ import { rc } from "@decentm/concourse-ts-cli";
 
 export default rc({
     compile: {
-        input: '.concourse/*.pipeline.ts',
-        output: '.ci',
+        input: '.ci/src/*.pipeline.ts',
+        output: '.ci/dist',
         project: './tsconfig.json'
     }
 })

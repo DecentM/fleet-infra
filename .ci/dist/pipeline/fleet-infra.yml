@@ -14,8 +14,8 @@ jobs:
         get: git-ci
         trigger: true
       - timeout: 6h
-        set_pipeline: index
-        file: git-ci/.ci/pipeline/index.yml
+        set_pipeline: fleet-infra
+        file: git-ci/.ci/dist/pipeline/fleet-infra.yml
     max_in_flight: 1
 display:
   background_image: https://bing.biturl.top/?resolution=1920&format=image

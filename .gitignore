@@ -1,2 +1,4 @@
 .ignored
 node_modules
+
+!/.ci/dist/*
