@@ -1,0 +1,31 @@
+# Generated with concourse-ts
+#
+# jobs: 1
+# groups: 0
+# resource_types: 1
+# resources: 1
+# var_sources: 0
+
+jobs:
+  - name: auto-pipeline
+    plan:
+      - get: git-ci
+        trigger: true
+      - set_pipeline: index
+        file: git-ci/.ci/pipeline/index.yml
+resource_types:
+  - name: git
+    type: registry-image
+    source:
+      repository: concourse/git-resource
+      tag: 1.17.0-20250129
+resources:
+  - name: git-ci
+    type: git
+    source:
+      uri: https://github.com/DecentM/infra-stuff
+      branch: main
+      paths:
+        - ci
+        - .ci
+    icon: github
