@@ -15,7 +15,6 @@ resources:
   - ../base/coder
   - ../base/nextcloud
   - ../base/authentik
-  - ../base/remote-play-host
   - ../base/home-assistant
   - ../base/invidious
   - ../base/concourse
