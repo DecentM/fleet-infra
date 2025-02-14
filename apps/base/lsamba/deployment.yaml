@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lsamba
+  namespace: app-lsamba
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lsamba
+  template:
+    metadata:
+      labels:
+        app: lsamba
+    spec:
+      containers:
+        - name: lsamba
+          image: dperson/samba:latest
+          imagePullPolicy: Always
+          args:
+            - "-u"
+            - "$(SAMBA_USERNAME);$(SAMBA_PASSWORD)"
+            - "-s"
+            - "stuff;/mnt/stuff;no;no;no;$(SAMBA_USERNAME)"
+          envFrom:
+            - secretRef:
+                name: lsamba-secrets
+          ports:
+            - containerPort: 445
+              name: samba-tcp-445
+          volumeMounts:
+            - mountPath: /mnt/stuff
+              name: stuff
+      volumes:
+        - name: stuff
+          hostPath:
+            path: /mnt/spike/storage/Downloads/stuff
+            type: Directory

@@ -147,6 +147,13 @@ create_secret \
     "apps/base/samba/sealed-samba-secrets.yaml"
 
 create_secret \
+    app-lsamba \
+    lsamba-secrets \
+    generic \
+    "SAMBA_USERNAME SAMBA_PASSWORD" \
+    "apps/base/lsamba/sealed-lsamba-secrets.yaml"
+
+create_secret \
     app-o11y \
     grafana-secrets \
     generic \
