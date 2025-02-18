@@ -93,6 +93,26 @@ spec:
   tls:
     secretName: traefik-tls
 ---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: pinchflat
+  namespace: app-servarr
+
+spec:
+  entryPoints:
+    - websecure
+
+  routes:
+    - match: Host(`pinchflat.cluster.arpa`)
+      kind: Rule
+      services:
+        - name: pinchflat
+          namespace: app-servarr
+          port: 8945
+  tls:
+    secretName: traefik-tls
+---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -111,3 +131,4 @@ spec:
     - "prowlarr.cluster.arpa"
     - "sonarr.cluster.arpa"
     - "qbittorrent.cluster.arpa"
+    - "pinchflat.cluster.arpa"
