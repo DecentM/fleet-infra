@@ -18,6 +18,5 @@ resources:
   - ../base/home-assistant
   - ../base/invidious
   - ../base/concourse
-  - ../base/lsamba
 patches:
   - path: patches/photoprism.yaml
