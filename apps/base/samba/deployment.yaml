@@ -62,7 +62,7 @@ spec:
             type: Directory
         - name: youtube
           hostPath:
-            path: /mnt/spike/mass-storage/videos/youtube-new
+            path: /mnt/spike/mass-storage/videos/youtube
             type: Directory
         - name: music
           hostPath:
