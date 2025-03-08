@@ -41,7 +41,7 @@ spec:
             - name: music
               mountPath: /music
             - name: transcode
-              mountPath: /var/lib/jellyfin/transcode
+              mountPath: /config/cache/transcodes
       volumes:
         - name: movies
           hostPath:
