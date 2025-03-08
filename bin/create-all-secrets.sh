@@ -180,3 +180,10 @@ create_secret \
     generic \
     "db-password secret-key" \
     "apps/base/authentik/sealed-authentik-secrets.yaml"
+
+create_secret \
+    app-syncstorage \
+    syncstorage-secrets \
+    generic \
+    "db-name db-username db-password master-key" \
+    "apps/base/syncstorage/sealed-syncstorage-secrets.yaml"
