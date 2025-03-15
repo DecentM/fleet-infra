@@ -70,8 +70,8 @@ spec:
 
     image:
       repository: quay.io/invidious/invidious
-      tag: latest
-      pullPolicy: Always
+      tag: 2.20250314.0
+      pullPolicy: IfNotPresent
 
     # Setting replicaCount higher than 1 may cause PostgreSQL database deadlocks.
     # This happens when multiple Invidious processes simultaneously attempt to refresh channel subscriptions for users.
