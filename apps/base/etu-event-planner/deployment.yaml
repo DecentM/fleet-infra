@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: etu-event-planner-backend
+  namespace: app-etu-event-planner
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: event-planner
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: event-planner
+    spec:
+      containers:
+        - name: backend
+          image: ghcr.io/eesti-transinimeste-uhing/event-manager:main
+          imagePullPolicy: Always
+          env:
+            - name: SECURE_SESSION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: event-planner-secrets
+                  key: secure-session-key
+            - name: DISCORD_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: event-planner-secrets
+                  key: discord_client_id
+            - name: DISCORD_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: event-planner-secrets
+                  key: discord_client_secret
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-cluster-app
+                  key: host
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-cluster-app
+                  key: port
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-cluster-app
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-cluster-app
+                  key: password
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-cluster-app
+                  key: dbname
+          envFrom:
+            - configMapRef:
+                name: event-planner-backend-config
+          ports:
+            - containerPort: 3000
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: static-files
+  namespace: app-etu-event-planner
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: longhorn-local

@@ -181,9 +181,16 @@ create_secret \
     "db-password secret-key" \
     "apps/base/authentik/sealed-authentik-secrets.yaml"
 
+# create_secret \
+#     app-syncstorage \
+#     syncstorage-secrets \
+#     generic \
+#     "db-name db-username db-password master-key" \
+#     "apps/base/syncstorage/sealed-syncstorage-secrets.yaml"
+
 create_secret \
-    app-syncstorage \
-    syncstorage-secrets \
+    app-etu-event-planner \
+    event-planner-secrets \
     generic \
-    "db-name db-username db-password master-key" \
-    "apps/base/syncstorage/sealed-syncstorage-secrets.yaml"
+    "secure-session-key discord_client_id discord_client_secret" \
+    "apps/base/etu-event-planner/sealed-event-planner-secrets.yaml"
