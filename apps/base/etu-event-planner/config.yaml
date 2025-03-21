@@ -4,7 +4,7 @@ metadata:
   name: event-planner-backend-config
   namespace: app-etu-event-planner
 data:
-  LOG_LEVEL: "info"
+  LOG_LEVEL: "debug"
   NODE_ENV: "production"
   PROCESS_ROLE: "worker,server"
 
