@@ -20,6 +20,8 @@ spec:
       containers:
         - name: backend
           image: ghcr.io/eesti-transinimeste-uhing/event-manager:main
+          args:
+            - "/app/apps/backend/src/index.js"
           imagePullPolicy: Always
           env:
             - name: SECURE_SESSION_KEY
@@ -67,6 +69,13 @@ spec:
                 name: event-planner-backend-config
           ports:
             - containerPort: 3000
+          volumeMounts:
+            - name: static-files
+              mountPath: /static-files
+      volumes:
+        - name: static-files
+          persistentVolumeClaim:
+            claimName: static-files
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
