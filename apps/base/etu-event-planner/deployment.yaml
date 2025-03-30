@@ -19,10 +19,10 @@ spec:
     spec:
       containers:
         - name: backend
-          image: ghcr.io/eesti-transinimeste-uhing/event-manager:main
+          image: ghcr.io/eesti-transinimeste-uhing/event-manager:93ed6475fec2b9ed7b996e1c63a3ba52dabf017e
           args:
             - "/app/apps/backend/src/index.js"
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           env:
             - name: SECURE_SESSION_KEY
               valueFrom:
