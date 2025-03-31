@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mc-1-12-2-pack
+  namespace: app-minecraft
+
+spec:
+  ports:
+    - name: tcp
+      port: 25565
+  selector:
+    app: 1-12-2-pack
+# ---
+# apiVersion: traefik.io/v1alpha1
+# kind: IngressRouteTCP
+# metadata:
+#   name: minecraft-default
+#   namespace: app-minecraft
+
+# spec:
+#   entryPoints:
+#     - minecraft
+#   routes:
+#     - match: HostSNI(`*`)
+#       services:
+#         - name: mc-1-12-2-pack
+#           port: 25565

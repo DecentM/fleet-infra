@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: StatefulSet
+
+metadata:
+  name: spectrum
+  namespace: app-minecraft
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spectrum
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: spectrum
+    spec:
+      containers:
+        - name: server
+          image: ghcr.io/decentm/minecraft-servers:spectrum-64b4a6cd3b5f8fed68311db40fe68ac75c009dcf
+          securityContext:
+            capabilities:
+              add:
+                - CAP_NET_RAW
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: spectrum-config
+            - secretRef:
+                name: spectrum-secrets
+          ports:
+            - containerPort: 25565
+          volumeMounts:
+            - name: world
+              mountPath: /data/world
+      volumes:
+        - name: world
+          persistentVolumeClaim:
+            claimName: spectrum-world
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: spectrum-world
+  namespace: app-minecraft
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 200Gi
+  storageClassName: longhorn-pool

@@ -181,16 +181,16 @@ create_secret \
     "db-password secret-key" \
     "apps/base/authentik/sealed-authentik-secrets.yaml"
 
-# create_secret \
-#     app-syncstorage \
-#     syncstorage-secrets \
-#     generic \
-#     "db-name db-username db-password master-key" \
-#     "apps/base/syncstorage/sealed-syncstorage-secrets.yaml"
-
 create_secret \
     app-etu-event-planner \
     event-planner-secrets \
     generic \
     "secure-session-key discord_client_id discord_client_secret" \
     "apps/base/etu-event-planner/sealed-event-planner-secrets.yaml"
+
+create_secret \
+    app-minecraft \
+    spectrum-secrets \
+    generic \
+    "SEED" \
+    "apps/base/minecraft/spectrum/sealed-spectrum-secrets.yaml"
