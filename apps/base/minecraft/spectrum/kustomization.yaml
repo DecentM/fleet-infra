@@ -4,4 +4,3 @@ resources:
   - config.yaml
   - sealed-spectrum-secrets.yaml
   - deployment.yaml
-  - ingressroute.yaml

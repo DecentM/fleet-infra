@@ -17,6 +17,7 @@ spec:
       labels:
         app: spectrum
     spec:
+      hostNetwork: true
       containers:
         - name: server
           image: ghcr.io/decentm/minecraft-servers:spectrum-64b4a6cd3b5f8fed68311db40fe68ac75c009dcf
