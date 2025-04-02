@@ -20,7 +20,7 @@ spec:
       hostNetwork: true
       containers:
         - name: server
-          image: ghcr.io/decentm/minecraft-servers:spectrum-64b4a6cd3b5f8fed68311db40fe68ac75c009dcf
+          image: ghcr.io/decentm/minecraft-servers:spectrum-9304136d8231e506b003033d126b27222cf45f03
           securityContext:
             capabilities:
               add:
@@ -36,10 +36,21 @@ spec:
           volumeMounts:
             - name: world
               mountPath: /data/world
+            - name: logs
+              mountPath: /data/logs
+            - name: config
+              mountPath: /data/ops.json
+              subPath: ops.json
       volumes:
         - name: world
           persistentVolumeClaim:
             claimName: spectrum-world
+        - name: logs
+          persistentVolumeClaim:
+            claimName: spectrum-logs
+        - name: config
+          configMap:
+            name: spectrum-config-files
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -53,3 +64,16 @@ spec:
     requests:
       storage: 200Gi
   storageClassName: longhorn-pool
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: spectrum-logs
+  namespace: app-minecraft
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: longhorn-local

@@ -22,7 +22,7 @@ data:
   SPAWN_PROTECTION: "16"
   VIEW_DISTANCE: "12"
   ALLOW_FLIGHT: "true"
-  MOTD: ""
+  MOTD: "Eesti Minecrafti server trans- ja trans-sõpradele"
   SERVER_NAME: "Spectrum"
   ENABLE_AUTOPAUSE: "true"
   AUTOPAUSE_TIMEOUT_EST: "1800"
