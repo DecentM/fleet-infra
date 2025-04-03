@@ -21,3 +21,4 @@ resources:
   - ../base/etu-event-planner
 patches:
   - path: patches/photoprism.yaml
+  - path: patches/etu-event-planner.yaml
