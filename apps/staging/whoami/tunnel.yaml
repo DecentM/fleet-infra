@@ -10,4 +10,4 @@ subjects:
       fqdn: whoami-stage.decentm.com
 tunnelRef:
   kind: ClusterTunnel
-  name: cluster-tunnel
+  name: cluster-tunnel-decentm

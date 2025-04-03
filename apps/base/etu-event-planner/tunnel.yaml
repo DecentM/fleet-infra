@@ -6,4 +6,4 @@ metadata:
   namespace: app-etu-event-planner
 tunnelRef:
   kind: ClusterTunnel
-  name: cluster-tunnel
+  name: cluster-tunnel-borooka

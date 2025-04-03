@@ -1,12 +1,25 @@
 apiVersion: networking.cfargotunnel.com/v1alpha1
 kind: ClusterTunnel
 metadata:
-  name: cluster-tunnel
+  name: cluster-tunnel-decentm
 spec:
   newTunnel:
-    name: cluster
+    name: decentm
   size: 1
   cloudflare:
     domain: decentm.com
+    secret: cloudflare-secrets
+    accountName: DecentM
+---
+apiVersion: networking.cfargotunnel.com/v1alpha1
+kind: ClusterTunnel
+metadata:
+  name: cluster-tunnel-borooka
+spec:
+  newTunnel:
+    name: borooka
+  size: 1
+  cloudflare:
+    domain: borooka.ee
     secret: cloudflare-secrets
     accountName: DecentM
