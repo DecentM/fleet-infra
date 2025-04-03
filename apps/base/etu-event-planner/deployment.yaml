@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: ghcr.io/eesti-transinimeste-uhing/event-manager:6f564d14c863832acf52748d261a191f36cad993
+          image: ghcr.io/eesti-transinimeste-uhing/event-manager:d4366f78032fef5566445db5a9aa05381067264c
           command:
             - /usr/local/bin/node
           args:
