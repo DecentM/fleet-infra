@@ -3,6 +3,8 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - config.yaml
+  - valkey-config.yaml
+  - valkey.yaml
   - cnpg.yaml
   - sealed-event-planner-secrets.yaml
   - deployment.yaml
