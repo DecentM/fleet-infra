@@ -75,7 +75,7 @@ spec:
 
     # Setting replicaCount higher than 1 may cause PostgreSQL database deadlocks.
     # This happens when multiple Invidious processes simultaneously attempt to refresh channel subscriptions for users.
-    replicaCount: 1
+    replicaCount: 0
 
     resources:
       requests:
