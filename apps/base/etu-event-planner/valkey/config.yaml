@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: valkey-config
+  namespace: app-etu-event-planner
+data:
+  ALLOW_EMPTY_PASSWORD: "yes"

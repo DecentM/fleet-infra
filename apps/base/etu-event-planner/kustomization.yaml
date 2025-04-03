@@ -4,6 +4,6 @@ resources:
   - namespace.yaml
   - sealed-event-planner-secrets.yaml
   - cnpg.yaml
-  - valkey.yaml
-  - backend.yaml
+  - valkey
+  - backend
   - tunnel.yaml
