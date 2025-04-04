@@ -5,7 +5,7 @@ metadata:
   namespace: app-etu-event-planner
 data:
   LOG_LEVEL: "debug"
-  NODE_ENV: "development"
+  NODE_ENV: "production"
   PROCESS_ROLE: "worker,server"
 
   SERVER_HOST: "0.0.0.0"
