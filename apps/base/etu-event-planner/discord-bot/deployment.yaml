@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: discord-bot
-          image: ghcr.io/eesti-transinimeste-uhing/event-manager:3a9dd2f2afd2a0c60aec1104c9d68c913db349a5
+          image: ghcr.io/eesti-transinimeste-uhing/event-manager:576f4b7f8708349ee3b51e4eff0e81ca0c0088a2
           command:
             - /usr/local/bin/node
           args:
