@@ -10,16 +10,16 @@ data:
 
   SERVER_HOST: "0.0.0.0"
   SERVER_PORT: "3000"
-  SERVER_PUBLIC_URL: "http://uritused.borooka.ee"
+  SERVER_PUBLIC_URL: "https://uritused.borooka.ee"
   SERVER_TRUST_PROXY: "true"
   SERVER_STORAGE_CACHE: "discord-avatars,template-banners,form-banners"
 
-  DISCORD_CALLBACK_URL: "http://uritused.borooka.ee/v1/auth/discord/callback"
+  DISCORD_CALLBACK_URL: "https://uritused-api.borooka.ee/v1/auth/discord/callback"
 
-  WEB_DISCORD_AUTH_FAILURE: "//etu-events.decentm.com/#/auth/failure"
-  WEB_DISCORD_AUTH_SUCCESS: "//etu-events.decentm.com/#/auth/success"
-  WEB_CORS_ORIGIN: "http://uritused.borooka.ee"
-  WEB_LOGIN_URL: "http://uritused.borooka.ee/#/auth/login"
+  WEB_DISCORD_AUTH_FAILURE: "//uritused.borooka.ee/#/auth/failure"
+  WEB_DISCORD_AUTH_SUCCESS: "//uritused.borooka.ee/#/auth/success"
+  WEB_CORS_ORIGIN: "https://uritused.borooka.ee"
+  WEB_LOGIN_URL: "https://uritused.borooka.ee/#/auth/login"
 
   STATIC_FILES_MOUNT: "/static-files/"
 
