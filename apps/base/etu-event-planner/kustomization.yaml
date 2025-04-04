@@ -6,4 +6,5 @@ resources:
   - cnpg.yaml
   - valkey
   - backend
+  - discord-bot
   - tunnel.yaml

@@ -194,3 +194,10 @@ create_secret \
     generic \
     "SEED" \
     "apps/base/minecraft/spectrum/sealed-spectrum-secrets.yaml"
+
+create_secret \
+    app-etu-event-planner \
+    discord-bot-secrets \
+    generic \
+    "DISCORD_CONTROL_GUILD_ID DISCORD_CLIENT_ID DISCORD_USER_ID_OWNERS DISCORD_ROLE_ID_ADMIN DISCORD_ROLE_ID_EDITOR DISCORD_ROLE_ID_PUBLISHER DISCORD_TOKEN" \
+    "apps/base/etu-event-planner/discord-bot/sealed-discord-bot-secrets.yaml"
