@@ -29,4 +29,6 @@ spec:
             - configMapRef:
                 name: discord-bot-config
             - secretRef:
-                name: discord-bot-secrets
+                name: secrets
+          ports:
+            - containerPort: 3001

@@ -182,13 +182,6 @@ create_secret \
     "apps/base/authentik/sealed-authentik-secrets.yaml"
 
 create_secret \
-    app-etu-event-planner \
-    event-planner-secrets \
-    generic \
-    "secure-session-key discord_client_id discord_client_secret" \
-    "apps/base/etu-event-planner/sealed-event-planner-secrets.yaml"
-
-create_secret \
     app-minecraft \
     spectrum-secrets \
     generic \
@@ -197,7 +190,7 @@ create_secret \
 
 create_secret \
     app-etu-event-planner \
-    discord-bot-secrets \
+    secrets \
     generic \
-    "DISCORD_CONTROL_GUILD_ID DISCORD_CLIENT_ID DISCORD_USER_ID_OWNERS DISCORD_ROLE_ID_ADMIN DISCORD_ROLE_ID_EDITOR DISCORD_ROLE_ID_PUBLISHER DISCORD_TOKEN" \
-    "apps/base/etu-event-planner/discord-bot/sealed-discord-bot-secrets.yaml"
+    "SECURE_SESSION_KEY DISCORD_CONTROL_GUILD_ID DISCORD_CLIENT_ID DISCORD_CLIENT_SECRET DISCORD_USER_ID_OWNERS DISCORD_ROLE_ID_ADMIN DISCORD_ROLE_ID_EDITOR DISCORD_ROLE_ID_PUBLISHER DISCORD_TOKEN" \
+    "apps/base/etu-event-planner/sealed-secrets.yaml"

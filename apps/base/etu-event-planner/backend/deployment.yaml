@@ -29,18 +29,18 @@ spec:
             - name: SECURE_SESSION_KEY
               valueFrom:
                 secretKeyRef:
-                  name: event-planner-secrets
-                  key: secure-session-key
+                  name: secrets
+                  key: SECURE_SESSION_KEY
             - name: DISCORD_CLIENT_ID
               valueFrom:
                 secretKeyRef:
-                  name: event-planner-secrets
-                  key: discord_client_id
+                  name: secrets
+                  key: DISCORD_CLIENT_ID
             - name: DISCORD_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: event-planner-secrets
-                  key: discord_client_secret
+                  name: secrets
+                  key: DISCORD_CLIENT_SECRET
             - name: DB_HOST
               valueFrom:
                 secretKeyRef:

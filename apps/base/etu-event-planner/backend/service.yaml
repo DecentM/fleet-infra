@@ -9,3 +9,15 @@ spec:
       port: 3000
   selector:
     app: backend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-rpc
+  namespace: app-etu-event-planner
+spec:
+  ports:
+    - name: tcp
+      port: 3002
+  selector:
+    app: backend
