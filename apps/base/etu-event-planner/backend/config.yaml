@@ -14,6 +14,9 @@ data:
   SERVER_TRUST_PROXY: "true"
   SERVER_STORAGE_CACHE: "discord-avatars,template-banners,form-banners"
 
+  DB_SYNC: "false"
+  DB_MIGRATE: "true"
+
   DISCORD_CALLBACK_URL: "https://uritused-api.borooka.ee/v1/auth/discord/callback"
 
   WEB_DISCORD_AUTH_FAILURE: "//uritused.borooka.ee/#/auth/failure"
