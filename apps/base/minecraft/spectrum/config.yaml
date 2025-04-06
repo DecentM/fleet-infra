@@ -22,6 +22,8 @@ data:
   SPAWN_PROTECTION: "16"
   VIEW_DISTANCE: "12"
   ALLOW_FLIGHT: "true"
-  MOTD: "Eesti Minecrafti server trans- ja trans-sõpradele"
+  MOTD: |
+    Eesti server trans inimestele ja sõpradele
+    Steve ei ütleks „Flint and Steel“
   SERVER_NAME: "Spectrum"
   MAX_TICK_TIME: "-1"
