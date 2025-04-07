@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: proxy-config
+  namespace: app-minecraft
+data:
+  UID: "1000"
+  GID: "1000"
+  TZ: "Europe/Tallinn"
+  MEMORY: "1G"

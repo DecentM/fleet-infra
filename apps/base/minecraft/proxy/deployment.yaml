@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: StatefulSet
+
+metadata:
+  name: proxy
+  namespace: app-minecraft
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: proxy
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: proxy
+    spec:
+      containers:
+        - name: server
+          image: ghcr.io/decentm/minecraft-servers:proxy-d7084923541e1554e70defa951ec7cebcfa4bb83
+          securityContext:
+            capabilities:
+              add:
+                - CAP_NET_RAW
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: proxy-config
+          ports:
+            - containerPort: 25565
+          volumeMounts:
+            - name: server
+              mountPath: /server
+      volumes:
+        - name: server
+          persistentVolumeClaim:
+            claimName: proxy-server
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: proxy-server
+  namespace: app-minecraft
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: longhorn-local
