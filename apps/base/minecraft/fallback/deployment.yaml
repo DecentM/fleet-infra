@@ -19,12 +19,18 @@ spec:
     spec:
       containers:
         - name: server
-          image: ghcr.io/decentm/minecraft-servers:fallback-a87215e8b9c5f290c4d13e18c43e51fc30a43e23
+          image: ghcr.io/decentm/minecraft-servers:fallback-1cddf75f6af9a299f347ac0d52a44fba6a0f73fe
           securityContext:
             capabilities:
               add:
                 - CAP_NET_RAW
           imagePullPolicy: IfNotPresent
+          env:
+            - name: CFG_PROXY_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: PROXY_SECRET
           envFrom:
             - configMapRef:
                 name: fallback-config
