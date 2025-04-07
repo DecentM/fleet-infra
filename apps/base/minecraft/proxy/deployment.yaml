@@ -30,23 +30,3 @@ spec:
                 name: proxy-config
           ports:
             - containerPort: 25565
-          volumeMounts:
-            - name: server
-              mountPath: /server
-      volumes:
-        - name: server
-          persistentVolumeClaim:
-            claimName: proxy-server
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: proxy-server
-  namespace: app-minecraft
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 2Gi
-  storageClassName: longhorn-local
