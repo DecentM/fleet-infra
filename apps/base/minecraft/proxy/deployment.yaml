@@ -25,6 +25,32 @@ spec:
               add:
                 - CAP_NET_RAW
           imagePullPolicy: IfNotPresent
+          env:
+            - name: CFG_BANS_DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: libertybans-db-app
+                  key: host
+            - name: CFG_BANS_DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: libertybans-db-app
+                  key: port
+            - name: CFG_BANS_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: libertybans-db-app
+                  key: username
+            - name: CFG_BANS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: libertybans-db-app
+                  key: password
+            - name: CFG_BANS_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: libertybans-db-app
+                  key: dbname
           envFrom:
             - configMapRef:
                 name: proxy-config
