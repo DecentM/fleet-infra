@@ -9,6 +9,7 @@ data:
   UID: "1000"
   GID: "1000"
   TZ: "Europe/Tallinn"
+  ONLINE_MODE: "false"
 
   # Minecraft stuff
   INIT_MEMORY: "4G"
