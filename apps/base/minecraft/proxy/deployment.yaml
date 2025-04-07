@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: server
-          image: ghcr.io/decentm/minecraft-servers:proxy-f14cdf93239e9517417d04e3b946c7c97fb4c9b6
+          image: ghcr.io/decentm/minecraft-servers:proxy-a87215e8b9c5f290c4d13e18c43e51fc30a43e23
           securityContext:
             capabilities:
               add:
@@ -30,3 +30,15 @@ spec:
                 name: proxy-config
           ports:
             - containerPort: 25565
+          volumeMounts:
+            - name: forwarding-secret
+              mountPath: /forwarding-secret
+              subPath: forwarding-secret
+              readOnly: true
+      volumes:
+        - name: forwarding-secret
+          secret:
+            secretName: secrets
+            items:
+              - key: PROXY_SECRET
+                path: forwarding-secret

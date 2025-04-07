@@ -19,17 +19,26 @@ spec:
     spec:
       containers:
         - name: server
-          image: ghcr.io/decentm/minecraft-servers:spectrum-bfa2204c53ec2ebcb0fd7c2d293a5095a162bc5d
+          image: ghcr.io/decentm/minecraft-servers:spectrum-a87215e8b9c5f290c4d13e18c43e51fc30a43e23
           securityContext:
             capabilities:
               add:
                 - CAP_NET_RAW
           imagePullPolicy: IfNotPresent
+          env:
+            - name: CFG_PROXY_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: PROXY_SECRET
+            - name: SEED
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: SEED
           envFrom:
             - configMapRef:
                 name: spectrum-config
-            - secretRef:
-                name: spectrum-secrets
           ports:
             - containerPort: 25565
           volumeMounts:

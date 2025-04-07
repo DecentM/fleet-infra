@@ -183,10 +183,10 @@ create_secret \
 
 create_secret \
     app-minecraft \
-    spectrum-secrets \
+    secrets \
     generic \
-    "SEED" \
-    "apps/base/minecraft/spectrum/sealed-spectrum-secrets.yaml"
+    "SEED PROXY_SECRET" \
+    "apps/base/minecraft/sealed-secrets.yaml"
 
 create_secret \
     app-etu-event-planner \
