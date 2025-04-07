@@ -20,7 +20,7 @@ spec:
       hostNetwork: true
       containers:
         - name: server
-          image: ghcr.io/decentm/minecraft-servers:spectrum-38678c4736c397f3586ada1be7afa0a9351b6ad3
+          image: ghcr.io/decentm/minecraft-servers:spectrum-a0ae4c97a9f154ac50196cd8a88454ca214f4ceb
           securityContext:
             capabilities:
               add:
