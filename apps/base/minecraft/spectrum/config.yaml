@@ -28,3 +28,5 @@ data:
     Steve ei ütleks „Flint and Steel“
   SERVER_NAME: "Spectrum"
   MAX_TICK_TIME: "-1"
+
+  CFG_POLYMER_AUTO_HOST_FORCED_ADDRESS: "https://mc-rp.borooka.ee:443"
