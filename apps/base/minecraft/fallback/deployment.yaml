@@ -2,24 +2,24 @@ apiVersion: apps/v1
 kind: StatefulSet
 
 metadata:
-  name: spectrum
+  name: fallback
   namespace: app-minecraft
 
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: spectrum
+      app: fallback
   strategy:
-    type: Recreate
+    type: RollingUpdate
   template:
     metadata:
       labels:
-        app: spectrum
+        app: fallback
     spec:
       containers:
         - name: server
-          image: ghcr.io/decentm/minecraft-servers:spectrum-d7084923541e1554e70defa951ec7cebcfa4bb83
+          image: ghcr.io/decentm/minecraft-servers:fallback-d7084923541e1554e70defa951ec7cebcfa4bb83
           securityContext:
             capabilities:
               add:
@@ -27,47 +27,27 @@ spec:
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
-                name: spectrum-config
-            - secretRef:
-                name: spectrum-secrets
+                name: fallback-config
           ports:
             - containerPort: 25565
           volumeMounts:
-            - name: world
-              mountPath: /data/world
             - name: logs
               mountPath: /data/logs
             - name: config
               mountPath: /data/ops.json
               subPath: ops.json
       volumes:
-        - name: world
-          persistentVolumeClaim:
-            claimName: spectrum-world
         - name: logs
           persistentVolumeClaim:
-            claimName: spectrum-logs
+            claimName: fallback-logs
         - name: config
           configMap:
-            name: spectrum-config-files
+            name: fallback-config-files
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: spectrum-world
-  namespace: app-minecraft
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 200Gi
-  storageClassName: longhorn-pool
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: spectrum-logs
+  name: fallback-logs
   namespace: app-minecraft
 spec:
   accessModes:
