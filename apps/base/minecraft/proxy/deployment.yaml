@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: server
-          image: ghcr.io/decentm/minecraft-servers:proxy-d0f5ef97a0f8549c7a76ee0a1978283aed675bdc
+          image: ghcr.io/decentm/minecraft-servers:proxy-cb6821b5c9a07e25f918467733675f0094710e52
           securityContext:
             capabilities:
               add:
