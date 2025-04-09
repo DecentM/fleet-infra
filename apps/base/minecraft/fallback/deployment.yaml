@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: server
-          image: ghcr.io/decentm/minecraft-servers:fallback-06b64dd757843527ce2b2e604bfaf3af06145371
+          image: ghcr.io/decentm/minecraft-servers:fallback-c3c6d59147058f8826143d6f5648a11848513d85
           securityContext:
             capabilities:
               add:
