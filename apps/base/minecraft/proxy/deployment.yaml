@@ -19,13 +19,29 @@ spec:
     spec:
       containers:
         - name: server
-          image: ghcr.io/decentm/minecraft-servers:proxy-b91a4f4df49196494e341023e1607fd1e2e5033e
+          image: ghcr.io/decentm/minecraft-servers:proxy-370d1056f98dafd60709068b2269496760f0ed5c
           securityContext:
             capabilities:
               add:
                 - CAP_NET_RAW
           imagePullPolicy: IfNotPresent
           env:
+            - name: CFG_CARBON_DATABASE_JDBC_URL
+              valueFrom:
+                secretKeyRef:
+                  name: carbon-db-app
+                  key: jdbc-uri
+            - name: CFG_CARBON_DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: carbon-db-app
+                  key: username
+            - name: CFG_CARBON_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: carbon-db-app
+                  key: password
+
             - name: CFG_LUCKPERMS_DB_HOST
               valueFrom:
                 secretKeyRef:
