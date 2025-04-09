@@ -4,6 +4,7 @@ resources:
   - namespace.yaml
   - sealed-secrets.yaml
   - 1-12-2-pack
+  - luckperms-cnpg.yaml
   - spectrum
   - fallback
   - proxy

@@ -19,13 +19,39 @@ spec:
     spec:
       containers:
         - name: server
-          image: ghcr.io/decentm/minecraft-servers:proxy-1cddf75f6af9a299f347ac0d52a44fba6a0f73fe
+          image: ghcr.io/decentm/minecraft-servers:proxy-d4955e8190c4a1c4a769f40a57429fa3bf93581c
           securityContext:
             capabilities:
               add:
                 - CAP_NET_RAW
           imagePullPolicy: IfNotPresent
           env:
+            - name: CFG_LUCKPERMS_DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: host
+            - name: CFG_LUCKPERMS_DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: port
+            - name: CFG_LUCKPERMS_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: username
+            - name: CFG_LUCKPERMS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: password
+            - name: CFG_LUCKPERMS_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: dbname
+
             - name: CFG_BANS_DB_HOST
               valueFrom:
                 secretKeyRef:
