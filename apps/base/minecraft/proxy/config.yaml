@@ -21,6 +21,6 @@ data:
   CFG_SERVER_FALLBACK_HOST: "fallback-mc"
   CFG_SERVER_FALLBACK_PORT: "25565"
   CFG_FORWARDING_SECRET_FILE: "/forwarding-secret"
-  CFG_CARBON_DEFAULT_FORMAT: "<gray>[</gray><luckperms_prefix><gray>]</gray> <carbonchat_nickname> <aqua>></aqua> <message>"
-  CFG_CARBON_CONSOLE_FORMAT: "[<channel> <viaversion_player_protocol_version> <clientcatcher_client>] <carbonchat_nickname> (<username>) > <message>"
+  CFG_CARBON_DEFAULT_FORMAT: "<gray>(<reset><luckperms_prefix><reset><gray>)<reset> <carbonchat_nickname> <aqua>><reset> <message>"
+  CFG_CARBON_CONSOLE_FORMAT: "[<channel> <viaversion_player_protocol_version>] <carbonchat_nickname> (<username>) > <message>"
   CFG_CARBON_DISCORD_FORMAT: "<carbonchat_nickname> (<username>) > <message>"
