@@ -65,16 +65,10 @@ spec:
           volumeMounts:
             - name: logs
               mountPath: /data/logs
-            - name: config
-              mountPath: /data/ops.json
-              subPath: ops.json
       volumes:
         - name: logs
           persistentVolumeClaim:
             claimName: fallback-logs
-        - name: config
-          configMap:
-            name: fallback-config-files
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
