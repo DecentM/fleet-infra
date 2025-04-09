@@ -15,6 +15,7 @@ data:
   INIT_MEMORY: "4G"
   MAX_MEMORY: "12G"
   ENABLE_ROLLING_LOGS: "true"
+  ENABLE_COMMAND_BLOCK: "true"
 
   # Server stuff
   DIFFICULTY: "easy"
