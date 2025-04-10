@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: server
-          image: ghcr.io/decentm/minecraft-servers:spectrum-6fb1bb9551a3fcde1c45dff6e92ecb7e735d0d41
+          image: ghcr.io/decentm/minecraft-servers:spectrum-427f7f076a2c7d886e4eb12e51b318ee1d81404c
           securityContext:
             capabilities:
               add:
