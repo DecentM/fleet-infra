@@ -17,6 +17,7 @@ spec:
       labels:
         app: spectrum
     spec:
+      terminationGracePeriodSeconds: 30
       containers:
         - name: server
           image: ghcr.io/decentm/minecraft-servers:spectrum-427f7f076a2c7d886e4eb12e51b318ee1d81404c
@@ -25,6 +26,18 @@ spec:
               add:
                 - CAP_NET_RAW
           imagePullPolicy: IfNotPresent
+          readinessProbe:
+            exec:
+              command: ["/usr/local/bin/mc-health"]
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            exec:
+              command: ["/usr/local/bin/mc-health"]
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
           env:
             - name: CFG_LUCKPERMS_DB_HOST
               valueFrom:

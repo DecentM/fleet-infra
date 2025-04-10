@@ -17,6 +17,7 @@ spec:
       labels:
         app: fallback
     spec:
+      terminationGracePeriodSeconds: 30
       containers:
         - name: server
           image: ghcr.io/decentm/minecraft-servers:fallback-6fb1bb9551a3fcde1c45dff6e92ecb7e735d0d41
@@ -25,6 +26,18 @@ spec:
               add:
                 - CAP_NET_RAW
           imagePullPolicy: IfNotPresent
+          readinessProbe:
+            exec:
+              command: ["/usr/local/bin/mc-health"]
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            exec:
+              command: ["/usr/local/bin/mc-health"]
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
           env:
             - name: CFG_LUCKPERMS_DB_HOST
               valueFrom:
