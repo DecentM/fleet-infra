@@ -6,12 +6,14 @@ metadata:
   namespace: app-minecraft
 
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: proxy
   strategy:
     type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 1
+    maxSurge: 1
   template:
     metadata:
       labels:
