@@ -1,8 +1,13 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - config.yaml
   - libertybans-cnpg.yaml
   - carbon-cnpg.yaml
   - deployment.yaml
   - service.yaml
+
+configMapGenerator:
+  - name: proxy-config
+    namespace: app-minecraft
+    envs:
+      - config.env
