@@ -5,6 +5,9 @@ metadata:
   namespace: app-minecraft
 spec:
   schedule: "0 */1 * * *"
+  successfulJobsHistoryLimit: 6
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
   jobTemplate:
     spec:
       backoffLimit: 0
