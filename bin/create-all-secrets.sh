@@ -185,7 +185,7 @@ create_secret \
     app-minecraft \
     secrets \
     generic \
-    "SEED PROXY_SECRET" \
+    "SEED PROXY_SECRET RCON_PASSWORD" \
     "apps/base/minecraft/sealed-secrets.yaml"
 
 create_secret \

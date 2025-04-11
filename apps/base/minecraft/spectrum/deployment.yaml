@@ -45,6 +45,12 @@ spec:
             exec:
               command: ["/bin/sh", "-c", "/data/lifecycle/pre-stop.sh"]
           env:
+            - name: RCON_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: RCON_PASSWORD
+
             - name: CFG_LUCKPERMS_DB_HOST
               valueFrom:
                 secretKeyRef:

@@ -41,6 +41,12 @@ spec:
             periodSeconds: 5
             failureThreshold: 20
           env:
+            - name: RCON_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: RCON_PASSWORD
+
             - name: CFG_LUCKPERMS_DB_HOST
               valueFrom:
                 secretKeyRef:
