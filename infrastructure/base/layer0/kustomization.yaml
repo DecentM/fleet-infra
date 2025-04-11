@@ -14,3 +14,4 @@ resources:
   - cert-manager
   - kubevirt
   - cdi
+  - k8tz
