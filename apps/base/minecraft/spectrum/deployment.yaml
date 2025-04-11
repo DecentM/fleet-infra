@@ -98,8 +98,6 @@ spec:
               mountPath: /data/world
             - name: logs
               mountPath: /data/logs
-            - name: mods
-              mountPath: /data/mods
       volumes:
         - name: world
           persistentVolumeClaim:
@@ -107,9 +105,6 @@ spec:
         - name: logs
           persistentVolumeClaim:
             claimName: spectrum-logs
-        - name: mods
-          persistentVolumeClaim:
-            claimName: spectrum-mods
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -135,17 +130,4 @@ spec:
   resources:
     requests:
       storage: 2Gi
-  storageClassName: longhorn-local
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: spectrum-mods
-  namespace: app-minecraft
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
   storageClassName: longhorn-local

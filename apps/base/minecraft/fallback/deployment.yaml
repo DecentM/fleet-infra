@@ -86,15 +86,10 @@ spec:
           volumeMounts:
             - name: logs
               mountPath: /data/logs
-            - name: mods
-              mountPath: /data/mods
       volumes:
         - name: logs
           persistentVolumeClaim:
             claimName: fallback-logs
-        - name: mods
-          persistentVolumeClaim:
-            claimName: fallback-mods
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -107,17 +102,4 @@ spec:
   resources:
     requests:
       storage: 2Gi
-  storageClassName: longhorn-local
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: fallback-mods
-  namespace: app-minecraft
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
   storageClassName: longhorn-local

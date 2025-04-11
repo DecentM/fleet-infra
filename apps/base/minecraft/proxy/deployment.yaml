@@ -124,8 +124,6 @@ spec:
               mountPath: /forwarding-secret
               subPath: forwarding-secret
               readOnly: true
-            - name: server
-              mountPath: /server
       volumes:
         - name: forwarding-secret
           secret:
@@ -133,19 +131,3 @@ spec:
             items:
               - key: PROXY_SECRET
                 path: forwarding-secret
-        - name: server
-          persistentVolumeClaim:
-            claimName: proxy-server
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: proxy-server
-  namespace: app-minecraft
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
-  storageClassName: longhorn-local
