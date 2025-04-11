@@ -1,10 +1,10 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: announce-time
+  name: announce-tip
   namespace: app-minecraft
 spec:
-  schedule: "0 */1 * * *"
+  schedule: "30 */1 * * *"
   successfulJobsHistoryLimit: 6
   failedJobsHistoryLimit: 3
   concurrencyPolicy: Forbid
@@ -27,6 +27,5 @@ spec:
               - configMapRef:
                   name: announcer-config
             command:
-              - /app/preset/preset.sh
-              - time
+              - /app/tip/tip.sh
           restartPolicy: Never
