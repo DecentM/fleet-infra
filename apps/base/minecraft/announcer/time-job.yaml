@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: announce-time
+  namespace: app-minecraft
+spec:
+  schedule: "0 */1 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: announcer
+            image: ghcr.io/decentm/minecraft-servers:announcer-bba5725dd1457d152c4e9a94e271961f5aafdde0
+            imagePullPolicy: IfNotPresent
+            envFrom:
+              - configMapRef:
+                  name: announcer-config
+            command:
+              - /app/preset/preset.sh
+              - time
+          restartPolicy: Never

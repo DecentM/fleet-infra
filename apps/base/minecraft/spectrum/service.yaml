@@ -11,6 +11,19 @@ spec:
   selector:
     app: spectrum
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spectrum-rcon
+  namespace: app-minecraft
+
+spec:
+  ports:
+    - name: tcp
+      port: 25575
+  selector:
+    app: spectrum
+---
 # https://github.com/adyanth/cloudflare-operator/blob/main/docs/configuration.md
 apiVersion: networking.cfargotunnel.com/v1alpha1
 kind: TunnelBinding

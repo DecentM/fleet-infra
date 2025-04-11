@@ -86,6 +86,7 @@ spec:
                 name: spectrum-config
           ports:
             - containerPort: 25565
+            - containerPort: 25575
           volumeMounts:
             - name: world
               mountPath: /data/world

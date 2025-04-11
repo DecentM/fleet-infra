@@ -8,3 +8,4 @@ resources:
   - spectrum
   - fallback
   - proxy
+  - announcer
