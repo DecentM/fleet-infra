@@ -15,7 +15,7 @@ spec:
         spec:
           containers:
           - name: announcer
-            image: ghcr.io/decentm/minecraft-servers:announcer-0c4dffece0c2231cd443f18b709c07796269d0ce
+            image: ghcr.io/decentm/minecraft-servers:announcer-4aaaf39d438c03990203c4fa91dbeb54a698b938
             imagePullPolicy: IfNotPresent
             env:
               - name: RCON_PASSWORD
