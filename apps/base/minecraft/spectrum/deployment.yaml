@@ -22,7 +22,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: server
-          image: ghcr.io/decentm/minecraft-servers:spectrum-cc37429673427610ee836a562b9f0200e986736b
+          image: ghcr.io/decentm/minecraft-servers:spectrum-a0e04b49a4d135dee59102075a8f9ba2717cba09
           securityContext:
             capabilities:
               add:
