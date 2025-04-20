@@ -22,7 +22,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: server
-          image: ghcr.io/decentm/minecraft-servers:proxy-63906194a0ed4856c3f8f6514dc5e810e7bb4423
+          image: ghcr.io/decentm/minecraft-servers:proxy-67a205c2188091ac9b94a9b163977a243691372a
           securityContext:
             capabilities:
               add:
