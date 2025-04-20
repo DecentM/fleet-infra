@@ -5,7 +5,9 @@ resources:
   - sealed-secrets.yaml
   - 1-12-2-pack
   - luckperms-cnpg.yaml
+  - resourcepacks-pvc.yaml
   - spectrum
   - fallback
   - proxy
   - announcer
+  - resourcepack-server
