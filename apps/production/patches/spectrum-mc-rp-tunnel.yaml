@@ -5,6 +5,6 @@ metadata:
   name: spectrum-mc-rp
   namespace: app-minecraft
 subjects:
-  - name: resourcepack-server
+  - name: spectrum-mc
     spec:
       fqdn: mc-rp.borooka.ee

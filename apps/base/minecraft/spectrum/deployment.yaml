@@ -22,7 +22,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: server
-          image: ghcr.io/decentm/minecraft-servers:spectrum-d2491b4d5f65ad7951d0fd68a31d2d4b914cbdcf
+          image: ghcr.io/decentm/minecraft-servers:spectrum-a8f1ad414e48fd5d982c1eca96c9d9327467c286
           securityContext:
             capabilities:
               add:
@@ -41,9 +41,9 @@ spec:
             periodSeconds: 5
             failureThreshold: 20
           lifecycle:
-            preStop:
-              exec:
-                command: ["/bin/sh", "-c", "/data/lifecycle/pre-stop.sh"]
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "/data/lifecycle/pre-stop.sh"]
           env:
             - name: RCON_PASSWORD
               valueFrom:
@@ -98,8 +98,6 @@ spec:
               mountPath: /data/world
             - name: logs
               mountPath: /data/logs
-            - name: resourcepacks
-              mountPath: /self-host-rps
       volumes:
         - name: world
           persistentVolumeClaim:
@@ -107,9 +105,6 @@ spec:
         - name: logs
           persistentVolumeClaim:
             claimName: spectrum-logs
-        - name: resourcepacks
-          persistentVolumeClaim:
-            claimName: resourcepacks
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
