@@ -119,6 +119,9 @@ spec:
                 name: proxy-config
           ports:
             - containerPort: 25565
+              protocol: TCP
+            - containerPort: 25565
+              protocol: UDP
           volumeMounts:
             - name: forwarding-secret
               mountPath: /forwarding-secret
