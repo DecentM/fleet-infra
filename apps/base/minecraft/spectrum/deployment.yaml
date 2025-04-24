@@ -22,7 +22,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: server
-          image: ghcr.io/decentm/minecraft-servers:spectrum-5ca6aa49fb605f597bbbc88b7bb85f22b4f6fed7
+          image: ghcr.io/decentm/minecraft-servers:spectrum-21a7dab325145287b90e6d56c1114358f8357cf8
           securityContext:
             capabilities:
               add:
@@ -51,6 +51,10 @@ spec:
                   name: secrets
                   key: RCON_PASSWORD
 
+            - name: CFG_POD_UUID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
             - name: CFG_LUCKPERMS_DB_HOST
               valueFrom:
                 secretKeyRef:
