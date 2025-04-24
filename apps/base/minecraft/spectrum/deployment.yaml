@@ -22,7 +22,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: server
-          image: ghcr.io/decentm/minecraft-servers:spectrum-d659676422bb26b0d0eb2a672705e05720d75b41
+          image: ghcr.io/decentm/minecraft-servers:spectrum-5ca6aa49fb605f597bbbc88b7bb85f22b4f6fed7
           securityContext:
             capabilities:
               add:
@@ -94,6 +94,8 @@ spec:
             - containerPort: 25565
             - containerPort: 25575
           volumeMounts:
+            - name: state
+              mountPath: /data
             - name: world
               mountPath: /data/world
             - name: logs
@@ -105,6 +107,9 @@ spec:
         - name: logs
           persistentVolumeClaim:
             claimName: spectrum-logs
+        - name: state
+          persistentVolumeClaim:
+            claimName: spectrum-state
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -130,4 +135,17 @@ spec:
   resources:
     requests:
       storage: 2Gi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: spectrum-state
+  namespace: app-minecraft
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
   storageClassName: longhorn-local

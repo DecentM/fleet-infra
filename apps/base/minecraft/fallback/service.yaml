@@ -10,3 +10,16 @@ spec:
       port: 25565
   selector:
     app: fallback
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fallback-rcon
+  namespace: app-minecraft
+
+spec:
+  ports:
+    - name: tcp
+      port: 25575
+  selector:
+    app: fallback

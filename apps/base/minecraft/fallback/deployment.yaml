@@ -22,7 +22,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: server
-          image: ghcr.io/decentm/minecraft-servers:fallback-9c5e002f9b54b22c25a205aabc16abe3080c123c
+          image: ghcr.io/decentm/minecraft-servers:fallback-5ca6aa49fb605f597bbbc88b7bb85f22b4f6fed7
           securityContext:
             capabilities:
               add:
@@ -83,13 +83,19 @@ spec:
                 name: fallback-config
           ports:
             - containerPort: 25565
+            - containerPort: 25575
           volumeMounts:
+            - name: state
+              mountPath: /data
             - name: logs
               mountPath: /data/logs
       volumes:
         - name: logs
           persistentVolumeClaim:
             claimName: fallback-logs
+        - name: state
+          persistentVolumeClaim:
+            claimName: fallback-state
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -102,4 +108,17 @@ spec:
   resources:
     requests:
       storage: 2Gi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fallback-state
+  namespace: app-minecraft
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
   storageClassName: longhorn-local
