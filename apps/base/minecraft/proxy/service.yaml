@@ -3,11 +3,8 @@ kind: Service
 metadata:
   name: proxy-mc
   namespace: app-minecraft
-  labels:
-    tailscale.com/proxy-class: "privileged-proxy"
 spec:
-  type: LoadBalancer
-  loadBalancerClass: tailscale
+  type: NodePort
   selector:
     app: proxy
   ports:
