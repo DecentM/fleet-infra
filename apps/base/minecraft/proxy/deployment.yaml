@@ -19,6 +19,8 @@ spec:
       labels:
         app: proxy
     spec:
+      nodeSelector:
+        home.arpa/public-network: "true"
       terminationGracePeriodSeconds: 30
       containers:
         - name: server
