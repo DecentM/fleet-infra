@@ -14,7 +14,7 @@ data:
         reload
         loop
         bind 169.254.20.10
-        forward . /etc/resolv.conf
+        forward . 10.244.2.25 10.244.2.43
         prometheus :9253
         log
     }
