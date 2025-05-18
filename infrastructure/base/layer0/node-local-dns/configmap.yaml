@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: nodelocaldns
-  namespace: kube-system
+  namespace: node-local-dns-system
 data:
   Corefile: |
     .:53 {

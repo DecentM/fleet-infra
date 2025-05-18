@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: nodelocaldns
-  namespace: kube-system
+  namespace: node-local-dns-system
 spec:
   selector:
     matchLabels:
