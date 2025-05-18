@@ -13,6 +13,7 @@ spec:
         k8s-app: nodelocaldns
     spec:
       hostNetwork: true
+      hostPID: true
       dnsPolicy: Default
       priorityClassName: system-node-critical
       tolerations:
@@ -24,6 +25,8 @@ spec:
       - name: nodelocaldns
         image: registry.k8s.io/dns/k8s-dns-node-cache:1.22.20
         imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: true
         resources:
           limits:
             memory: 100Mi
