@@ -12,7 +12,9 @@ spec:
       port: 25565
       name: mc
       targetPort: 25565
+      nodePort: 25565
     - protocol: UDP
       port: 25565
       name: mc-raknet
       targetPort: 25565
+      nodePort: 25565
