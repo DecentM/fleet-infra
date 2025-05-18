@@ -16,4 +16,3 @@ resources:
   - cdi
   - k8tz
   - node-feature-discovery
-  - node-local-dns
