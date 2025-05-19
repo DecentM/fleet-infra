@@ -19,8 +19,6 @@ spec:
       labels:
         app: proxy
     spec:
-      nodeSelector:
-        node: "stockholm-0"
       terminationGracePeriodSeconds: 30
       containers:
         - name: server
