@@ -119,7 +119,6 @@ spec:
                 name: proxy-config
           ports:
             - containerPort: 25565
-              hostPort: 25565
               protocol: TCP
             - containerPort: 25565
               protocol: UDP

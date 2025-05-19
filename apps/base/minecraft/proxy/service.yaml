@@ -4,29 +4,11 @@ metadata:
   name: proxy-mc
   namespace: app-minecraft
 spec:
+  type: NodePort
   selector:
     app: proxy
   ports:
     - protocol: TCP
       port: 25565
       name: mc
-      targetPort: 25565
-    - protocol: UDP
-      port: 25565
-      name: mc-raknet
-      targetPort: 25565
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRouteTCP
-metadata:
-  name: proxy-mc
-  namespace: app-minecraft
-
-spec:
-  entryPoints:
-    - minecraft
-  routes:
-    - match: HostSNI(`*`)
-      services:
-        - name: proxy-mc
-          port: 25565
+      nodePort: 30000
