@@ -130,7 +130,6 @@ spec:
         - args:
             - --ip-masq
             - --kube-subnet-mgr
-            - --iface=tailscale0
           command:
             - /opt/bin/flanneld
           env:
