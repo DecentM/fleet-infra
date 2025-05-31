@@ -23,8 +23,6 @@ spec:
         - name: mariadb
           image: mariadb:11-ubi
           imagePullPolicy: IfNotPresent
-          args:
-            - --tc-heuristic-recover=rollback
           envFrom:
             - configMapRef:
                 name: mariadb-config
