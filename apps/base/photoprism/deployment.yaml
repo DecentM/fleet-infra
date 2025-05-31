@@ -23,14 +23,17 @@ spec:
         - name: mariadb
           image: mariadb:11-ubi
           imagePullPolicy: IfNotPresent
+          args:
+            - --tc-heuristic-recover=rollback
+          envFrom:
+            - configMapRef:
+                name: mariadb-config
           env:
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: photoprism-db-secrets
                   key: PHOTOPRISM_DATABASE_PASSWORD
-            - name: MYSQL_DATABASE
-              value: photoprism
 
           ports:
             - containerPort: 3306

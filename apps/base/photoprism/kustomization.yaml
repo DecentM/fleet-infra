@@ -7,3 +7,9 @@ resources:
   - sealed-admin-secrets.yaml
   - deployment.yaml
   - ingressroute.yaml
+
+configMapGenerator:
+  - name: mariadb-config
+    namespace: app-photoprism
+    envs:
+      - mariadb-config.env
