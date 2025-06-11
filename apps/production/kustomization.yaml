@@ -18,8 +18,6 @@ resources:
   - ../base/home-assistant
   - ../base/invidious
   - ../base/concourse
-  - ../base/etu-event-planner
 patches:
   - path: patches/photoprism.yaml
-  - path: patches/etu-event-planner.yaml
   - path: patches/spectrum-mc-rp-tunnel.yaml
