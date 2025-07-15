@@ -4,7 +4,7 @@ metadata:
   name: broker
   namespace: app-paperless-ngx
   labels:
-    app: paperless-ngx
+    app: paperless-ngx-redis
 spec:
   replicas: 1
   selector:
@@ -39,7 +39,7 @@ spec:
   ports:
     - port: 6379
   selector:
-    app: paperless-ngx
+    app: paperless-ngx-redis
     component: broker
 ---
 apiVersion: v1
