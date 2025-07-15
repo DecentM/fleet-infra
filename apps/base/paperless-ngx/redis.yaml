@@ -9,12 +9,12 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: paperless-ngx
+      app: paperless-ngx-redis
       component: broker
   template:
     metadata:
       labels:
-        app: paperless-ngx
+        app: paperless-ngx-redis
         component: broker
     spec:
       containers:
