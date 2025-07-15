@@ -40,8 +40,8 @@ spec:
               name: mariadb
 
         - name: photoprism
-          image: photoprism/photoprism:latest
-          imagePullPolicy: Always
+          image: photoprism/photoprism:250707-ce
+          imagePullPolicy: IfNotPresent
           env:
             - name: PHOTOPRISM_ORIGINALS_PATH
               value: /photoprism/originals/originals
