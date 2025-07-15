@@ -10,7 +10,6 @@ resources:
   - ../base/samba
   - ../base/o11y
   - ../base/minecraft
-  - ../base/nextcloud
   - ../base/home-assistant
   - ../base/invidious
   - ../base/concourse
