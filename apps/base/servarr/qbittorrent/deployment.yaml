@@ -24,8 +24,8 @@ spec:
         fsGroup: 1000
       containers:
         - name: qbittorrent
-          image: lscr.io/linuxserver/qbittorrent:latest
-          imagePullPolicy: Always
+          image: lscr.io/linuxserver/qbittorrent:5.1.2-r1-ls405
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 30688
           env:
