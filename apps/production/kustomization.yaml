@@ -6,7 +6,6 @@ resources:
   - ../base/joplin
   - ../base/paperless-ngx
   - ../base/photoprism
-  - ../base/etu-website-strapi
   - ../base/whoami
   - ../base/samba
   - ../base/tdarr
