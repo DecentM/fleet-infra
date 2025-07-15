@@ -21,8 +21,8 @@ spec:
         fsGroup: 1000
       containers:
         - name: paperless-ngx
-          image: ghcr.io/paperless-ngx/paperless-ngx:latest
-          imagePullPolicy: Always
+          image: ghcr.io/paperless-ngx/paperless-ngx:2.17.1
+          imagePullPolicy: IfNotPresent
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
