@@ -19,8 +19,8 @@ spec:
     spec:
       containers:
         - name: jellyfin
-          image: lscr.io/linuxserver/jellyfin:latest
-          imagePullPolicy: Always
+          image: lscr.io/linuxserver/jellyfin:10.10.7ubu2404-ls70
+          imagePullPolicy: IfNotPresent
           resources:
             limits:
               nvidia.com/gpu: 1
