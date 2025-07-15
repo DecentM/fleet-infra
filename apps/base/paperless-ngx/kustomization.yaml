@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - cnpg.yaml
-  - config.yaml
   - redis.yaml
   - deployment.yaml
   - ingressroute.yaml

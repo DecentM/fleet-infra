@@ -50,7 +50,7 @@ spec:
                   name: paperless-db-app
                   key: password
             - name: PAPERLESS_URL
-              value: http://paperless-ngx.cluster.arpa
+              value: https://paperless-ngx.cluster.arpa
             - name: PAPERLESS_MEDIA_ROOT
               value: /media
             - name: PAPERLESS_DATA_DIR
