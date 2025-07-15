@@ -26,9 +26,10 @@ spec:
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
+          envFrom:
+            - configMapRef:
+                name: paperless-config
           env:
-            - name: PAPERLESS_REDIS
-              value: redis://broker:6379
             - name: PAPERLESS_DBHOST
               valueFrom:
                 secretKeyRef:
@@ -49,14 +50,6 @@ spec:
                 secretKeyRef:
                   name: paperless-db-app
                   key: password
-            - name: PAPERLESS_URL
-              value: https://paperless-ngx.cluster.arpa
-            - name: PAPERLESS_MEDIA_ROOT
-              value: /media
-            - name: PAPERLESS_DATA_DIR
-              value: /data
-            - name: PAPERLESS_EMPTY_TRASH_DIR
-              value: "/trash"
           volumeMounts:
             - mountPath: /data
               name: data

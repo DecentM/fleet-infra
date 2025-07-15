@@ -6,3 +6,9 @@ resources:
   - redis.yaml
   - deployment.yaml
   - ingressroute.yaml
+
+configMapGenerator:
+  - name: paperless-config
+    namespace: app-paperless-ngx
+    envs:
+      - config.env
