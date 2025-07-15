@@ -10,12 +10,10 @@ spec:
   selector:
     matchLabels:
       app: paperless-ngx-redis
-      component: broker
   template:
     metadata:
       labels:
         app: paperless-ngx-redis
-        component: broker
     spec:
       containers:
         - name: redis
@@ -40,7 +38,6 @@ spec:
     - port: 6379
   selector:
     app: paperless-ngx-redis
-    component: broker
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
