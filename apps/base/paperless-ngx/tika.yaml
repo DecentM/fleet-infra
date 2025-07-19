@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paperless-ngx-tika
+  namespace: app-paperless-ngx
+  labels:
+    app: paperless-ngx-tika
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paperless-ngx-tika
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: paperless-ngx-tika
+    spec:
+      containers:
+        - name: tika
+          image: apache/tika:3.2.1.0-full
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9998
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tika
+  namespace: app-paperless-ngx
+spec:
+  ports:
+    - port: 9998
+      targetPort: 9998
+  selector:
+    app: paperless-ngx-tika

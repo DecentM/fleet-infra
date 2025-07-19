@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paperless-ngx-gotenberg
+  namespace: app-paperless-ngx
+  labels:
+    app: paperless-ngx-gotenberg
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paperless-ngx-gotenberg
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: paperless-ngx-gotenberg
+    spec:
+      containers:
+        - name: gotenberg
+          image: gotenberg/gotenberg:8.21
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          command:
+            - "gotenberg"
+          args:
+            - "--chromium-disable-javascript=true"
+            - "--chromium-allow-list=file:///tmp/.*"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gotenberg
+  namespace: app-paperless-ngx
+spec:
+  ports:
+    - port: 3000
+      targetPort: 3000
+  selector:
+    app: paperless-ngx-gotenberg
