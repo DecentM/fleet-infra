@@ -30,8 +30,8 @@ spec:
       valuesKey: db_user
       targetPath: config.db.user
     - kind: Secret
-      name: invidious-secrets
-      valuesKey: db_password
+      name: invidious-postgresql
+      valuesKey: password
       targetPath: config.db.password
 
     - kind: Secret
@@ -39,8 +39,8 @@ spec:
       valuesKey: db_user
       targetPath: postgresql.auth.username
     - kind: Secret
-      name: invidious-secrets
-      valuesKey: db_password
+      name: invidious-postgresql
+      valuesKey: password
       targetPath: postgresql.auth.password
 
     - kind: Secret
@@ -48,8 +48,8 @@ spec:
       valuesKey: db_user
       targetPath: postgresql.primary.initdb.username
     - kind: Secret
-      name: invidious-secrets
-      valuesKey: db_password
+      name: invidious-postgresql
+      valuesKey: password
       targetPath: postgresql.primary.initdb.password
 
     - kind: Secret
