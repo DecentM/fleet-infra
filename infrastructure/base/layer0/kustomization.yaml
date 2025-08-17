@@ -14,5 +14,5 @@ resources:
   - cert-manager
   - kubevirt
   - cdi
-  - k8tz
+  # - k8tz
   - node-feature-discovery
