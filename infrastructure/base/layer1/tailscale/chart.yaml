@@ -18,6 +18,8 @@ spec:
     spec:
       chart: tailscale-operator
       version: "1.76.6"
+      valuesFiles:
+        - values.yaml
       sourceRef:
         kind: HelmRepository
         name: tailscale

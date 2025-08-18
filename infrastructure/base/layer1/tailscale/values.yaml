@@ -1,0 +1,6 @@
+operatorConfig:
+    repository: ghcr.io/tailscale/k8s-operator
+
+proxyConfig:
+  image:
+    repository: ghcr.io/tailscale/tailscale
