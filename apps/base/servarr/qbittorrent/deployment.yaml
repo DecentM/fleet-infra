@@ -38,7 +38,7 @@ spec:
             - name: TZ
               value: "Europe/Tallinn"
             - name: WEBUI_PORT
-              value: "8080"
+              value: "8081"
             - name: TORRENTING_PORT
               value: "30688"
             # From `qbittorrent --help`
