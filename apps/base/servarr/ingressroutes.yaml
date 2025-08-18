@@ -29,7 +29,7 @@ spec:
       services:
         - name: qbittorrent-web
           namespace: app-servarr
-          port: 8080
+          port: http
   tls:
     secretName: traefik-tls
 ---
