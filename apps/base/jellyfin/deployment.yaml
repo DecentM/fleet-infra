@@ -21,9 +21,6 @@ spec:
         - name: jellyfin
           image: lscr.io/linuxserver/jellyfin:10.10.7ubu2404-ls70
           imagePullPolicy: IfNotPresent
-          resources:
-            limits:
-              nvidia.com/gpu: 1
           envFrom:
             - configMapRef:
                 name: jellyfin-config
