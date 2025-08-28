@@ -8,6 +8,11 @@ spec:
   selector:
     matchLabels:
       app: samba
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: "OnRootMismatch"
   template:
     metadata:
       labels:
@@ -15,8 +20,8 @@ spec:
     spec:
       containers:
         - name: samba
-          image: dperson/samba:latest
-          imagePullPolicy: Always
+          image: dperson/samba@sha256:66088b78a19810dd1457a8f39340e95e663c728083efa5fe7dc0d40b2478e869
+          imagePullPolicy: IfNotPresent
           args:
             - "-u"
             - "$(SAMBA_USERNAME);$(SAMBA_PASSWORD)"
