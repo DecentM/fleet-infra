@@ -86,7 +86,7 @@ spec:
             claimName: mariadb
         - name: import
           persistentVolumeClaim:
-            claimName: import
+            claimName: photo-import
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -104,11 +104,11 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: import
+  name: photo-import
   namespace: app-photoprism
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 6Gi

@@ -85,5 +85,5 @@ spec:
             path: /mnt/spike/mass-storage/games
         - name: photo-import
           persistentVolumeClaim:
-            claimName: import
+            claimName: photo-import
             namespace: app-photoprism
