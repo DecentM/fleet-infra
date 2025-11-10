@@ -58,6 +58,8 @@ spec:
               name: downloads
             - mountPath: /mnt/games
               name: games
+            - mountPath: /mnt/photo-import
+              name: photo-import
       volumes:
         - name: movies
           hostPath:
