@@ -55,6 +55,8 @@ spec:
               value: /photoprism/storage/config
             - name: PHOTOPRISM_TEMP_PATH
               value: /photoprism/storage/temp
+            - name: PHOTOPRISM_IMPORT_PATH
+              value: /photoprism/import
           envFrom:
             - configMapRef:
                 name: photoprism-config
@@ -70,6 +72,8 @@ spec:
               name: originals
             - mountPath: /photoprism/storage
               name: storage
+            - mountPath: /photoprism/import
+              name: import
       volumes:
         - name: originals
           persistentVolumeClaim:
@@ -80,6 +84,9 @@ spec:
         - name: mariadb
           persistentVolumeClaim:
             claimName: mariadb
+        - name: import
+          persistentVolumeClaim:
+            claimName: import
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -131,4 +138,17 @@ spec:
   resources:
     requests:
       storage: 2Gi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: import
+  namespace: app-photoprism
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 6Gi
   storageClassName: longhorn-local

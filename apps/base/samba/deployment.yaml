@@ -37,6 +37,8 @@ spec:
             - "downloads;/mnt/downloads;no;no;no;$(SAMBA_USERNAME)"
             - "-s"
             - "games;/mnt/games;no;no;no;$(SAMBA_USERNAME)"
+            - "-s"
+            - "photo-import;/mnt/photo-import;no;no;no;$(SAMBA_USERNAME)"
           envFrom:
             - secretRef:
                 name: samba-secrets
@@ -79,3 +81,7 @@ spec:
         - name: games
           hostPath:
             path: /mnt/spike/mass-storage/games
+        - name: photo-import
+          persistentVolumeClaim:
+            claimName: import
+            namespace: app-photoprism
