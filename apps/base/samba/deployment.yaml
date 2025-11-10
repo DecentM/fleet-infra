@@ -38,7 +38,7 @@ spec:
             - "-s"
             - "games;/mnt/games;no;no;no;$(SAMBA_USERNAME)"
             - "-s"
-            - "photo-import;/mnt/photo-import;no;no;no;$(SAMBA_USERNAME)"
+            - "photoprism-import;/mnt/photoprism-import;no;no;no;$(SAMBA_USERNAME)"
           envFrom:
             - secretRef:
                 name: samba-secrets
@@ -58,8 +58,8 @@ spec:
               name: downloads
             - mountPath: /mnt/games
               name: games
-            - mountPath: /mnt/photo-import
-              name: photo-import
+            - mountPath: /mnt/photoprism-import
+              name: photoprism-import
       volumes:
         - name: movies
           hostPath:
@@ -80,10 +80,12 @@ spec:
         - name: downloads
           hostPath:
             path: /mnt/spike/storage/Downloads
+            type: Directory
         - name: games
           hostPath:
             path: /mnt/spike/mass-storage/games
-        - name: photo-import
-          persistentVolumeClaim:
-            claimName: photo-import
-            namespace: app-photoprism
+            type: Directory
+        - name: photoprism-import
+          hostPath:
+            path: /mnt/spike/mass-storage/photoprism-import
+            type: Directory

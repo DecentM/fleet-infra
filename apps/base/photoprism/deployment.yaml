@@ -85,8 +85,9 @@ spec:
           persistentVolumeClaim:
             claimName: mariadb
         - name: import
-          persistentVolumeClaim:
-            claimName: photo-import
+          hostPath:
+            path: /mnt/spike/mass-storage/photoprism-import
+            type: Directory
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -100,19 +101,6 @@ spec:
     requests:
       storage: 200Gi
   storageClassName: longhorn-pool
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: photo-import
-  namespace: app-photoprism
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 6Gi
-  storageClassName: longhorn-local-nobackup
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
