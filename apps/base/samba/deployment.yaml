@@ -26,22 +26,27 @@ spec:
             - "-u"
             - "$(SAMBA_USERNAME);$(SAMBA_PASSWORD);1000;samba;1000"
             - "-s"
-            - "movies;/mnt/movies;no;no;no;$(SAMBA_USERNAME)"
+            - "movies;/mnt/movies;yes;no;no;$(SAMBA_USERNAME)"
             - "-s"
-            - "series;/mnt/series;no;no;no;$(SAMBA_USERNAME)"
+            - "series;/mnt/series;yes;no;no;$(SAMBA_USERNAME)"
             - "-s"
-            - "youtube;/mnt/youtube;no;no;no;$(SAMBA_USERNAME)"
+            - "youtube;/mnt/youtube;yes;no;no;$(SAMBA_USERNAME)"
             - "-s"
-            - "music;/mnt/music;no;no;no;$(SAMBA_USERNAME)"
+            - "music;/mnt/music;yes;no;no;$(SAMBA_USERNAME)"
             - "-s"
-            - "downloads;/mnt/downloads;no;no;no;$(SAMBA_USERNAME)"
+            - "downloads;/mnt/downloads;yes;no;no;$(SAMBA_USERNAME)"
             - "-s"
-            - "games;/mnt/games;no;no;no;$(SAMBA_USERNAME)"
+            - "games;/mnt/games;yes;no;no;$(SAMBA_USERNAME)"
             - "-s"
-            - "photoprism-import;/mnt/photoprism-import;no;no;no;$(SAMBA_USERNAME)"
+            - "photoprism-import;/mnt/photoprism-import;yes;no;no;$(SAMBA_USERNAME)"
           envFrom:
             - secretRef:
                 name: samba-secrets
+          env:
+            - name: USERID
+              value: "1000"
+            - name: GROUPID
+              value: "1000"
           ports:
             - containerPort: 445
               name: samba-tcp-445
