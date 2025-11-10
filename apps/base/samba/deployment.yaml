@@ -39,6 +39,7 @@ spec:
             - "games;/mnt/games;yes;no;no;$(SAMBA_USERNAME)"
             - "-s"
             - "photoprism-import;/mnt/photoprism-import;yes;no;no;$(SAMBA_USERNAME)"
+            - "-p"
           envFrom:
             - secretRef:
                 name: samba-secrets
