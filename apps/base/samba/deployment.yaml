@@ -24,7 +24,7 @@ spec:
           imagePullPolicy: IfNotPresent
           args:
             - "-u"
-            - "$(SAMBA_USERNAME);$(SAMBA_PASSWORD)"
+            - "$(SAMBA_USERNAME);$(SAMBA_PASSWORD);1000;samba;1000"
             - "-s"
             - "movies;/mnt/movies;no;no;no;$(SAMBA_USERNAME)"
             - "-s"
