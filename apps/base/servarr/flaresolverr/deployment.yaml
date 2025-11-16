@@ -23,7 +23,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: flaresolverr
-          image: ghcr.io/flaresolverr/flaresolverr:v3.3.25
+          image: ghcr.io/flaresolverr/flaresolverr:v3.4.5
           imagePullPolicy: IfNotPresent
           env:
             - name: LOG_LEVEL

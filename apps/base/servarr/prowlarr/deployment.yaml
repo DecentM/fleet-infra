@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: prowlarr
-          image: lscr.io/linuxserver/prowlarr:1.37.0.5076-ls121
+          image: lscr.io/linuxserver/prowlarr:2.1.5.5216-ls131
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
