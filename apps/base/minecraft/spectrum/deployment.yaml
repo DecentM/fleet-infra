@@ -100,14 +100,14 @@ spec:
           volumeMounts:
             - name: state
               mountPath: /data
-            - name: world
-              mountPath: /data/world
+            - name: world-old
+              mountPath: /data/world-old
             - name: logs
               mountPath: /data/logs
-            - name: world-migration
-              mountPath: /data/world-migration
+            - name: world
+              mountPath: /data/world
       volumes:
-        - name: world
+        - name: world-old
           persistentVolumeClaim:
             claimName: spectrum-world
         - name: logs
@@ -116,7 +116,7 @@ spec:
         - name: state
           persistentVolumeClaim:
             claimName: spectrum-state
-        - name: world-migration
+        - name: world
           hostPath:
             path: /mnt/spike/storage/k8s/namespaces/app-spectrum/world
             type: Directory
