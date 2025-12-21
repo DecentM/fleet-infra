@@ -36,8 +36,6 @@ spec:
             - "-s"
             - "downloads;/mnt/downloads;yes;no;no;$(SAMBA_USERNAME)"
             - "-s"
-            - "games;/mnt/games;yes;no;no;$(SAMBA_USERNAME)"
-            - "-s"
             - "photoprism-import;/mnt/photoprism-import;yes;no;no;$(SAMBA_USERNAME)"
             - "-p"
             - "-r"
@@ -63,8 +61,6 @@ spec:
               name: music
             - mountPath: /mnt/downloads
               name: downloads
-            - mountPath: /mnt/games
-              name: games
             - mountPath: /mnt/photoprism-import
               name: photoprism-import
       volumes:
@@ -87,10 +83,6 @@ spec:
         - name: downloads
           hostPath:
             path: /mnt/spike/storage/Downloads
-            type: Directory
-        - name: games
-          hostPath:
-            path: /mnt/spike/mass-storage/games
             type: Directory
         - name: photoprism-import
           hostPath:
