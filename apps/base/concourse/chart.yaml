@@ -68,10 +68,10 @@ spec:
         runtime: containerd
 
     web:
-      replicas: 1
+      replicas: 0
 
     worker:
-      replicas: 1
+      replicas: 0
       updateStrategy:
         type: RollingUpdate
 
