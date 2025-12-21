@@ -10,6 +10,9 @@ spec:
     - name: tcp
       port: 25565
       nodePort: 30565
+    - name: rp
+      port: 25577
+      nodePort: 30566
   selector:
     app: spectrum
 ---

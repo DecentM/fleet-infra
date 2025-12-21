@@ -22,7 +22,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: server
-          image: ghcr.io/decentm/minecraft-servers:fallback-5ca6aa49fb605f597bbbc88b7bb85f22b4f6fed7
+          image: ghcr.io/decentm/minecraft-servers:fallback-53b21e493f88888141dc3909499f7f45fdb08344
           securityContext:
             capabilities:
               add:
