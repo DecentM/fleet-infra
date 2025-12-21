@@ -5,6 +5,19 @@ metadata:
   namespace: app-minecraft
 
 spec:
+  ports:
+    - name: mc
+      port: 25565
+  selector:
+    app: spectrum
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spectrum-rp
+  namespace: app-minecraft
+
+spec:
   type: NodePort
   ports:
     - name: rp
