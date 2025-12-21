@@ -22,7 +22,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: server
-          image: ghcr.io/decentm/minecraft-servers:spectrum-c75468b5dbe897b3689f1787e85be52031c36036
+          image: ghcr.io/decentm/minecraft-servers:spectrum-44c544f620e03d641acd25f3cc23c23111f6b374
           securityContext:
             capabilities:
               add:
@@ -55,6 +55,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.uid
+
             - name: CFG_LUCKPERMS_DB_HOST
               valueFrom:
                 secretKeyRef:
@@ -86,6 +87,7 @@ spec:
                 secretKeyRef:
                   name: secrets
                   key: PROXY_SECRET
+
             - name: SEED
               valueFrom:
                 secretKeyRef:
@@ -100,16 +102,11 @@ spec:
           volumeMounts:
             - name: state
               mountPath: /data
-            - name: world-old
-              mountPath: /data/world-old
             - name: logs
               mountPath: /data/logs
             - name: world
               mountPath: /data/world
       volumes:
-        - name: world-old
-          persistentVolumeClaim:
-            claimName: spectrum-world
         - name: logs
           persistentVolumeClaim:
             claimName: spectrum-logs

@@ -5,9 +5,11 @@ metadata:
   namespace: app-minecraft
 
 spec:
+  type: NodePort
   ports:
     - name: tcp
       port: 25565
+      nodePort: 30565
   selector:
     app: spectrum
 ---
