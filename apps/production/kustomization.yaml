@@ -15,4 +15,3 @@ resources:
   - ../base/concourse
 patches:
   - path: patches/photoprism.yaml
-  - path: patches/spectrum-mc-rp-tunnel.yaml
