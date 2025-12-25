@@ -1,0 +1,15 @@
+# https://github.com/adyanth/cloudflare-operator/blob/main/docs/configuration.md
+apiVersion: networking.cfargotunnel.com/v1alpha1
+kind: TunnelBinding
+
+metadata:
+  name: spectrum-rp
+  namespace: app-minecraft
+
+subjects:
+  - name: spectrum-rp
+    spec:
+      fqdn: mc-rp.borooka.ee
+
+tunnelRef:
+  name: cluster-tunnel-borooka

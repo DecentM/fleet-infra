@@ -27,3 +27,13 @@ spec:
       port: 25565
       name: mc
       nodePort: 30000
+---
+# https://github.com/adyanth/cloudflare-operator/blob/main/docs/configuration.md
+apiVersion: networking.cfargotunnel.com/v1alpha1
+kind: TunnelBinding
+metadata:
+  name: spectrum-rp
+  namespace: app-minecraft
+
+tunnelRef:
+  kind: ClusterTunnel
