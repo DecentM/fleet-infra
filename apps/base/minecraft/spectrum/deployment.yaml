@@ -97,7 +97,7 @@ spec:
             - configMapRef:
                 name: spectrum-config
           ports:
-            - containerPort: 25565
+            - containerPort: 25566
             - containerPort: 25575
             - containerPort: 25577
           volumeMounts:
@@ -206,8 +206,6 @@ spec:
           ports:
             - containerPort: 25565
               protocol: TCP
-            - containerPort: 25565
-              protocol: UDP
           volumeMounts:
             - name: forwarding-secret
               mountPath: /forwarding-secret
@@ -274,8 +272,7 @@ spec:
             - configMapRef:
                 name: fallback-config
           ports:
-            - containerPort: 25565
-            - containerPort: 25575
+            - containerPort: 25567
           volumeMounts:
             - name: fallback-state
               mountPath: /data
