@@ -22,7 +22,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: survival
-          image: ghcr.io/decentm/minecraft-servers:spectrum-86882c868ddfad924bb71b37e23ae834a8173a81
+          image: ghcr.io/decentm/minecraft-servers:spectrum-747592c0da9e80924e9973083f799e2a4e279ab6
           securityContext:
             capabilities:
               add:
