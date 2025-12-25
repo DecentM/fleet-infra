@@ -10,7 +10,7 @@ spec:
     app: spectrum
   ports:
     - name: rp
-      port: 25577
+      port: 25567
       nodePort: 30566
 ---
 apiVersion: v1

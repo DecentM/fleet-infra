@@ -99,7 +99,7 @@ spec:
           ports:
             - containerPort: 25566
             - containerPort: 25575
-            - containerPort: 25577
+            - containerPort: 25567
           volumeMounts:
             - name: survival-state
               mountPath: /data
