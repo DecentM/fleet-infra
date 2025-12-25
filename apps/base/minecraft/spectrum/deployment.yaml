@@ -108,7 +108,7 @@ spec:
             - name: survival-world
               mountPath: /data/world
         - name: proxy
-          image: ghcr.io/decentm/minecraft-servers:proxy-219d1778764868cf4bd1536ac9cb8a7f537cbe9b
+          image: ghcr.io/decentm/minecraft-servers:proxy-86882c868ddfad924bb71b37e23ae834a8173a81
           securityContext:
             capabilities:
               add:
