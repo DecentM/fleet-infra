@@ -21,7 +21,7 @@ spec:
     spec:
       terminationGracePeriodSeconds: 30
       containers:
-        - name: server
+        - name: survival
           image: ghcr.io/decentm/minecraft-servers:spectrum-53b21e493f88888141dc3909499f7f45fdb08344
           securityContext:
             capabilities:
@@ -101,23 +101,212 @@ spec:
             - containerPort: 25575
             - containerPort: 25577
           volumeMounts:
-            - name: state
+            - name: survival-state
               mountPath: /data
-            - name: logs
+            - name: survival-logs
               mountPath: /data/logs
-            - name: world
+            - name: survival-world
               mountPath: /data/world
+        - name: proxy
+          image: ghcr.io/decentm/minecraft-servers:proxy-219fa8ae0fa6006257b9af3c28dd0986c6d9097b
+          securityContext:
+            capabilities:
+              add:
+                - CAP_NET_RAW
+          imagePullPolicy: IfNotPresent
+          readinessProbe:
+            tcpSocket:
+              port: 25565
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: 25565
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          env:
+            - name: RCON_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: RCON_PASSWORD
+
+            - name: CFG_CARBON_DATABASE_JDBC_URL
+              valueFrom:
+                secretKeyRef:
+                  name: carbon-db-app
+                  key: jdbc-uri
+            - name: CFG_CARBON_DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: carbon-db-app
+                  key: username
+            - name: CFG_CARBON_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: carbon-db-app
+                  key: password
+
+            - name: CFG_LUCKPERMS_DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: host
+            - name: CFG_LUCKPERMS_DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: port
+            - name: CFG_LUCKPERMS_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: username
+            - name: CFG_LUCKPERMS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: password
+            - name: CFG_LUCKPERMS_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: dbname
+
+            - name: CFG_BANS_DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: libertybans-db-app
+                  key: host
+            - name: CFG_BANS_DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: libertybans-db-app
+                  key: port
+            - name: CFG_BANS_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: libertybans-db-app
+                  key: username
+            - name: CFG_BANS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: libertybans-db-app
+                  key: password
+            - name: CFG_BANS_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: libertybans-db-app
+                  key: dbname
+          envFrom:
+            - configMapRef:
+                name: proxy-config
+          ports:
+            - containerPort: 25565
+              protocol: TCP
+            - containerPort: 25565
+              protocol: UDP
+          volumeMounts:
+            - name: forwarding-secret
+              mountPath: /forwarding-secret
+              subPath: forwarding-secret
+              readOnly: true
+        - name: fallback
+          image: ghcr.io/decentm/minecraft-servers:fallback-53b21e493f88888141dc3909499f7f45fdb08344
+          securityContext:
+            capabilities:
+              add:
+                - CAP_NET_RAW
+          imagePullPolicy: IfNotPresent
+          readinessProbe:
+            exec:
+              command: ["/usr/local/bin/mc-health"]
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            exec:
+              command: ["/usr/local/bin/mc-health"]
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          env:
+            - name: RCON_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: RCON_PASSWORD
+
+            - name: CFG_LUCKPERMS_DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: host
+            - name: CFG_LUCKPERMS_DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: port
+            - name: CFG_LUCKPERMS_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: username
+            - name: CFG_LUCKPERMS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: password
+            - name: CFG_LUCKPERMS_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: dbname
+
+            - name: CFG_PROXY_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: PROXY_SECRET
+          envFrom:
+            - configMapRef:
+                name: fallback-config
+          ports:
+            - containerPort: 25565
+            - containerPort: 25575
+          volumeMounts:
+            - name: fallback-state
+              mountPath: /data
+            - name: fallback-logs
+              mountPath: /data/logs
       volumes:
-        - name: logs
+        - name: survival-logs
           persistentVolumeClaim:
-            claimName: spectrum-logs
-        - name: state
+            claimName: survival-logs
+        - name: fallback-logs
+          persistentVolumeClaim:
+            claimName: fallback-logs
+        - name: proxy-logs
+          persistentVolumeClaim:
+            claimName: proxy-logs
+        - name: survival-state
           persistentVolumeClaim:
             claimName: spectrum-state
-        - name: world
+        - name: fallback-state
+          persistentVolumeClaim:
+            claimName: fallback-state
+        - name: survival-world
           hostPath:
             path: /mnt/spike/storage/k8s/namespaces/app-spectrum/world
             type: Directory
+        - name: forwarding-secret
+          secret:
+            secretName: secrets
+            items:
+              - key: PROXY_SECRET
+                path: forwarding-secret
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -149,6 +338,32 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: spectrum-state
+  namespace: app-minecraft
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fallback-logs
+  namespace: app-minecraft
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fallback-state
   namespace: app-minecraft
 spec:
   accessModes:
