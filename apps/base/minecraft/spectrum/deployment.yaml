@@ -102,8 +102,8 @@ spec:
             - containerPort: 25567
             - containerPort: 25578
           volumeMounts:
-            - name: survival-state
-              mountPath: /data
+            - name: survival-server
+              mountPath: /server
             - name: survival-logs
               mountPath: /data/logs
             - name: survival-world
@@ -275,8 +275,8 @@ spec:
           ports:
             - containerPort: 25567
           volumeMounts:
-            - name: fallback-state
-              mountPath: /data
+            - name: fallback-server
+              mountPath: /server
             - name: fallback-logs
               mountPath: /data/logs
       volumes:
@@ -289,12 +289,12 @@ spec:
         - name: proxy-logs
           persistentVolumeClaim:
             claimName: proxy-logs
-        - name: survival-state
+        - name: survival-server
           persistentVolumeClaim:
-            claimName: spectrum-state
-        - name: fallback-state
+            claimName: survival-server
+        - name: fallback-server
           persistentVolumeClaim:
-            claimName: fallback-state
+            claimName: fallback-server
         - name: survival-world
           hostPath:
             path: /mnt/spike/storage/k8s/namespaces/app-spectrum/world
@@ -348,7 +348,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: spectrum-state
+  name: survival-server
   namespace: app-minecraft
 spec:
   accessModes:
@@ -374,7 +374,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: fallback-state
+  name: fallback-server
   namespace: app-minecraft
 spec:
   accessModes:
