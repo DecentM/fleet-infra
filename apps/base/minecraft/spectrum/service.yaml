@@ -76,4 +76,4 @@ subjects:
     name: spectrum-mc-tun
     spec:
       protocol: tcp
-      target: tcp://spectrum-mc-tun:25565
+      target: tcp://spectrum-mc-tun.app-minecraft.svc:25565
