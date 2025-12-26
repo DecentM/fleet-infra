@@ -70,11 +70,3 @@ metadata:
 
 tunnelRef:
   kind: ClusterTunnel
-
-subjects:
-  - kind: Service
-    name: spectrum-mc-tun
-    spec:
-      protocol: tcp
-      fqdn: mc-tun.borooka.ee
-      # target: tcp://spectrum-mc-tun.app-minecraft.svc:25565

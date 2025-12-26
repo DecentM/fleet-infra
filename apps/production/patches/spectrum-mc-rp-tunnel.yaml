@@ -24,6 +24,7 @@ metadata:
 subjects:
   - name: spectrum-mc
     spec:
+      protocol: tcp
       fqdn: mc-tun.borooka.ee
 
 tunnelRef:
