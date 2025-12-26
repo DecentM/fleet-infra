@@ -76,4 +76,5 @@ subjects:
     name: spectrum-mc-tun
     spec:
       protocol: tcp
-      target: tcp://spectrum-mc-tun.app-minecraft.svc:25565
+      fqdn: mc-tun.borooka.ee
+      # target: tcp://spectrum-mc-tun.app-minecraft.svc:25565
