@@ -22,7 +22,7 @@ spec:
       terminationGracePeriodSeconds: 130
       containers:
         - name: survival
-          image: ghcr.io/decentm/minecraft-servers:spectrum-fd428652c06be4f9f8439624a1867635f3337c30
+          image: ghcr.io/decentm/minecraft-servers:spectrum-02c7ac10d213a08044c32194ff75452cfbb151fd
           securityContext:
             capabilities:
               add:
@@ -109,7 +109,7 @@ spec:
             - name: survival-world
               mountPath: /data/world
         - name: proxy
-          image: ghcr.io/decentm/minecraft-servers:proxy-ae436e71ae7dfb61b40fbca2230a6189a3c459f9
+          image: ghcr.io/decentm/minecraft-servers:proxy-02c7ac10d213a08044c32194ff75452cfbb151fd
           securityContext:
             capabilities:
               add:
@@ -318,19 +318,6 @@ spec:
     requests:
       storage: 2Gi
   storageClassName: longhorn-local
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: spectrum-world
-  namespace: app-minecraft
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 200Gi
-  storageClassName: longhorn-pool
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
