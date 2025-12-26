@@ -13,3 +13,18 @@ subjects:
 
 tunnelRef:
   name: cluster-tunnel-borooka
+---
+apiVersion: networking.cfargotunnel.com/v1alpha1
+kind: TunnelBinding
+
+metadata:
+  name: spectrum-mc
+  namespace: app-minecraft
+
+subjects:
+  - name: spectrum-mc
+    spec:
+      fqdn: mc-tun.borooka.ee
+
+tunnelRef:
+  name: cluster-tunnel-borooka

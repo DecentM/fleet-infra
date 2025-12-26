@@ -5,13 +5,23 @@ metadata:
   namespace: app-minecraft
 
 spec:
-  type: NodePort
   selector:
     app: spectrum
   ports:
     - name: rp
       port: 25578
-      nodePort: 30566
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spectrum-mc
+  namespace: app-minecraft
+
+spec:
+  type: NodePort
+  selector:
+    app: spectrum
+  ports:
     - name: mc
       port: 25565
       nodePort: 30000
@@ -38,3 +48,18 @@ metadata:
 
 tunnelRef:
   kind: ClusterTunnel
+---
+apiVersion: networking.cfargotunnel.com/v1alpha1
+kind: TunnelBinding
+metadata:
+  name: spectrum-mc
+  namespace: app-minecraft
+
+tunnelRef:
+  kind: ClusterTunnel
+
+subjects:
+  - kind: Service
+    name: spectrum-mc
+    spec:
+      protocol: tcp
