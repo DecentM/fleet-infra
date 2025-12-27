@@ -25,7 +25,7 @@ subjects:
   - name: spectrum-mc
     spec:
       protocol: tcp
-      fqdn: mc-tun.borooka.ee
+      fqdn: mc.borooka.ee
 
 tunnelRef:
   name: cluster-tunnel-borooka
