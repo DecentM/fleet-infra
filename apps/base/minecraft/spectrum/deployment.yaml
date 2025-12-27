@@ -22,7 +22,7 @@ spec:
       terminationGracePeriodSeconds: 130
       containers:
         - name: survival
-          image: ghcr.io/decentm/minecraft-servers:spectrum-3c0020074f76bcd5d644b3cb4e4090c5e19a9952
+          image: ghcr.io/decentm/minecraft-servers:spectrum-b166a10a9dc17559368c14e0c3beb8e7f6e48790
           securityContext:
             capabilities:
               add:
@@ -109,7 +109,7 @@ spec:
             - name: survival-world
               mountPath: /data/world
         - name: proxy
-          image: ghcr.io/decentm/minecraft-servers:proxy-02c7ac10d213a08044c32194ff75452cfbb151fd
+          image: ghcr.io/decentm/minecraft-servers:proxy-9b404b9a08840f5f4bfeb7625793153051241754
           securityContext:
             capabilities:
               add:
