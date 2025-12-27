@@ -213,7 +213,7 @@ spec:
               subPath: forwarding-secret
               readOnly: true
         - name: fallback
-          image: ghcr.io/decentm/minecraft-servers:fallback-04551aad3b697831fd329905cfb76611c65b8c7b
+          image: ghcr.io/decentm/minecraft-servers:fallback-5f6064b8c75a08c8778ecc74c722cfff9bc99106
           securityContext:
             capabilities:
               add:
