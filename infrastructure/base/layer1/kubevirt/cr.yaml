@@ -23,6 +23,12 @@ spec:
           resourceName: "nvidia.com/GP107_GeForce_GTX_1050_Ti"
         - pciVendorSelector: "10DE:0FB9"
           resourceName: "nvidia.com/GP107GL_High_Definition_Audio_Controller"
+      usb:
+        - resourceName: kubevirt.io/conbee-ii
+          selectors:
+            - vendor: "1cf1"
+              product: "0030"
+
 
   customizeComponents: {}
   imagePullPolicy: IfNotPresent
