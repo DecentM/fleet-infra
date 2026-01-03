@@ -17,12 +17,6 @@ spec:
         - AutoResourceLimitsGate
         - VMLiveUpdateFeatures
         - VMPersistentState
-    permittedHostDevices:
-      pciHostDevices:
-        - pciVendorSelector: "10DE:1C82"
-          resourceName: "nvidia.com/GP107_GeForce_GTX_1050_Ti"
-        - pciVendorSelector: "10DE:0FB9"
-          resourceName: "nvidia.com/GP107GL_High_Definition_Audio_Controller"
 
   customizeComponents: {}
   imagePullPolicy: IfNotPresent
