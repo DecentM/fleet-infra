@@ -70,6 +70,8 @@ spec:
           volumeMounts:
             - mountPath: /photoprism/originals
               name: originals
+            - mountPath: /photoprism/originals-new
+              name: originals-new
             - mountPath: /photoprism/storage
               name: storage
             - mountPath: /photoprism/import
@@ -87,6 +89,10 @@ spec:
         - name: import
           hostPath:
             path: /mnt/spike/mass-storage/photoprism-import
+            type: Directory
+        - name: originals-new
+          hostPath:
+            path: /mnt/spike/storage/k8s/namespaces/app-photoprism/originals
             type: Directory
 ---
 apiVersion: v1
