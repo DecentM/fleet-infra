@@ -34,10 +34,6 @@ spec:
           interfaces:
             - name: default
               masquerade: {}
-          hostDevices:
-            - deviceName: kubevirt.io/conbee-ii
-              name: conbee-ii
-
         resources:
           requests:
             memory: 2Gi
