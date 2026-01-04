@@ -36,7 +36,7 @@ spec:
             - "-s"
             - "downloads;/mnt/downloads;yes;no;no;$(SAMBA_USERNAME)"
             - "-s"
-            - "photoprism-import;/mnt/photoprism-import;yes;no;no;$(SAMBA_USERNAME)"
+            - "photoprism-originals;/mnt/photoprism-originals;yes;yes;yes"
             - "-p"
             - "-r"
           envFrom:
@@ -61,8 +61,8 @@ spec:
               name: music
             - mountPath: /mnt/downloads
               name: downloads
-            - mountPath: /mnt/photoprism-import
-              name: photoprism-import
+            - mountPath: /mnt/photoprism-originals
+              name: photoprism-originals
       volumes:
         - name: movies
           hostPath:
@@ -84,7 +84,7 @@ spec:
           hostPath:
             path: /mnt/spike/storage/Downloads
             type: Directory
-        - name: photoprism-import
+        - name: photoprism-originals
           hostPath:
-            path: /mnt/spike/mass-storage/photoprism-import
+            path: /mnt/spike/storage/k8s/namespaces/app-photoprism/originals
             type: Directory
