@@ -68,16 +68,16 @@ spec:
             - containerPort: 2342
               name: http
           volumeMounts:
+            - mountPath: /photoprism/originals-old
+              name: originals-old
             - mountPath: /photoprism/originals
               name: originals
-            - mountPath: /photoprism/originals-new
-              name: originals-new
             - mountPath: /photoprism/storage
               name: storage
             - mountPath: /photoprism/import
               name: import
       volumes:
-        - name: originals
+        - name: originals-old
           persistentVolumeClaim:
             claimName: originals
         - name: storage
@@ -90,7 +90,7 @@ spec:
           hostPath:
             path: /mnt/spike/mass-storage/photoprism-import
             type: Directory
-        - name: originals-new
+        - name: originals
           hostPath:
             path: /mnt/spike/storage/k8s/namespaces/app-photoprism/originals
             type: Directory
