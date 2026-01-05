@@ -27,13 +27,13 @@ spec:
           imagePullPolicy: IfNotPresent
           readinessProbe:
             tcpSocket:
-              port: 6969
+              port: 8191
             initialDelaySeconds: 60
             periodSeconds: 5
             failureThreshold: 20
           livenessProbe:
             tcpSocket:
-              port: 6969
+              port: 8191
             initialDelaySeconds: 60
             periodSeconds: 5
             failureThreshold: 20
@@ -41,4 +41,4 @@ spec:
             - name: LOG_LEVEL
               value: info
           ports:
-            - containerPort: 6969
+            - containerPort: 8191
