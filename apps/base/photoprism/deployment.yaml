@@ -23,6 +23,18 @@ spec:
         - name: mariadb
           image: mariadb:11-ubi
           imagePullPolicy: IfNotPresent
+          readinessProbe:
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
           envFrom:
             - configMapRef:
                 name: mariadb-config
@@ -41,6 +53,18 @@ spec:
 
         - name: photoprism
           image: photoprism/photoprism:250707-ce
+          readinessProbe:
+            tcpSocket:
+              port: 2342
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: 2342
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
           imagePullPolicy: IfNotPresent
           env:
             - name: PHOTOPRISM_ORIGINALS_PATH
@@ -83,7 +107,7 @@ spec:
             claimName: mariadb
         - name: import
           hostPath:
-            path: /mnt/spike/mass-storage/photoprism-import
+            path: /mnt/spike/storage/k8s/namespaces/app-photoprism/import
             type: Directory
         - name: originals
           hostPath:
