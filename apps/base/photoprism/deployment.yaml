@@ -68,8 +68,6 @@ spec:
             - containerPort: 2342
               name: http
           volumeMounts:
-            - mountPath: /photoprism/originals-old
-              name: originals-old
             - mountPath: /photoprism/originals
               name: originals
             - mountPath: /photoprism/storage
@@ -77,9 +75,6 @@ spec:
             - mountPath: /photoprism/import
               name: import
       volumes:
-        - name: originals-old
-          persistentVolumeClaim:
-            claimName: originals
         - name: storage
           persistentVolumeClaim:
             claimName: storage
