@@ -21,6 +21,18 @@ spec:
         - name: radarr
           image: lscr.io/linuxserver/radarr:5.28.0.10274-ls286
           imagePullPolicy: IfNotPresent
+          readinessProbe:
+            tcpSocket:
+              port: 7878
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: 7878
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
           envFrom:
             - configMapRef:
                 name: radarr-config

@@ -26,6 +26,18 @@ spec:
         - name: qbittorrent
           image: lscr.io/linuxserver/qbittorrent:5.1.2-r4-ls426
           imagePullPolicy: IfNotPresent
+          readinessProbe:
+            tcpSocket:
+              port: 30688
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: 30688
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
           ports:
             - containerPort: 30688
           env:
@@ -61,6 +73,15 @@ spec:
         - name: config
           persistentVolumeClaim:
             claimName: qbittorrent-config
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: home.arpa/zfs-pool
+                    operator: In
+                    values:
+                      - "true"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

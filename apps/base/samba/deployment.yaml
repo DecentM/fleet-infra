@@ -22,6 +22,18 @@ spec:
         - name: samba
           image: dperson/samba@sha256:66088b78a19810dd1457a8f39340e95e663c728083efa5fe7dc0d40b2478e869
           imagePullPolicy: IfNotPresent
+          readinessProbe:
+            tcpSocket:
+              port: 445
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: 445
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
           args:
             - "-u"
             - "$(SAMBA_USERNAME);$(SAMBA_PASSWORD);1000"
@@ -88,3 +100,12 @@ spec:
           hostPath:
             path: /mnt/spike/storage/k8s/namespaces/app-photoprism/originals
             type: Directory
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: home.arpa/zfs-pool
+                    operator: In
+                    values:
+                      - "true"

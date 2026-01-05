@@ -23,6 +23,18 @@ spec:
         - name: paperless-ngx
           image: ghcr.io/paperless-ngx/paperless-ngx:2.19.6
           imagePullPolicy: IfNotPresent
+          readinessProbe:
+            tcpSocket:
+              port: 8000
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: 8000
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000

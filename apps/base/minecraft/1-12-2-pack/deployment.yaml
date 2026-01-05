@@ -20,6 +20,18 @@ spec:
       containers:
         - name: server
           image: ghcr.io/decentm/minecraft-servers:1-12-2-pack
+          readinessProbe:
+            tcpSocket:
+              port: 25565
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: 25565
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
           securityContext:
             capabilities:
               add:

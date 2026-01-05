@@ -25,6 +25,18 @@ spec:
         - name: flaresolverr
           image: ghcr.io/flaresolverr/flaresolverr:v3.4.5
           imagePullPolicy: IfNotPresent
+          readinessProbe:
+            tcpSocket:
+              port: 6969
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: 6969
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
           env:
             - name: LOG_LEVEL
               value: info

@@ -21,6 +21,18 @@ spec:
         - name: joplin
           image: joplin/server:3.4.3
           imagePullPolicy: IfNotPresent
+          readinessProbe:
+            tcpSocket:
+              port: 22300
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: 22300
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
           env:
             - name: APP_BASE_URL
               valueFrom:

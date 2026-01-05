@@ -21,6 +21,18 @@ spec:
         - name: jellyfin
           image: lscr.io/linuxserver/jellyfin:10.11.2ubu2404-ls7
           imagePullPolicy: IfNotPresent
+          readinessProbe:
+            tcpSocket:
+              port: 8096
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: 8096
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
           envFrom:
             - configMapRef:
                 name: jellyfin-config

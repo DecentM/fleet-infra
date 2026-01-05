@@ -21,6 +21,18 @@ spec:
         - name: gotenberg
           image: gotenberg/gotenberg:8.21
           imagePullPolicy: IfNotPresent
+          readinessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
           ports:
             - containerPort: 3000
           command:
