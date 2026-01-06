@@ -6,12 +6,14 @@ metadata:
   labels:
     app: paperless-ngx
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: paperless-ngx
   strategy:
-    type: Recreate
+    type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
   template:
     metadata:
       labels:

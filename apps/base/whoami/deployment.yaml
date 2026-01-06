@@ -5,13 +5,15 @@ metadata:
   namespace: app-whoami
 
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: traefiklabs
       task: whoami
   strategy:
-    type: Recreate
+    type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
   template:
     metadata:
       labels:
@@ -20,12 +22,12 @@ spec:
     spec:
       containers:
         - name: whoami
-          image: traefik/whoami:latest
-          imagePullPolicy: Always
+          image: traefik/whoami@sha256:4f90b33ddca9c4d4f06527070d6e503b16d71016edea036842be2a84e60c91cb
+          imagePullPolicy: IfNotPresent
           readinessProbe:
             tcpSocket:
               port: 80
-            initialDelaySeconds: 60
+            initialDelaySeconds: 2
             periodSeconds: 5
             failureThreshold: 20
           livenessProbe:

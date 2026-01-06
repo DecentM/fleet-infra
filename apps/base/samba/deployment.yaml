@@ -4,10 +4,14 @@ metadata:
   name: samba
   namespace: app-samba
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: samba
+  strategy:
+    type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
   securityContext:
     runAsUser: 1000
     runAsGroup: 1000
