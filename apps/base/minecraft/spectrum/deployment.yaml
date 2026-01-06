@@ -2,22 +2,22 @@ apiVersion: apps/v1
 kind: StatefulSet
 
 metadata:
-  name: spectrum
+  name: spectrum-survival
   namespace: app-minecraft
 
 spec:
   selector:
     matchLabels:
-      app: spectrum
+      app: spectrum-survival
   strategy:
     type: RollingUpdate
   rollingUpdate:
-    maxUnavailable: 1
+    maxUnavailable: 0
     maxSurge: 1
   template:
     metadata:
       labels:
-        app: spectrum
+        app: spectrum-survival
     spec:
       terminationGracePeriodSeconds: 130
       containers:
@@ -108,6 +108,39 @@ spec:
               mountPath: /data/logs
             - name: survival-world
               mountPath: /data/world
+      volumes:
+        - name: survival-logs
+          persistentVolumeClaim:
+            claimName: spectrum-logs
+        - name: survival-server
+          persistentVolumeClaim:
+            claimName: survival-server
+        - name: survival-world
+          hostPath:
+            path: /mnt/spike/storage/k8s/namespaces/app-spectrum/world
+            type: Directory
+---
+apiVersion: apps/v1
+kind: StatefulSet
+
+metadata:
+  name: spectrum-proxy
+  namespace: app-minecraft
+
+spec:
+  selector:
+    matchLabels:
+      app: spectrum-proxy
+  strategy:
+    type: Recreate
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: spectrum-proxy
+    spec:
+      terminationGracePeriodSeconds: 130
+      containers:
         - name: proxy
           image: ghcr.io/decentm/minecraft-servers:proxy-9b404b9a08840f5f4bfeb7625793153051241754
           securityContext:
@@ -212,6 +245,40 @@ spec:
               mountPath: /forwarding-secret
               subPath: forwarding-secret
               readOnly: true
+      volumes:
+        - name: proxy-logs
+          persistentVolumeClaim:
+            claimName: proxy-logs
+        - name: forwarding-secret
+          secret:
+            secretName: secrets
+            items:
+              - key: PROXY_SECRET
+                path: forwarding-secret
+---
+apiVersion: apps/v1
+kind: StatefulSet
+
+metadata:
+  name: spectrum-fallback
+  namespace: app-minecraft
+
+spec:
+  selector:
+    matchLabels:
+      app: spectrum-fallback
+  strategy:
+    type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: spectrum-fallback
+    spec:
+      terminationGracePeriodSeconds: 130
+      containers:
         - name: fallback
           image: ghcr.io/decentm/minecraft-servers:fallback-5f6064b8c75a08c8778ecc74c722cfff9bc99106
           securityContext:
@@ -280,93 +347,9 @@ spec:
             - name: fallback-logs
               mountPath: /data/logs
       volumes:
-        - name: survival-logs
-          persistentVolumeClaim:
-            claimName: spectrum-logs
         - name: fallback-logs
           persistentVolumeClaim:
             claimName: fallback-logs
-        - name: proxy-logs
-          persistentVolumeClaim:
-            claimName: proxy-logs
-        - name: survival-server
-          persistentVolumeClaim:
-            claimName: survival-server
         - name: fallback-server
           persistentVolumeClaim:
             claimName: fallback-server
-        - name: survival-world
-          hostPath:
-            path: /mnt/spike/storage/k8s/namespaces/app-spectrum/world
-            type: Directory
-        - name: forwarding-secret
-          secret:
-            secretName: secrets
-            items:
-              - key: PROXY_SECRET
-                path: forwarding-secret
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: proxy-logs
-  namespace: app-minecraft
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 2Gi
-  storageClassName: longhorn-local
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: spectrum-logs
-  namespace: app-minecraft
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 2Gi
-  storageClassName: longhorn-local
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: survival-server
-  namespace: app-minecraft
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 2Gi
-  storageClassName: longhorn-local
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: fallback-logs
-  namespace: app-minecraft
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 2Gi
-  storageClassName: longhorn-local
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: fallback-server
-  namespace: app-minecraft
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 2Gi
-  storageClassName: longhorn-local

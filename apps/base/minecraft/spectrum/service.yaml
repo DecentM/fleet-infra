@@ -6,7 +6,7 @@ metadata:
 
 spec:
   selector:
-    app: spectrum
+    app: spectrum-survival
   ports:
     - name: rp
       port: 25578
@@ -20,7 +20,7 @@ metadata:
 spec:
   type: NodePort
   selector:
-    app: spectrum
+    app: spectrum-proxy
   ports:
     - name: mc
       port: 25565
@@ -34,7 +34,7 @@ metadata:
 
 spec:
   selector:
-    app: spectrum
+    app: spectrum-proxy
   ports:
     - name: mc
       port: 25565
@@ -47,10 +47,36 @@ metadata:
 
 spec:
   selector:
-    app: spectrum
+    app: spectrum-survival
   ports:
     - name: rcon
       port: 25575
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spectrum-internal-fallback
+  namespace: app-minecraft
+
+spec:
+  selector:
+    app: spectrum-fallback
+  ports:
+    - name: mc
+      port: 25567
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spectrum-internal-survival
+  namespace: app-minecraft
+
+spec:
+  selector:
+    app: spectrum-survival
+  ports:
+    - name: mc
+      port: 25566
 ---
 # https://github.com/adyanth/cloudflare-operator/blob/main/docs/configuration.md
 apiVersion: networking.cfargotunnel.com/v1alpha1
