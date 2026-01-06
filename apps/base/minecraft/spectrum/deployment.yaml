@@ -10,10 +10,8 @@ spec:
     matchLabels:
       app: spectrum-survival
   strategy:
-    type: RollingUpdate
-  rollingUpdate:
-    maxUnavailable: 0
-    maxSurge: 1
+    type: Recreate
+  replicas: 1
   template:
     metadata:
       labels:
@@ -132,8 +130,10 @@ spec:
     matchLabels:
       app: spectrum-proxy
   strategy:
-    type: Recreate
-  replicas: 1
+    type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
   template:
     metadata:
       labels:
