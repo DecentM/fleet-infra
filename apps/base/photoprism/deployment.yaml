@@ -8,10 +8,8 @@ spec:
     matchLabels:
       app: photoprism
   strategy:
-    type: RollingUpdate
-  rollingUpdate:
-    maxUnavailable: 0
-    maxSurge: 1
+    type: Recreate
+  replicas: 1
   template:
     metadata:
       labels:
