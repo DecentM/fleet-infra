@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: joplin
-          image: joplin/server:3.4.3
+          image: joplin/server:3.5.2
           imagePullPolicy: IfNotPresent
           readinessProbe:
             tcpSocket:
