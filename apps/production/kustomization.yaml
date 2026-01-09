@@ -8,7 +8,6 @@ resources:
   - ../base/photoprism
   - ../base/whoami
   - ../base/samba
-  - ../base/o11y
   - ../base/minecraft
   - ../base/home-assistant
   - ../base/invidious
