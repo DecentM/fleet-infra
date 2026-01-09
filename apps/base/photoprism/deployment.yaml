@@ -54,7 +54,7 @@ spec:
               name: mariadb
 
         - name: photoprism
-          image: photoprism/photoprism:250707-ce
+          image: photoprism/photoprism:251130-ce
           readinessProbe:
             tcpSocket:
               port: 2342
