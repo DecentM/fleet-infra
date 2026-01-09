@@ -8,49 +8,29 @@ spec:
     matchLabels:
       app: photoprism
   strategy:
-    type: Recreate
-  replicas: 1
+    type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
   template:
     metadata:
       labels:
         app: photoprism
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: home.arpa/zfs-pool
+                    operator: In
+                    values:
+                      - "true"
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
       containers:
-        - name: mariadb
-          image: mariadb:11-ubi
-          imagePullPolicy: IfNotPresent
-          readinessProbe:
-            tcpSocket:
-              port: 3306
-            initialDelaySeconds: 60
-            periodSeconds: 5
-            failureThreshold: 20
-          livenessProbe:
-            tcpSocket:
-              port: 3306
-            initialDelaySeconds: 60
-            periodSeconds: 5
-            failureThreshold: 20
-          envFrom:
-            - configMapRef:
-                name: mariadb-config
-          env:
-            - name: MYSQL_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: photoprism-db-secrets
-                  key: PHOTOPRISM_DATABASE_PASSWORD
-
-          ports:
-            - containerPort: 3306
-          volumeMounts:
-            - mountPath: /var/lib/mysql
-              name: mariadb
-
         - name: photoprism
           image: photoprism/photoprism:251130-ce
           readinessProbe:
@@ -138,17 +118,4 @@ spec:
   resources:
     requests:
       storage: 100Gi
-  storageClassName: longhorn-local
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: mariadb
-  namespace: app-photoprism
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 2Gi
   storageClassName: longhorn-local

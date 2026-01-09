@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb
+  namespace: app-photoprism
+spec:
+  selector:
+    matchLabels:
+      app: mariadb
+  strategy:
+    type: Recreate
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: mariadb
+          image: mariadb:11-ubi
+          imagePullPolicy: IfNotPresent
+          readinessProbe:
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          envFrom:
+            - configMapRef:
+                name: mariadb-config
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: photoprism-db-secrets
+                  key: PHOTOPRISM_DATABASE_PASSWORD
+
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mariadb
+
+      volumes:
+        - name: mariadb
+          persistentVolumeClaim:
+            claimName: mariadb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb
+  namespace: app-photoprism
+
+spec:
+  ports:
+    - name: mysql
+      port: 3306
+  selector:
+    app: mariadb
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mariadb
+  namespace: app-photoprism
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: longhorn-local

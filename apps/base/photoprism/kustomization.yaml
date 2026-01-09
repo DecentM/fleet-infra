@@ -4,7 +4,8 @@ resources:
   - namespace.yaml
   - sealed-db-secrets.yaml
   - sealed-admin-secrets.yaml
-  - deployment.yaml
+  - mariadb.yaml
+  - photoprism.yaml
   - ingressroute.yaml
 
 configMapGenerator:
