@@ -1,0 +1,187 @@
+apiVersion: apps/v1
+kind: StatefulSet
+
+metadata:
+  name: spectrum-proxy
+  namespace: app-minecraft
+
+spec:
+  selector:
+    matchLabels:
+      app: spectrum-proxy
+  strategy:
+    type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: spectrum-proxy
+    spec:
+      terminationGracePeriodSeconds: 130
+      containers:
+        - name: proxy
+          image: ghcr.io/decentm/minecraft-servers:proxy-9b404b9a08840f5f4bfeb7625793153051241754
+          securityContext:
+            capabilities:
+              add:
+                - CAP_NET_RAW
+          imagePullPolicy: IfNotPresent
+          readinessProbe:
+            tcpSocket:
+              port: 25565
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: 25565
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          env:
+            - name: RCON_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: RCON_PASSWORD
+
+            - name: CFG_CARBON_DATABASE_JDBC_URL
+              valueFrom:
+                secretKeyRef:
+                  name: carbon-db-app
+                  key: jdbc-uri
+            - name: CFG_CARBON_DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: carbon-db-app
+                  key: username
+            - name: CFG_CARBON_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: carbon-db-app
+                  key: password
+
+            - name: CFG_LUCKPERMS_DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: host
+            - name: CFG_LUCKPERMS_DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: port
+            - name: CFG_LUCKPERMS_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: username
+            - name: CFG_LUCKPERMS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: password
+            - name: CFG_LUCKPERMS_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: dbname
+
+            - name: CFG_BANS_DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: libertybans-db-app
+                  key: host
+            - name: CFG_BANS_DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: libertybans-db-app
+                  key: port
+            - name: CFG_BANS_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: libertybans-db-app
+                  key: username
+            - name: CFG_BANS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: libertybans-db-app
+                  key: password
+            - name: CFG_BANS_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: libertybans-db-app
+                  key: dbname
+          envFrom:
+            - configMapRef:
+                name: proxy-config
+          ports:
+            - containerPort: 25565
+              protocol: TCP
+          volumeMounts:
+            - name: forwarding-secret
+              mountPath: /forwarding-secret
+              subPath: forwarding-secret
+              readOnly: true
+      volumes:
+        - name: proxy-logs
+          persistentVolumeClaim:
+            claimName: proxy-logs
+        - name: forwarding-secret
+          secret:
+            secretName: secrets
+            items:
+              - key: PROXY_SECRET
+                path: forwarding-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spectrum-mc
+  namespace: app-minecraft
+
+spec:
+  type: NodePort
+  selector:
+    app: spectrum-proxy
+  ports:
+    - name: mc
+      port: 25565
+      nodePort: 30000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spectrum-mc-tun
+  namespace: app-minecraft
+
+spec:
+  selector:
+    app: spectrum-proxy
+  ports:
+    - name: mc
+      port: 25565
+---
+apiVersion: networking.cfargotunnel.com/v1alpha1
+kind: TunnelBinding
+metadata:
+  name: spectrum-mc
+  namespace: app-minecraft
+
+tunnelRef:
+  kind: ClusterTunnel
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: proxy-logs
+  namespace: app-minecraft
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: longhorn-local

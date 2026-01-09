@@ -1,0 +1,194 @@
+apiVersion: apps/v1
+kind: StatefulSet
+
+metadata:
+  name: spectrum-survival
+  namespace: app-minecraft
+
+spec:
+  selector:
+    matchLabels:
+      app: spectrum-survival
+  strategy:
+    type: Recreate
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: spectrum-survival
+    spec:
+      terminationGracePeriodSeconds: 130
+      containers:
+        - name: survival
+          image: ghcr.io/decentm/minecraft-servers:spectrum-35e37a89f01fd6f5232d8263ebcb02c55f83de62
+          securityContext:
+            capabilities:
+              add:
+                - CAP_NET_RAW
+          imagePullPolicy: IfNotPresent
+          readinessProbe:
+            exec:
+              command: ["/usr/local/bin/mc-health"]
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            exec:
+              command: ["/usr/local/bin/mc-health"]
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "/data/lifecycle/pre-stop.sh"]
+          env:
+            - name: RCON_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: RCON_PASSWORD
+
+            - name: CFG_POD_UUID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+
+            - name: CFG_LUCKPERMS_DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: host
+            - name: CFG_LUCKPERMS_DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: port
+            - name: CFG_LUCKPERMS_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: username
+            - name: CFG_LUCKPERMS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: password
+            - name: CFG_LUCKPERMS_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: dbname
+
+            - name: CFG_PROXY_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: PROXY_SECRET
+
+            - name: SEED
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: SEED
+          envFrom:
+            - configMapRef:
+                name: spectrum-config
+          ports:
+            - containerPort: 25566
+            - containerPort: 25575
+            - containerPort: 25567
+            - containerPort: 25578
+          volumeMounts:
+            - name: survival-server
+              mountPath: /server
+            - name: survival-logs
+              mountPath: /data/logs
+            - name: survival-world
+              mountPath: /data/world
+      volumes:
+        - name: survival-logs
+          persistentVolumeClaim:
+            claimName: spectrum-logs
+        - name: survival-server
+          persistentVolumeClaim:
+            claimName: survival-server
+        - name: survival-world
+          hostPath:
+            path: /mnt/spike/storage/k8s/namespaces/app-spectrum/world
+            type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spectrum-rp
+  namespace: app-minecraft
+
+spec:
+  selector:
+    app: spectrum-survival
+  ports:
+    - name: rp
+      port: 25578
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spectrum-rcon
+  namespace: app-minecraft
+
+spec:
+  selector:
+    app: spectrum-survival
+  ports:
+    - name: rcon
+      port: 25575
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spectrum-internal-survival
+  namespace: app-minecraft
+
+spec:
+  selector:
+    app: spectrum-survival
+  ports:
+    - name: mc
+      port: 25566
+---
+# https://github.com/adyanth/cloudflare-operator/blob/main/docs/configuration.md
+apiVersion: networking.cfargotunnel.com/v1alpha1
+kind: TunnelBinding
+metadata:
+  name: spectrum-rp
+  namespace: app-minecraft
+
+tunnelRef:
+  kind: ClusterTunnel
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: spectrum-logs
+  namespace: app-minecraft
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: survival-server
+  namespace: app-minecraft
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: longhorn-local

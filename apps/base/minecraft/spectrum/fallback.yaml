@@ -1,0 +1,136 @@
+apiVersion: apps/v1
+kind: StatefulSet
+
+metadata:
+  name: spectrum-fallback
+  namespace: app-minecraft
+
+spec:
+  selector:
+    matchLabels:
+      app: spectrum-fallback
+  strategy:
+    type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: spectrum-fallback
+    spec:
+      terminationGracePeriodSeconds: 130
+      containers:
+        - name: fallback
+          image: ghcr.io/decentm/minecraft-servers:fallback-5f6064b8c75a08c8778ecc74c722cfff9bc99106
+          securityContext:
+            capabilities:
+              add:
+                - CAP_NET_RAW
+          imagePullPolicy: IfNotPresent
+          readinessProbe:
+            exec:
+              command: ["/usr/local/bin/mc-health"]
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            exec:
+              command: ["/usr/local/bin/mc-health"]
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          env:
+            - name: RCON_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: RCON_PASSWORD
+
+            - name: CFG_LUCKPERMS_DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: host
+            - name: CFG_LUCKPERMS_DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: port
+            - name: CFG_LUCKPERMS_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: username
+            - name: CFG_LUCKPERMS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: password
+            - name: CFG_LUCKPERMS_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: luckperms-db-app
+                  key: dbname
+
+            - name: CFG_PROXY_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: PROXY_SECRET
+          envFrom:
+            - configMapRef:
+                name: fallback-config
+          ports:
+            - containerPort: 25567
+          volumeMounts:
+            - name: fallback-server
+              mountPath: /server
+            - name: fallback-logs
+              mountPath: /data/logs
+      volumes:
+        - name: fallback-logs
+          persistentVolumeClaim:
+            claimName: fallback-logs
+        - name: fallback-server
+          persistentVolumeClaim:
+            claimName: fallback-server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spectrum-internal-fallback
+  namespace: app-minecraft
+
+spec:
+  selector:
+    app: spectrum-fallback
+  ports:
+    - name: mc
+      port: 25567
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fallback-logs
+  namespace: app-minecraft
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fallback-server
+  namespace: app-minecraft
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: longhorn-local
