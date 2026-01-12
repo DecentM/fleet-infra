@@ -1,17 +1,15 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ../base/jellyfin
-  - ../base/servarr
-  - ../base/joplin
-  - ../base/paperless-ngx
-  - ../base/photoprism
-  - ../base/whoami
-  - ../base/samba
-  - ../base/minecraft
   - ../base/home-assistant
   - ../base/invidious
-  - ../base/concourse
+  - ../base/jellyfin
+  - ../base/joplin
+  - ../base/minecraft
+  - ../base/paperless-ngx
+  - ../base/photoprism
+  - ../base/samba
+  - ../base/servarr
 patches:
   - path: patches/photoprism.yaml
   - path: patches/spectrum-mc-rp-tunnel.yaml
