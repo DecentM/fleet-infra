@@ -3,6 +3,10 @@ kind: InitConfiguration
 nodeRegistration:
   kubeletExtraArgs:
     volume-plugin-dir: "/var/usr/libexec/kubernetes/kubelet-plugins/volume/exec/"
+    node-ip: # "tailscale ip"
+localAPIEndpoint:
+  advertiseAddress: # tailscale ip
+  bindPort: 6443
 ---
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: ClusterConfiguration
@@ -11,3 +15,8 @@ controllerManager:
     flex-volume-plugin-dir: "/var/usr/libexec/kubernetes/kubelet-plugins/volume/exec/"
 networking:
   podSubnet: "10.244.0.0/16"
+apiServer:
+  certSANs:
+    - # "tailscale ip"
+    - # tailscale host
+controlPlaneEndpoint: # "control plane ip:6443"
