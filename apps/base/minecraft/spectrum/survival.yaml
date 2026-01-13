@@ -29,7 +29,7 @@ spec:
           readinessProbe:
             exec:
               command: ["/usr/local/bin/mc-health"]
-            initialDelaySeconds: 60
+            initialDelaySeconds: 2
             periodSeconds: 5
             failureThreshold: 20
           livenessProbe:

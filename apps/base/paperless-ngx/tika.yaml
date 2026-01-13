@@ -24,7 +24,7 @@ spec:
           readinessProbe:
             tcpSocket:
               port: 9998
-            initialDelaySeconds: 60
+            initialDelaySeconds: 2
             periodSeconds: 5
             failureThreshold: 20
           livenessProbe:

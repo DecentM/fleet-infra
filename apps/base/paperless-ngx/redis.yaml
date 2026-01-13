@@ -18,6 +18,18 @@ spec:
       containers:
         - name: redis
           image: docker.io/library/redis:7
+          readinessProbe:
+            tcpSocket:
+              port: 6379
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: 6379
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
           volumeMounts:
             - mountPath: /data
               name: redisdata
