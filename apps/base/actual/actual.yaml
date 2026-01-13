@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: actual
+  namespace: app-actual
+
+spec:
+  selector:
+    matchLabels:
+      app: actual
+  strategy:
+    type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: actual
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: actual
+          image: actualbudget/actual-server:sha-843e957-alpine
+          imagePullPolicy: IfNotPresent
+          readinessProbe:
+            exec:
+              command: ["/usr/bin/node", "/app/src/scripts/health-check.js"]
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            exec:
+              command: ["/usr/bin/node", "/app/src/scripts/health-check.js"]
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          envFrom:
+            - configMapRef:
+                name: actual-config
+          ports:
+            - containerPort: 5006
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          hostPath:
+            path: /mnt/spike/storage/k8s/namespaces/app-actual/data
+            type: Directory
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: home.arpa/zfs-pool
+                    operator: In
+                    values:
+                      - "true"
