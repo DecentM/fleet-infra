@@ -10,7 +10,6 @@ resources:
   - sealed-secrets
   - tailscale
   - nvidia
-  - image-updates
   - cert-manager
   - kubevirt
   - cdi
