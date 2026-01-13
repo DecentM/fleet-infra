@@ -1,5 +1,5 @@
 # https://github.com/adyanth/cloudflare-operator/blob/main/docs/configuration.md
-apiVersion: networking.cfargotunnel.com/v1alpha2
+apiVersion: networking.cfargotunnel.com/v1alpha1
 kind: TunnelBinding
 
 metadata:
@@ -14,7 +14,7 @@ subjects:
 tunnelRef:
   name: cluster-tunnel-borooka
 ---
-apiVersion: networking.cfargotunnel.com/v1alpha2
+apiVersion: networking.cfargotunnel.com/v1alpha1
 kind: TunnelBinding
 
 metadata:
