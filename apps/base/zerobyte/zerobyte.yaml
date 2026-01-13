@@ -11,7 +11,7 @@ spec:
       app: zerobyte
   strategy:
     type: Recreate
-  replicas: 1
+  replicas: 0
   template:
     metadata:
       labels:
