@@ -7,6 +7,7 @@ metadata:
 spec:
   certificateRotateStrategy: {}
   configuration:
+    imagePullPolicy: IfNotPresent
     vmRolloutStrategy: "LiveUpdate"
     vmStateStorageClass: "longhorn-pool"
     developerConfiguration:
