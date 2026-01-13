@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: zerobyte
+  namespace: app-zerobyte
+
+spec:
+  selector:
+    matchLabels:
+      app: zerobyte
+  strategy:
+    type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: zerobyte
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: zerobyte
+          image: ghcr.io/nicotsx/zerobyte:v0.22
+          imagePullPolicy: IfNotPresent
+          readinessProbe:
+            tcpSocket:
+              port: 4096
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: 4096
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          envFrom:
+            - configMapRef:
+                name: zerobyte-config
+          ports:
+            - containerPort: 4096
+          volumeMounts:
+            - name: k8s
+              mountPath: /k8s
+              readOnly: true
+            - name: data
+              mountPath: /var/lib/zerobyte
+            - name: localtime
+              mountPath: /etc/localtime
+              readOnly: true
+      volumes:
+        - name: k8s
+          hostPath:
+            path: /mnt/spike/storage/k8s
+            type: Directory
+        - name: localtime
+          hostPath:
+            path: /etc/localtime
+            type: File
+        - name: data
+          persistentVolumeClaim:
+            claimName: zerobyte-data
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: home.arpa/zfs-pool
+                    operator: In
+                    values:
+                      - "true"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zerobyte-data
+  namespace: app-zerobyte
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: longhorn-local
