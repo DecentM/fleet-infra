@@ -13,10 +13,14 @@ metadata:
     app: traefik
 
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: traefik
+  strategy:
+    type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
   template:
     metadata:
       labels:
@@ -25,8 +29,20 @@ spec:
       serviceAccountName: traefik-ingress-controller
       containers:
         - name: traefik
-          image: traefik:v3.2
+          image: traefik:v3.6.6
           imagePullPolicy: IfNotPresent
+          readinessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
           args:
             - "--log.level=DEBUG"
             - "--api"
@@ -39,14 +55,11 @@ spec:
             - "--entryPoints.samba.address=:445"
             - "--providers.kubernetescrd"
             - "--providers.kubernetescrd.allowCrossNamespace=true"
-            - "--metrics.prometheus=true"
           ports:
             - name: web
               containerPort: 80
             - name: websecure
               containerPort: 443
-            - name: minecraft
-              containerPort: 25565
             - name: samba
               containerPort: 445
 ---
@@ -71,10 +84,6 @@ spec:
       port: 443
       name: websecure
       targetPort: 443
-    - protocol: TCP
-      port: 25565
-      name: minecraft
-      targetPort: 25565
     - protocol: TCP
       port: 445
       name: samba
