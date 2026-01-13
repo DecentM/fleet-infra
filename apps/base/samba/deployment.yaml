@@ -39,25 +39,20 @@ spec:
             periodSeconds: 5
             failureThreshold: 20
           args:
-            - "-u"
-            - "$(SAMBA_USERNAME);$(SAMBA_PASSWORD);1000"
             - "-s"
-            - "movies;/mnt/movies;yes;no;no;$(SAMBA_USERNAME)"
+            - "movies;/mnt/movies;yes;yes;yes"
             - "-s"
-            - "series;/mnt/series;yes;no;no;$(SAMBA_USERNAME)"
+            - "series;/mnt/series;yes;yes;yes"
             - "-s"
-            - "youtube;/mnt/youtube;yes;no;no;$(SAMBA_USERNAME)"
+            - "youtube;/mnt/youtube;yes;yes;yes"
             - "-s"
-            - "music;/mnt/music;yes;no;no;$(SAMBA_USERNAME)"
+            - "music;/mnt/music;yes;yes;yes"
             - "-s"
-            - "downloads;/mnt/downloads;yes;no;no;$(SAMBA_USERNAME)"
+            - "downloads;/mnt/downloads;yes;no;yes"
             - "-s"
-            - "photoprism-originals;/mnt/photoprism-originals;yes;yes;yes"
+            - "photos;/mnt/photoprism-originals;yes;yes;yes"
             - "-p"
             - "-r"
-          envFrom:
-            - secretRef:
-                name: samba-secrets
           env:
             - name: USERID
               value: "1000"

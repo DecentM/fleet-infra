@@ -98,20 +98,6 @@ create_secret \
     "infrastructure/production/layer1/sealed-s3-secret.yaml"
 
 create_secret \
-    app-concourse \
-    local-users \
-    generic \
-    "value main-team-members" \
-    "apps/base/concourse/secrets/sealed-local-users.yaml"
-
-create_secret \
-    concourse-main \
-    npm \
-    generic \
-    "automation-token" \
-    "apps/base/concourse/secrets/sealed-npm.yaml"
-
-create_secret \
     app-photoprism \
     photoprism-admin-secrets \
     generic \
@@ -126,39 +112,11 @@ create_secret \
     "apps/base/photoprism/sealed-db-secrets.yaml"
 
 create_secret \
-    app-etu-website-strapi \
-    strapi-secrets \
-    generic \
-    "ADMIN_JWT_SECRET JWT_SECRET API_TOKEN_SALT TRANSFER_TOKEN_SALT APP_KEYS" \
-    "apps/base/etu-website-strapi/sealed-strapi-secrets.yaml"
-
-create_secret \
     app-invidious \
     invidious-secrets \
     generic \
     "hmac_key db_user db_password po_token visitor_data" \
     "apps/base/invidious/sealed-invidious-secrets.yaml"
-
-create_secret \
-    app-samba \
-    samba-secrets \
-    generic \
-    "SAMBA_USERNAME SAMBA_PASSWORD" \
-    "apps/base/samba/sealed-samba-secrets.yaml"
-
-create_secret \
-    app-o11y \
-    grafana-secrets \
-    generic \
-    "admin-user admin-password" \
-    "apps/base/o11y/sealed-grafana-secrets.yaml"
-
-create_secret \
-    app-o11y \
-    qbittorrent-exporter-secrets \
-    generic \
-    "QBITTORRENT_USERNAME QBITTORRENT_PASSWORD" \
-    "apps/base/o11y/qbittorrent-exporter/sealed-qbittorrent-exporter-secrets.yaml"
 
 create_secret \
     cert-manager-system \
@@ -168,29 +126,8 @@ create_secret \
     "infrastructure/base/layer1/cert-manager/sealed-ca-issuer.yaml"
 
 create_secret \
-    app-nextcloud \
-    nextcloud-secrets \
-    generic \
-    "username password" \
-    "apps/base/nextcloud/sealed-nextcloud-secrets.yaml"
-
-create_secret \
-    app-authentik \
-    authentik-secrets \
-    generic \
-    "db-password secret-key" \
-    "apps/base/authentik/sealed-authentik-secrets.yaml"
-
-create_secret \
     app-minecraft \
     secrets \
     generic \
     "SEED PROXY_SECRET RCON_PASSWORD" \
     "apps/base/minecraft/sealed-secrets.yaml"
-
-create_secret \
-    app-etu-event-planner \
-    secrets \
-    generic \
-    "SECURE_SESSION_KEY DISCORD_CONTROL_GUILD_ID DISCORD_CLIENT_ID DISCORD_CLIENT_SECRET DISCORD_USER_ID_OWNERS DISCORD_ROLE_ID_ADMIN DISCORD_ROLE_ID_EDITOR DISCORD_ROLE_ID_PUBLISHER DISCORD_TOKEN" \
-    "apps/base/etu-event-planner/sealed-secrets.yaml"
