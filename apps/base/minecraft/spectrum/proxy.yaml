@@ -164,7 +164,7 @@ spec:
     - name: mc
       port: 25565
 ---
-apiVersion: networking.cfargotunnel.com/v1alpha1
+apiVersion: networking.cfargotunnel.com/v1alpha2
 kind: TunnelBinding
 metadata:
   name: spectrum-mc
