@@ -17,4 +17,4 @@ configMapGenerator:
   - name: photoprism-config
     namespace: app-photoprism
     envs:
-      - config.env
+      - photoprism-config.env
