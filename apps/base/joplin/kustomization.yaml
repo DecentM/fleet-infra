@@ -4,5 +4,5 @@ resources:
   - namespace.yaml
   - cnpg.yaml
   - sealed-joplin-secrets.yaml
-  - deployment.yaml
+  - joplin.yaml
   - ingressroute.yaml
