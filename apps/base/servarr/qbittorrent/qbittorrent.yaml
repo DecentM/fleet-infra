@@ -28,13 +28,13 @@ spec:
           imagePullPolicy: IfNotPresent
           readinessProbe:
             tcpSocket:
-              port: 30688
+              port: 8081
             initialDelaySeconds: 2
             periodSeconds: 5
             failureThreshold: 20
           livenessProbe:
             tcpSocket:
-              port: 30688
+              port: 8081
             initialDelaySeconds: 60
             periodSeconds: 5
             failureThreshold: 20
