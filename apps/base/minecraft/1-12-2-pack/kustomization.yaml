@@ -1,5 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - config.yaml
-  - deployment.yaml
+  - 1-12-2-pack.yaml
+
+configMapGenerator:
+  - name: 1-12-2-config
+    namespace: app-minecraft
+    envs:
+      - 1-12-2-config.env
