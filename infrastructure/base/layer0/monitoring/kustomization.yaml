@@ -7,3 +7,12 @@ resources:
   - promtail.yaml
   - grafana.yaml
   - ingressroute.yaml
+configMapGenerator:
+  - name: grafana-dashboard-kubernetes-namespace
+    namespace: monitoring-system
+    files:
+      - dashboards/kubernetes-namespace.json
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_dashboard: "1"
