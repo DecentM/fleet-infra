@@ -35,6 +35,7 @@ spec:
             failureThreshold: 20
           ports:
             - containerPort: 3000
+              name: http
           command:
             - "gotenberg"
           args:
@@ -48,7 +49,8 @@ metadata:
   namespace: app-paperless-ngx
 spec:
   ports:
-    - port: 3000
-      targetPort: 3000
+    - name: http
+      port: 3000
+      targetPort: http
   selector:
     app: paperless-ngx-gotenberg

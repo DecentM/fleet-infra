@@ -37,11 +37,11 @@ spec:
     - name: dns
       port: 53
       protocol: UDP
-      targetPort: 53
+      targetPort: dns
     - name: dns-tcp
       port: 53
       protocol: TCP
-      targetPort: 53
+      targetPort: dns-tcp
   selector:
     k8s-app: kube-dns
 ---
@@ -214,6 +214,6 @@ spec:
   ports:
     - name: metrics
       port: 9253
-      targetPort: 9253
+      targetPort: metrics
   selector:
     k8s-app: node-local-dns

@@ -79,7 +79,7 @@ metadata:
   namespace: app-home-assistant
 spec:
   ports:
-    - name: web
+    - name: http
       port: 8123
   selector:
     app: home-assistant

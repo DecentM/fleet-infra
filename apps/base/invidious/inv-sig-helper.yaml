@@ -31,6 +31,9 @@ spec:
             limits:
               memory: "128Mi"
               cpu: "100m"
+          ports:
+            - containerPort: 12999
+              name: http
 ---
 apiVersion: v1
 kind: Service
@@ -40,7 +43,8 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: 12999
-      targetPort: 12999
+    - name: http
+      port: 12999
+      targetPort: http
   selector:
     app: inv-sig-helper

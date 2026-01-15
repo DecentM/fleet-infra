@@ -60,7 +60,7 @@ spec:
               value: "1000"
           ports:
             - containerPort: 445
-              name: samba-tcp-445
+              name: smb
           volumeMounts:
             - mountPath: /mnt/movies
               name: movies
@@ -117,7 +117,8 @@ metadata:
 
 spec:
   ports:
-    - name: tcp
+    - name: smb
       port: 445
+      targetPort: smb
   selector:
     app: samba

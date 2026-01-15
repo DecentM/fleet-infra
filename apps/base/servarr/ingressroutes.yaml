@@ -49,7 +49,7 @@ spec:
       services:
         - name: sonarr
           namespace: app-servarr
-          port: 8989
+          port: http
   tls:
     secretName: traefik-tls
 ---
@@ -69,7 +69,7 @@ spec:
       services:
         - name: prowlarr
           namespace: app-servarr
-          port: 6969
+          port: http
   tls:
     secretName: traefik-tls
 ---
@@ -89,7 +89,7 @@ spec:
       services:
         - name: radarr
           namespace: app-servarr
-          port: 7878
+          port: http
   tls:
     secretName: traefik-tls
 ---
@@ -109,7 +109,7 @@ spec:
       services:
         - name: pinchflat
           namespace: app-servarr
-          port: 8945
+          port: http
   tls:
     secretName: traefik-tls
 ---

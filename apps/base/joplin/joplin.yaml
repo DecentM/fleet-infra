@@ -50,6 +50,7 @@ spec:
                   key: uri
           ports:
             - containerPort: 22300
+              name: http
 ---
 apiVersion: v1
 kind: Service
@@ -59,7 +60,8 @@ metadata:
 
 spec:
   ports:
-    - name: tcp
+    - name: http
       port: 22300
+      targetPort: http
   selector:
     app: joplin

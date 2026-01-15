@@ -40,6 +40,9 @@ spec:
             failureThreshold: 20
           ports:
             - containerPort: 30688
+              name: torrent
+            - containerPort: 8081
+              name: http
           env:
             - name: HOME
               value: /config
@@ -106,5 +109,6 @@ spec:
   ports:
     - name: http
       port: 8081
+      targetPort: http
   selector:
     app: qbittorrent

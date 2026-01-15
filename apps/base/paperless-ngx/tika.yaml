@@ -35,6 +35,7 @@ spec:
             failureThreshold: 20
           ports:
             - containerPort: 9998
+              name: http
 ---
 apiVersion: v1
 kind: Service
@@ -43,7 +44,8 @@ metadata:
   namespace: app-paperless-ngx
 spec:
   ports:
-    - port: 9998
-      targetPort: 9998
+    - name: http
+      port: 9998
+      targetPort: http
   selector:
     app: paperless-ngx-tika

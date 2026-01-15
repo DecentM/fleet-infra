@@ -11,4 +11,4 @@ spec:
     - match: HostSNI(`*`)
       services:
         - name: samba
-          port: 445
+          port: smb

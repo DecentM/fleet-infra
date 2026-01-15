@@ -42,6 +42,7 @@ spec:
                 name: 1-12-2-config
           ports:
             - containerPort: 25565
+              name: minecraft
           volumeMounts:
             - name: world
               mountPath: /data/world

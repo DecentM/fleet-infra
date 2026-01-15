@@ -47,6 +47,7 @@ spec:
 
           ports:
             - containerPort: 3306
+              name: mysql
           volumeMounts:
             - mountPath: /var/lib/mysql
               name: mariadb
@@ -66,6 +67,7 @@ spec:
   ports:
     - name: mysql
       port: 3306
+      targetPort: mysql
   selector:
     app: mariadb
 ---

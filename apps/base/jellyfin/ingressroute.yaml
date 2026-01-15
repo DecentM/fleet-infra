@@ -14,7 +14,7 @@ spec:
       services:
         - name: jellyfin
           namespace: app-jellyfin
-          port: 8096
+          port: http
   tls:
     secretName: traefik-tls
 ---

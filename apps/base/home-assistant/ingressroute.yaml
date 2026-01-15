@@ -13,7 +13,7 @@ spec:
       kind: Rule
       services:
         - name: home-assistant-web
-          port: 8123
+          port: http
   tls:
     secretName: traefik-tls
 ---

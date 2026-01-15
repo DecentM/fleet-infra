@@ -14,7 +14,7 @@ spec:
       services:
         - name: dashboard
           namespace: traefik-system
-          port: 8080
+          port: http
   tls:
     secretName: traefik-tls
 ---

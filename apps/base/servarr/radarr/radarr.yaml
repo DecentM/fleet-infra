@@ -50,6 +50,7 @@ spec:
                   key: value
           ports:
             - containerPort: 7878
+              name: http
           volumeMounts:
             - name: config
               mountPath: /config
@@ -102,5 +103,6 @@ spec:
   ports:
     - name: http
       port: 7878
+      targetPort: http
   selector:
     app: radarr

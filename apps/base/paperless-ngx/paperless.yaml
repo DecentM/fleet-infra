@@ -73,6 +73,7 @@ spec:
               name: trash
           ports:
             - containerPort: 8000
+              name: http
       volumes:
         - name: data
           persistentVolumeClaim:
@@ -130,7 +131,8 @@ metadata:
   namespace: app-paperless-ngx
 spec:
   ports:
-    - port: 8000
-      targetPort: 8000
+    - name: http
+      port: 8000
+      targetPort: http
   selector:
     app: paperless-ngx

@@ -50,6 +50,7 @@ spec:
                   key: value
           ports:
             - containerPort: 6969
+              name: http
           volumeMounts:
             - name: config
               mountPath: /config
@@ -102,5 +103,6 @@ spec:
   ports:
     - name: http
       port: 6969
+      targetPort: http
   selector:
     app: prowlarr

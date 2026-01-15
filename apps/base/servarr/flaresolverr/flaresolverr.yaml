@@ -44,6 +44,7 @@ spec:
               value: info
           ports:
             - containerPort: 8191
+              name: http
 ---
 apiVersion: v1
 kind: Service
@@ -55,5 +56,6 @@ spec:
   ports:
     - name: http
       port: 8191
+      targetPort: http
   selector:
     app: flaresolverr

@@ -14,7 +14,7 @@ spec:
       services:
         - name: zerobyte
           namespace: app-zerobyte
-          port: 4096
+          port: http
   tls:
     secretName: traefik-tls
 ---
