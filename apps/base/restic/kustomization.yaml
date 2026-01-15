@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - sealed-secrets.yaml
-  - cronjob.yaml
+  - restic.yaml
