@@ -2,6 +2,11 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - namespace.yaml
-  - config.yaml
-  - deployment.yaml
+  - jellyfin.yaml
   - ingressroute.yaml
+
+configMapGenerator:
+  - name: jellyfin-config
+    namespace: app-jellyfin
+    envs:
+      - jellyfin-config.env

@@ -98,3 +98,16 @@ spec:
     requests:
       storage: 15Gi
   storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jellyfin
+  namespace: app-jellyfin
+
+spec:
+  ports:
+    - name: http
+      port: 8096
+  selector:
+    app: jellyfin
