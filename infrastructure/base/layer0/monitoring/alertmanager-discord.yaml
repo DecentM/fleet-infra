@@ -15,10 +15,20 @@ spec:
       labels:
         app: alertmanager-discord
     spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
         - name: alertmanager-discord
           image: rogerrum/alertmanager-discord:1.0.7
           imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           ports:
             - containerPort: 9094
               name: http
@@ -28,6 +38,8 @@ spec:
                 secretKeyRef:
                   name: alertmanager-discord-webhook
                   key: webhook-url
+            - name: DISCORD_USERNAME
+              value: "Alertmanager"
             - name: LISTEN_ADDRESS
               value: "0.0.0.0:9094"
           resources:
