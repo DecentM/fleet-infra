@@ -131,3 +131,10 @@ create_secret \
     generic \
     "SEED PROXY_SECRET RCON_PASSWORD" \
     "apps/base/minecraft/sealed-secrets.yaml"
+
+create_secret \
+    app-restic \
+    restic-secrets \
+    generic \
+    "repository password aws-access-key-id aws-secret-access-key" \
+    "apps/base/restic/sealed-secrets.yaml"

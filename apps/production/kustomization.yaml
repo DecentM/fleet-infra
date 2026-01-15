@@ -9,6 +9,7 @@ resources:
   - ../base/minecraft
   - ../base/paperless-ngx
   - ../base/photoprism
+  - ../base/restic
   - ../base/samba
   - ../base/servarr
   - ../base/zerobyte

@@ -1,0 +1,151 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: restic-backup
+  namespace: app-restic
+spec:
+  schedule: "0 3 * * 0" # Weekly on Sunday at 3am
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        metadata:
+          labels:
+            app: restic-backup
+        spec:
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+          restartPolicy: OnFailure
+          initContainers:
+            # Step 1: Initialize repository if it doesn't exist
+            - name: init-repo
+              image: restic/restic:0.17.3
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  echo "=== Init Repo: $(date) ==="
+                  if restic snapshots > /dev/null 2>&1; then
+                    echo "Repository already initialized"
+                  else
+                    echo "Initializing repository..."
+                    restic init
+                  fi
+              env: &restic-env
+                - name: TZ
+                  value: Europe/Tallinn
+                - name: RESTIC_REPOSITORY
+                  valueFrom:
+                    secretKeyRef:
+                      name: restic-secrets
+                      key: repository
+                - name: RESTIC_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: restic-secrets
+                      key: password
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: restic-secrets
+                      key: aws-access-key-id
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: restic-secrets
+                      key: aws-secret-access-key
+              resources: &restic-resources
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
+                limits:
+                  cpu: "2"
+                  memory: 2Gi
+              volumeMounts: &restic-mounts
+                - name: data
+                  mountPath: /data
+                  readOnly: true
+                - name: cache
+                  mountPath: /root/.cache/restic
+
+            # Step 2: Run backup
+            - name: backup
+              image: restic/restic:0.17.3
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  echo "=== Backup: $(date) ==="
+                  restic backup \
+                    --verbose \
+                    --host kubernetes \
+                    --tag k8s-storage \
+                    /data
+                  echo "=== Backup complete: $(date) ==="
+              env: *restic-env
+              resources: *restic-resources
+              volumeMounts: *restic-mounts
+
+            # Step 3: Prune old backups
+            - name: prune
+              image: restic/restic:0.17.3
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  echo "=== Prune: $(date) ==="
+                  restic forget \
+                    --keep-weekly 4 \
+                    --keep-monthly 12 \
+                    --keep-yearly 2 \
+                    --prune
+                  echo "=== Prune complete: $(date) ==="
+              env: *restic-env
+              resources: *restic-resources
+              volumeMounts: *restic-mounts
+
+          containers:
+            # Step 4: Check repository integrity
+            - name: check
+              image: restic/restic:0.17.3
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  echo "=== Check: $(date) ==="
+                  restic check
+                  echo "=== All steps completed: $(date) ==="
+              env: *restic-env
+              resources: *restic-resources
+              volumeMounts: *restic-mounts
+
+          volumes:
+            - name: data
+              hostPath:
+                path: /mnt/spike/storage/k8s
+                type: Directory
+                readOnly: true
+            - name: cache
+              persistentVolumeClaim:
+                claimName: restic-cache
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: restic-cache
+  namespace: app-restic
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: longhorn-local-nobackup
