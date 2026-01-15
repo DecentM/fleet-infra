@@ -23,7 +23,7 @@ spec:
           initContainers:
             # Step 1: Initialize repository if it doesn't exist
             - name: init-repo
-              image: restic/restic:0.17.3
+              image: restic/restic:0.18.1
               imagePullPolicy: IfNotPresent
               command:
                 - /bin/sh
@@ -75,7 +75,7 @@ spec:
 
             # Step 2: Run backup
             - name: backup
-              image: restic/restic:0.17.3
+              image: restic/restic:0.18.1
               imagePullPolicy: IfNotPresent
               command:
                 - /bin/sh
@@ -94,7 +94,7 @@ spec:
 
             # Step 3: Prune old backups
             - name: prune
-              image: restic/restic:0.17.3
+              image: restic/restic:0.18.1
               imagePullPolicy: IfNotPresent
               command:
                 - /bin/sh
@@ -114,7 +114,7 @@ spec:
           containers:
             # Step 4: Check repository integrity
             - name: check
-              image: restic/restic:0.17.3
+              image: restic/restic:0.18.1
               imagePullPolicy: IfNotPresent
               command:
                 - /bin/sh
