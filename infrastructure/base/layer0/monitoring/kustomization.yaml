@@ -24,3 +24,11 @@ configMapGenerator:
       disableNameSuffixHash: true
       labels:
         grafana_dashboard: "1"
+  - name: grafana-dashboard-photoprism
+    namespace: monitoring-system
+    files:
+      - dashboards/photoprism.json
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_dashboard: "1"
