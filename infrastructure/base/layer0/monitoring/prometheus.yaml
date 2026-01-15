@@ -24,7 +24,36 @@ spec:
   interval: 10m
   values:
     alertmanager:
-      enabled: false
+      enabled: true
+      persistence:
+        enabled: true
+        storageClass: longhorn-local
+        size: 1Gi
+      config:
+        global:
+          resolve_timeout: 5m
+        route:
+          group_by: ['alertname', 'namespace', 'severity']
+          group_wait: 30s
+          group_interval: 5m
+          repeat_interval: 4h
+          receiver: 'discord'
+          routes:
+            - receiver: 'discord'
+              matchers:
+                - severity=~"critical|warning"
+              continue: true
+        receivers:
+          - name: 'discord'
+            webhook_configs:
+              - url: 'http://alertmanager-discord.monitoring-system.svc.cluster.local:9094'
+                send_resolved: true
+        inhibit_rules:
+          - source_matchers:
+              - severity="critical"
+            target_matchers:
+              - severity="warning"
+            equal: ['alertname', 'namespace']
     kube-state-metrics:
       enabled: true
     prometheus-node-exporter:
@@ -39,6 +68,287 @@ spec:
       retention: "15d"
       service:
         type: ClusterIP
+    serverFiles:
+      alerting_rules.yml:
+        groups:
+          # Kubernetes Node Alerts
+          - name: kubernetes-nodes
+            rules:
+              - alert: NodeNotReady
+                expr: kube_node_status_condition{condition="Ready",status="true"} == 0
+                for: 5m
+                labels:
+                  severity: critical
+                annotations:
+                  summary: "Node {{ $labels.node }} is not ready"
+                  description: "Node {{ $labels.node }} has been not ready for more than 5 minutes."
+
+              - alert: NodeMemoryPressure
+                expr: kube_node_status_condition{condition="MemoryPressure",status="true"} == 1
+                for: 5m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "Node {{ $labels.node }} has memory pressure"
+                  description: "Node {{ $labels.node }} is under memory pressure."
+
+              - alert: NodeDiskPressure
+                expr: kube_node_status_condition{condition="DiskPressure",status="true"} == 1
+                for: 5m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "Node {{ $labels.node }} has disk pressure"
+                  description: "Node {{ $labels.node }} is under disk pressure."
+
+              - alert: NodeHighCPU
+                expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+                for: 10m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "High CPU usage on {{ $labels.instance }}"
+                  description: "CPU usage is above 85% on {{ $labels.instance }} for more than 10 minutes. Current value: {{ $value | printf \"%.1f\" }}%"
+
+              - alert: NodeHighMemory
+                expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+                for: 10m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "High memory usage on {{ $labels.instance }}"
+                  description: "Memory usage is above 85% on {{ $labels.instance }}. Current value: {{ $value | printf \"%.1f\" }}%"
+
+              - alert: NodeFilesystemAlmostFull
+                expr: (1 - (node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"})) * 100 > 80
+                for: 10m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "Filesystem almost full on {{ $labels.instance }}"
+                  description: "Filesystem {{ $labels.mountpoint }} on {{ $labels.instance }} is {{ $value | printf \"%.1f\" }}% full."
+
+              - alert: NodeFilesystemFull
+                expr: (1 - (node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"})) * 100 > 95
+                for: 5m
+                labels:
+                  severity: critical
+                annotations:
+                  summary: "Filesystem full on {{ $labels.instance }}"
+                  description: "Filesystem {{ $labels.mountpoint }} on {{ $labels.instance }} is {{ $value | printf \"%.1f\" }}% full."
+
+          # Kubernetes Pod Alerts
+          - name: kubernetes-pods
+            rules:
+              - alert: PodCrashLooping
+                expr: rate(kube_pod_container_status_restarts_total[15m]) * 60 * 15 > 3
+                for: 5m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is crash looping"
+                  description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} ({{ $labels.container }}) has restarted more than 3 times in the last 15 minutes."
+
+              - alert: PodNotReady
+                expr: kube_pod_status_ready{condition="true"} == 0 and on(pod, namespace) kube_pod_status_phase{phase=~"Running|Pending"} == 1
+                for: 10m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is not ready"
+                  description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} has been not ready for more than 10 minutes."
+
+              - alert: ContainerOOMKilled
+                expr: kube_pod_container_status_last_terminated_reason{reason="OOMKilled"} == 1
+                for: 0m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "Container {{ $labels.container }} OOM killed"
+                  description: "Container {{ $labels.container }} in pod {{ $labels.namespace }}/{{ $labels.pod }} was OOM killed."
+
+              - alert: PodPending
+                expr: kube_pod_status_phase{phase="Pending"} == 1
+                for: 15m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} stuck in Pending"
+                  description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} has been pending for more than 15 minutes."
+
+          # Traefik Ingress Alerts
+          - name: traefik
+            rules:
+              - alert: TraefikHighErrorRate
+                expr: sum(rate(traefik_service_requests_total{code=~"5.."}[5m])) / sum(rate(traefik_service_requests_total[5m])) * 100 > 5
+                for: 5m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "Traefik high error rate"
+                  description: "Traefik is experiencing {{ $value | printf \"%.1f\" }}% 5xx error rate."
+
+              - alert: TraefikServiceHighErrorRate
+                expr: sum by(service) (rate(traefik_service_requests_total{code=~"5.."}[5m])) / sum by(service) (rate(traefik_service_requests_total[5m])) * 100 > 10
+                for: 5m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "High error rate on service {{ $labels.service }}"
+                  description: "Service {{ $labels.service }} is returning {{ $value | printf \"%.1f\" }}% 5xx errors."
+
+              - alert: TraefikHighLatency
+                expr: histogram_quantile(0.95, sum(rate(traefik_service_request_duration_seconds_bucket[5m])) by (le)) > 2
+                for: 5m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "Traefik high latency"
+                  description: "Traefik P95 latency is {{ $value | printf \"%.2f\" }} seconds."
+
+              - alert: TraefikDown
+                expr: up{job=~".*traefik.*"} == 0
+                for: 2m
+                labels:
+                  severity: critical
+                annotations:
+                  summary: "Traefik is down"
+                  description: "Traefik instance {{ $labels.instance }} is down."
+
+              - alert: TraefikCertificateExpiringSoon
+                expr: (traefik_tls_certs_not_after - time()) / 86400 < 14
+                for: 1h
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "TLS certificate expiring soon"
+                  description: "Certificate for {{ $labels.cn }} expires in {{ $value | printf \"%.0f\" }} days."
+
+              - alert: TraefikCertificateExpired
+                expr: (traefik_tls_certs_not_after - time()) < 0
+                for: 0m
+                labels:
+                  severity: critical
+                annotations:
+                  summary: "TLS certificate expired"
+                  description: "Certificate for {{ $labels.cn }} has expired."
+
+          # Longhorn Storage Alerts
+          - name: longhorn
+            rules:
+              - alert: LonghornVolumeActualSpaceUsedWarning
+                expr: (longhorn_volume_actual_size_bytes / longhorn_volume_capacity_bytes) * 100 > 80
+                for: 5m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "Longhorn volume {{ $labels.volume }} is {{ $value | printf \"%.1f\" }}% full"
+                  description: "Volume {{ $labels.volume }} in namespace {{ $labels.namespace }} is using more than 80% of its capacity."
+
+              - alert: LonghornVolumeActualSpaceUsedCritical
+                expr: (longhorn_volume_actual_size_bytes / longhorn_volume_capacity_bytes) * 100 > 95
+                for: 5m
+                labels:
+                  severity: critical
+                annotations:
+                  summary: "Longhorn volume {{ $labels.volume }} is almost full"
+                  description: "Volume {{ $labels.volume }} is {{ $value | printf \"%.1f\" }}% full."
+
+              - alert: LonghornVolumeDegraded
+                expr: longhorn_volume_robustness == 2
+                for: 5m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "Longhorn volume {{ $labels.volume }} is degraded"
+                  description: "Volume {{ $labels.volume }} is in degraded state."
+
+              - alert: LonghornVolumeFaulted
+                expr: longhorn_volume_robustness == 3
+                for: 2m
+                labels:
+                  severity: critical
+                annotations:
+                  summary: "Longhorn volume {{ $labels.volume }} is faulted"
+                  description: "Volume {{ $labels.volume }} is in faulted state and may have data loss."
+
+              - alert: LonghornNodeDown
+                expr: longhorn_node_status{condition="ready"} == 0
+                for: 5m
+                labels:
+                  severity: critical
+                annotations:
+                  summary: "Longhorn node {{ $labels.node }} is down"
+                  description: "Longhorn storage node {{ $labels.node }} is not ready."
+
+          # PostgreSQL (CNPG) Alerts
+          - name: postgresql
+            rules:
+              - alert: PostgreSQLDown
+                expr: pg_up == 0
+                for: 2m
+                labels:
+                  severity: critical
+                annotations:
+                  summary: "PostgreSQL instance {{ $labels.instance }} is down"
+                  description: "PostgreSQL instance {{ $labels.instance }} in namespace {{ $labels.namespace }} is not responding."
+
+              - alert: PostgreSQLHighConnections
+                expr: sum by (instance, namespace) (pg_stat_activity_count) / on (instance, namespace) pg_settings_max_connections * 100 > 80
+                for: 5m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "PostgreSQL high connection usage"
+                  description: "PostgreSQL {{ $labels.instance }} is using {{ $value | printf \"%.1f\" }}% of max connections."
+
+              - alert: PostgreSQLReplicationLag
+                expr: pg_replication_lag > 30
+                for: 5m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "PostgreSQL replication lag"
+                  description: "PostgreSQL replication lag is {{ $value | printf \"%.0f\" }} seconds on {{ $labels.instance }}."
+
+              - alert: PostgreSQLDeadlocks
+                expr: rate(pg_stat_database_deadlocks[5m]) > 0
+                for: 5m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "PostgreSQL deadlocks detected"
+                  description: "Database {{ $labels.datname }} on {{ $labels.instance }} is experiencing deadlocks."
+
+          # Generic Service Alerts
+          - name: services
+            rules:
+              - alert: TargetDown
+                expr: up == 0
+                for: 5m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "Target {{ $labels.job }}/{{ $labels.instance }} is down"
+                  description: "Prometheus target {{ $labels.instance }} from job {{ $labels.job }} has been down for more than 5 minutes."
+
+              - alert: PrometheusConfigReloadFailed
+                expr: prometheus_config_last_reload_successful == 0
+                for: 5m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "Prometheus config reload failed"
+                  description: "Prometheus failed to reload its configuration."
+
+              - alert: AlertmanagerConfigReloadFailed
+                expr: alertmanager_config_last_reload_successful == 0
+                for: 5m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "Alertmanager config reload failed"
+                  description: "Alertmanager failed to reload its configuration."
     extraScrapeConfigs: |
       # Scrape services with prometheus.io/scrape annotation
       - job_name: 'kubernetes-service-endpoints'

@@ -7,6 +7,8 @@ resources:
   - promtail.yaml
   - grafana.yaml
   - ingressroute.yaml
+  - alertmanager-discord.yaml
+  - sealed-discord-webhook.yaml
 configMapGenerator:
   - name: grafana-dashboard-kubernetes-namespace
     namespace: monitoring-system
