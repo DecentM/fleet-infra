@@ -122,3 +122,15 @@ spec:
     requests:
       storage: 1Gi
   storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webserver
+  namespace: app-paperless-ngx
+spec:
+  ports:
+    - port: 8000
+      targetPort: 8000
+  selector:
+    app: paperless-ngx

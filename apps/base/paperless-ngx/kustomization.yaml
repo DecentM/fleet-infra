@@ -6,11 +6,11 @@ resources:
   - redis.yaml
   - tika.yaml
   - gotenberg.yaml
-  - deployment.yaml
+  - paperless.yaml
   - ingressroute.yaml
 
 configMapGenerator:
   - name: paperless-config
     namespace: app-paperless-ngx
     envs:
-      - config.env
+      - paperless-config.env
