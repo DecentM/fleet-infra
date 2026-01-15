@@ -19,6 +19,20 @@ spec:
     spec:
       terminationGracePeriodSeconds: 130
       containers:
+        - name: promtail
+          image: grafana/promtail:3.3.2
+          args:
+            - -config.file=/etc/promtail/promtail.yaml
+            - -config.expand-env=true
+          env:
+            - name: COMPONENT
+              value: survival
+          volumeMounts:
+            - name: promtail-config
+              mountPath: /etc/promtail
+            - name: survival-logs
+              mountPath: /logs
+              readOnly: true
         - name: survival
           image: ghcr.io/decentm/minecraft-servers:spectrum-35e37a89f01fd6f5232d8263ebcb02c55f83de62
           securityContext:
@@ -96,9 +110,13 @@ spec:
                 name: spectrum-config
           ports:
             - containerPort: 25566
+              name: minecraft
             - containerPort: 25575
+              name: rcon
             - containerPort: 25567
+              name: fallback
             - containerPort: 25578
+              name: resourcepack
           volumeMounts:
             - name: survival-server
               mountPath: /server
@@ -107,6 +125,9 @@ spec:
             - name: survival-world
               mountPath: /data/world
       volumes:
+        - name: promtail-config
+          configMap:
+            name: promtail-config
         - name: survival-logs
           persistentVolumeClaim:
             claimName: spectrum-logs
@@ -137,8 +158,9 @@ spec:
   selector:
     app: spectrum-survival
   ports:
-    - name: rp
+    - name: resourcepack
       port: 25578
+      targetPort: resourcepack
 ---
 apiVersion: v1
 kind: Service
@@ -152,6 +174,7 @@ spec:
   ports:
     - name: rcon
       port: 25575
+      targetPort: rcon
 ---
 apiVersion: v1
 kind: Service
@@ -163,8 +186,9 @@ spec:
   selector:
     app: spectrum-survival
   ports:
-    - name: mc
+    - name: minecraft
       port: 25566
+      targetPort: minecraft
 ---
 # https://github.com/adyanth/cloudflare-operator/blob/main/docs/configuration.md
 apiVersion: networking.cfargotunnel.com/v1alpha1

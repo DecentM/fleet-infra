@@ -24,3 +24,7 @@ configMapGenerator:
     namespace: app-minecraft
     envs:
       - announcer-config.env
+  - name: promtail-config
+    namespace: app-minecraft
+    files:
+      - promtail.yaml=promtail-config.yaml
