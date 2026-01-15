@@ -1,0 +1,47 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: grafana
+  namespace: monitoring-system
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`grafana.cluster.arpa`)
+      kind: Rule
+      services:
+        - name: grafana
+          namespace: monitoring-system
+          port: 80
+  tls:
+    secretName: traefik-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: traefik-cert
+  namespace: monitoring-system
+spec:
+  secretName: traefik-tls
+  duration: 672h # 28d
+  renewBefore: 168h # 7d
+  issuerRef:
+    name: custom-ca-cluster-issuer
+    kind: ClusterIssuer
+  commonName: "grafana.cluster.arpa"
+  dnsNames:
+    - "grafana.cluster.arpa"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: traefik-ingress-controller
+  namespace: monitoring-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: traefik-ingress-controller
+subjects:
+  - kind: ServiceAccount
+    name: traefik-ingress-controller
+    namespace: traefik-system

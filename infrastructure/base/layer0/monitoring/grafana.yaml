@@ -1,0 +1,52 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: grafana
+  namespace: monitoring-system
+spec:
+  chart:
+    spec:
+      chart: grafana
+      reconcileStrategy: ChartVersion
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+      version: "8.10.1"
+  interval: 10m
+  values:
+    grafana.ini:
+      auth:
+        disable_login_form: true
+      auth.anonymous:
+        enabled: true
+        org_name: Main Org.
+        org_role: Admin
+      server:
+        root_url: https://grafana.cluster.arpa
+    persistence:
+      enabled: true
+      storageClassName: longhorn-local
+      size: 1Gi
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+          - name: Prometheus
+            type: prometheus
+            url: http://prometheus-server.monitoring-system.svc.cluster.local
+            access: proxy
+            isDefault: true
+          - name: Loki
+            type: loki
+            url: http://loki.monitoring-system.svc.cluster.local:3100
+            access: proxy
+    dashboardProviders: {}
+    dashboards: {}
+    sidecar:
+      dashboards:
+        enabled: false
+      datasources:
+        enabled: false
+    service:
+      type: ClusterIP
+      port: 80
