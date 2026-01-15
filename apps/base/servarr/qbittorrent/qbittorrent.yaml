@@ -69,7 +69,7 @@ spec:
             - name: config
               mountPath: /config
         - name: exporter
-          image: caseyscarborough/qbittorrent-exporter:v1.3.5
+          image: ghcr.io/esanchezm/prometheus-qbittorrent-exporter:v1.6.0
           imagePullPolicy: IfNotPresent
           env:
             - name: QBITTORRENT_HOST
@@ -77,10 +77,12 @@ spec:
             - name: QBITTORRENT_PORT
               value: "8081"
             - name: EXPORTER_PORT
-              value: "17871"
-            # Auth disabled by default in local setup - if auth is needed, add secrets
+              value: "8000"
+            - name: EXPORTER_LOG_LEVEL
+              value: "INFO"
+            # Works with bypass_local_auth=true (empty username/password defaults)
           ports:
-            - containerPort: 17871
+            - containerPort: 8000
               name: metrics
           readinessProbe:
             httpGet:
@@ -146,11 +148,11 @@ metadata:
   namespace: app-servarr
   annotations:
     prometheus.io/scrape: "true"
-    prometheus.io/port: "17871"
+    prometheus.io/port: "8000"
 spec:
   ports:
     - name: metrics
-      port: 17871
+      port: 8000
       targetPort: metrics
   selector:
     app: qbittorrent
