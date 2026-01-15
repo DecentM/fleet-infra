@@ -1,0 +1,10 @@
+apiVersion: 1
+contactPoints:
+  - orgId: 1
+    name: alertmanager
+    receivers:
+      - uid: alertmanager
+        type: prometheus-alertmanager
+        settings:
+          url: http://prometheus-alertmanager.monitoring-system.svc.cluster.local:9093
+        disableResolveMessage: false

@@ -1,0 +1,196 @@
+apiVersion: 1
+groups:
+  - orgId: 1
+    name: longhorn
+    folder: Infrastructure
+    interval: 1m
+    rules:
+      - uid: longhorn-volume-space-warning
+        title: Longhorn Volume Space Warning
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: (longhorn_volume_actual_size_bytes / longhorn_volume_capacity_bytes) * 100 > 80
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Longhorn volume {{ index $labels \"volume\" }} is more than 80% full"
+          description: "Volume is using more than 80% of its capacity."
+
+      - uid: longhorn-volume-space-critical
+        title: Longhorn Volume Space Critical
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: (longhorn_volume_actual_size_bytes / longhorn_volume_capacity_bytes) * 100 > 95
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Longhorn volume {{ index $labels \"volume\" }} is almost full"
+          description: "Volume is more than 95% full."
+
+      - uid: longhorn-volume-degraded
+        title: Longhorn Volume Degraded
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: longhorn_volume_robustness == 2
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Longhorn volume {{ index $labels \"volume\" }} is degraded"
+          description: "Volume is in degraded state."
+
+      - uid: longhorn-volume-faulted
+        title: Longhorn Volume Faulted
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: longhorn_volume_robustness == 3
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Longhorn volume {{ index $labels \"volume\" }} is faulted"
+          description: "Volume is in faulted state and may have data loss."
+
+      - uid: longhorn-node-down
+        title: Longhorn Node Down
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: longhorn_node_status{condition="ready"} == 0
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Longhorn node {{ index $labels \"node\" }} is down"
+          description: "Longhorn storage node is not ready."

@@ -23,6 +23,8 @@ spec:
         org_role: Admin
       server:
         root_url: https://grafana.cluster.arpa
+      unified_alerting:
+        enabled: true
     persistence:
       enabled: true
       storageClassName: longhorn-local
@@ -33,13 +35,22 @@ spec:
         datasources:
           - name: Prometheus
             type: prometheus
+            uid: prometheus
             url: http://prometheus-server.monitoring-system.svc.cluster.local
             access: proxy
             isDefault: true
           - name: Loki
             type: loki
+            uid: loki
             url: http://loki.monitoring-system.svc.cluster.local:3100
             access: proxy
+          - name: Alertmanager
+            type: alertmanager
+            uid: alertmanager
+            url: http://prometheus-alertmanager.monitoring-system.svc.cluster.local:9093
+            access: proxy
+            jsonData:
+              implementation: prometheus
     sidecar:
       dashboards:
         enabled: true
@@ -51,6 +62,10 @@ spec:
           foldersFromFilesStructure: false
       datasources:
         enabled: false
+      alerts:
+        enabled: true
+        label: grafana_alert
+        labelValue: "1"
     service:
       type: ClusterIP
       port: 80
