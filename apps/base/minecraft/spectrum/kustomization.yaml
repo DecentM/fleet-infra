@@ -6,6 +6,7 @@ resources:
   - fallback.yaml
   - proxy.yaml
   - announcer.yaml
+  - mc-monitor.yaml
 
 configMapGenerator:
   - name: spectrum-config

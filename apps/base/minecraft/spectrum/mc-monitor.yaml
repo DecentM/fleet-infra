@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mc-monitor
+  namespace: app-minecraft
+spec:
+  selector:
+    matchLabels:
+      app: mc-monitor
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mc-monitor
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+    spec:
+      containers:
+        - name: mc-monitor
+          image: itzg/mc-monitor:0.16.0
+          args:
+            - export-for-prometheus
+          env:
+            - name: EXPORT_SERVERS
+              value: "spectrum-internal-survival:25566,spectrum-internal-fallback:25567,spectrum-mc:25565"
+          ports:
+            - containerPort: 8080
+              name: metrics
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mc-monitor
+  namespace: app-minecraft
+  labels:
+    app: mc-monitor
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
+spec:
+  ports:
+    - name: metrics
+      port: 8080
+      targetPort: metrics
+  selector:
+    app: mc-monitor

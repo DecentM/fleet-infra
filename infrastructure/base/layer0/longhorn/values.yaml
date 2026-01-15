@@ -1,2 +1,9 @@
 persistence:
   defaultClass: false
+
+metrics:
+  serviceMonitor:
+    enabled: false
+
+defaultSettings:
+  backupTarget: ""

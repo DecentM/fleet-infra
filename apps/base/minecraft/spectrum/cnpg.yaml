@@ -9,6 +9,8 @@ spec:
   storage:
     storageClass: longhorn-local
     size: 1Gi
+  monitoring:
+    enablePodMonitor: false
 ---
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
@@ -21,6 +23,8 @@ spec:
   storage:
     storageClass: longhorn-local
     size: 1Gi
+  monitoring:
+    enablePodMonitor: false
 ---
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
@@ -33,3 +37,5 @@ spec:
   storage:
     storageClass: longhorn-local
     size: 1Gi
+  monitoring:
+    enablePodMonitor: false

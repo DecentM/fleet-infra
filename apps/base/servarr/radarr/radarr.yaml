@@ -58,6 +58,35 @@ spec:
               mountPath: /movies
             - name: downloads
               mountPath: /downloads
+        - name: exportarr
+          image: ghcr.io/onedr0p/exportarr:v2.1.0
+          args:
+            - radarr
+          env:
+            - name: PORT
+              value: "9708"
+            - name: URL
+              value: "http://localhost:7878"
+            - name: APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: servarr-api-key
+                  key: value
+          ports:
+            - containerPort: 9708
+              name: metrics
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: metrics
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: metrics
+            initialDelaySeconds: 10
+            periodSeconds: 30
       volumes:
         - name: movies
           hostPath:
@@ -104,5 +133,21 @@ spec:
     - name: http
       port: 7878
       targetPort: http
+  selector:
+    app: radarr
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: radarr-metrics
+  namespace: app-servarr
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9708"
+spec:
+  ports:
+    - name: metrics
+      port: 9708
+      targetPort: metrics
   selector:
     app: radarr

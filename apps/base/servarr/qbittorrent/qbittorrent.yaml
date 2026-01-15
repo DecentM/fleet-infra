@@ -68,6 +68,31 @@ spec:
               mountPath: /downloads
             - name: config
               mountPath: /config
+        - name: exporter
+          image: caseyscarborough/qbittorrent-exporter:v1.3.5
+          env:
+            - name: QBITTORRENT_HOST
+              value: "localhost"
+            - name: QBITTORRENT_PORT
+              value: "8081"
+            - name: EXPORTER_PORT
+              value: "17871"
+            # Auth disabled by default in local setup - if auth is needed, add secrets
+          ports:
+            - containerPort: 17871
+              name: metrics
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 15
+            periodSeconds: 30
       volumes:
         - name: downloads
           hostPath:
@@ -110,5 +135,21 @@ spec:
     - name: http
       port: 8081
       targetPort: http
+  selector:
+    app: qbittorrent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qbittorrent-metrics
+  namespace: app-servarr
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "17871"
+spec:
+  ports:
+    - name: metrics
+      port: 17871
+      targetPort: metrics
   selector:
     app: qbittorrent

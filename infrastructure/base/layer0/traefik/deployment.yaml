@@ -48,6 +48,10 @@ spec:
             - "--api"
             - "--api.insecure"
             - "--api.dashboard"
+            - "--metrics.prometheus=true"
+            - "--metrics.prometheus.addEntryPointsLabels=true"
+            - "--metrics.prometheus.addServicesLabels=true"
+            - "--metrics.prometheus.addRoutersLabels=true"
             - "--entryPoints.web.address=:80"
             - "--entryPoints.web.http.redirections.entryPoint.to=websecure"
             - "--entryPoints.websecure.address=:443"
@@ -63,6 +67,8 @@ spec:
               containerPort: 445
             - name: dashboard
               containerPort: 8080
+            - name: metrics
+              containerPort: 8082
 ---
 apiVersion: v1
 kind: Service
@@ -101,5 +107,23 @@ spec:
     - name: http
       port: 8080
       targetPort: dashboard
+  selector:
+    app: traefik
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik-metrics
+  namespace: traefik-system
+  labels:
+    app: traefik
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8082"
+spec:
+  ports:
+    - name: metrics
+      port: 8082
+      targetPort: metrics
   selector:
     app: traefik

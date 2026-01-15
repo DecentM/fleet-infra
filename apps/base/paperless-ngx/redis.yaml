@@ -36,6 +36,26 @@ spec:
           ports:
             - containerPort: 6379
               name: redis
+        - name: exporter
+          image: oliver006/redis_exporter:v1.69.0
+          env:
+            - name: REDIS_ADDR
+              value: "redis://localhost:6379"
+          ports:
+            - containerPort: 9121
+              name: metrics
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 10
+            periodSeconds: 30
       volumes:
         - name: redisdata
           persistentVolumeClaim:
@@ -51,6 +71,22 @@ spec:
     - name: redis
       port: 6379
       targetPort: redis
+  selector:
+    app: paperless-ngx-redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: broker-metrics
+  namespace: app-paperless-ngx
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9121"
+spec:
+  ports:
+    - name: metrics
+      port: 9121
+      targetPort: metrics
   selector:
     app: paperless-ngx-redis
 ---

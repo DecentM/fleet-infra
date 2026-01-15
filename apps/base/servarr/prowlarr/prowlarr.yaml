@@ -58,6 +58,35 @@ spec:
               mountPath: /movies
             - name: downloads
               mountPath: /downloads
+        - name: exportarr
+          image: ghcr.io/onedr0p/exportarr:v2.1.0
+          args:
+            - prowlarr
+          env:
+            - name: PORT
+              value: "9709"
+            - name: URL
+              value: "http://localhost:6969"
+            - name: APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: servarr-api-key
+                  key: value
+          ports:
+            - containerPort: 9709
+              name: metrics
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: metrics
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: metrics
+            initialDelaySeconds: 10
+            periodSeconds: 30
       volumes:
         - name: movies
           hostPath:
@@ -104,5 +133,21 @@ spec:
     - name: http
       port: 6969
       targetPort: http
+  selector:
+    app: prowlarr
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prowlarr-metrics
+  namespace: app-servarr
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9709"
+spec:
+  ports:
+    - name: metrics
+      port: 9709
+      targetPort: metrics
   selector:
     app: prowlarr

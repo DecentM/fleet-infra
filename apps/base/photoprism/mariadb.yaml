@@ -51,6 +51,35 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/mysql
               name: mariadb
+        - name: exporter
+          image: prom/mysqld-exporter:v0.16.0
+          args:
+            - --mysqld.address=localhost:3306
+            - --mysqld.username=root
+          env:
+            - name: MYSQLD_EXPORTER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: photoprism-db-secrets
+                  key: PHOTOPRISM_DATABASE_PASSWORD
+          ports:
+            - containerPort: 9104
+              name: metrics
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
 
       volumes:
         - name: mariadb
@@ -68,6 +97,22 @@ spec:
     - name: mysql
       port: 3306
       targetPort: mysql
+  selector:
+    app: mariadb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb-metrics
+  namespace: app-photoprism
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9104"
+spec:
+  ports:
+    - name: metrics
+      port: 9104
+      targetPort: metrics
   selector:
     app: mariadb
 ---
