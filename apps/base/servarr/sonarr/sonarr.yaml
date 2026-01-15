@@ -2,77 +2,73 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: qbittorrent
+  name: sonarr
   namespace: app-servarr
 
 spec:
   selector:
     matchLabels:
-      app: qbittorrent
+      app: sonarr
   strategy:
-    type: Recreate
-  replicas: 1
+    type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
   template:
     metadata:
       labels:
-        app: qbittorrent
+        app: sonarr
     spec:
-      hostNetwork: true
-      securityContext:
-        runAsUser: 0
-        runAsGroup: 0
-        fsGroup: 1000
       containers:
-        - name: qbittorrent
-          image: lscr.io/linuxserver/qbittorrent:5.1.4-r1-ls435
+        - name: sonarr
+          image: lscr.io/linuxserver/sonarr:4.0.16.2944-ls300
           imagePullPolicy: IfNotPresent
           readinessProbe:
             tcpSocket:
-              port: 30688
+              port: 8989
             initialDelaySeconds: 2
             periodSeconds: 5
             failureThreshold: 20
           livenessProbe:
             tcpSocket:
-              port: 30688
+              port: 8989
             initialDelaySeconds: 60
             periodSeconds: 5
             failureThreshold: 20
-          ports:
-            - containerPort: 30688
+          envFrom:
+            - configMapRef:
+                name: sonarr-config
           env:
-            - name: HOME
-              value: /config
             - name: PUID
               value: "1000"
             - name: PGID
               value: "1000"
-            - name: TZ
-              value: "Europe/Tallinn"
-            - name: WEBUI_PORT
-              value: "8081"
-            - name: TORRENTING_PORT
-              value: "30688"
-            # From `qbittorrent --help`
-            - name: QBT_NO_SPLASH
-              value: "true"
-            - name: QBT_SAVE_PATH
-              value: "/downloads"
-            - name: QBT_PROFILE
-              value: "/config"
+            - name: SONARR__AUTH__APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: servarr-api-key
+                  key: value
+          ports:
+            - containerPort: 8989
           volumeMounts:
-            - name: downloads
-              mountPath: /downloads
             - name: config
               mountPath: /config
+            - name: series
+              mountPath: /series
+            - name: downloads
+              mountPath: /downloads
       volumes:
+        - name: series
+          hostPath:
+            path: /mnt/spike/mass-storage/videos/series
+            type: Directory
+        - name: config
+          persistentVolumeClaim:
+            claimName: sonarr-config
         - name: downloads
           hostPath:
             path: /mnt/spike/mass-storage/downloads
             type: Directory
-        - name: config
-          persistentVolumeClaim:
-            claimName: qbittorrent-config
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -86,7 +82,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: qbittorrent-config
+  name: sonarr-config
   namespace: app-servarr
 spec:
   accessModes:
@@ -95,3 +91,16 @@ spec:
     requests:
       storage: 1Gi
   storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sonarr
+  namespace: app-servarr
+
+spec:
+  ports:
+    - name: http
+      port: 8989
+  selector:
+    app: sonarr

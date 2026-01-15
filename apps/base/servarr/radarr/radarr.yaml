@@ -2,13 +2,13 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: sonarr
+  name: radarr
   namespace: app-servarr
 
 spec:
   selector:
     matchLabels:
-      app: sonarr
+      app: radarr
   strategy:
     type: RollingUpdate
   rollingUpdate:
@@ -17,54 +17,54 @@ spec:
   template:
     metadata:
       labels:
-        app: sonarr
+        app: radarr
     spec:
       containers:
-        - name: sonarr
-          image: lscr.io/linuxserver/sonarr:4.0.16.2944-ls300
+        - name: radarr
+          image: lscr.io/linuxserver/radarr:6.0.4.10291-ls289
           imagePullPolicy: IfNotPresent
           readinessProbe:
             tcpSocket:
-              port: 8989
+              port: 7878
             initialDelaySeconds: 2
             periodSeconds: 5
             failureThreshold: 20
           livenessProbe:
             tcpSocket:
-              port: 8989
+              port: 7878
             initialDelaySeconds: 60
             periodSeconds: 5
             failureThreshold: 20
           envFrom:
             - configMapRef:
-                name: sonarr-config
+                name: radarr-config
           env:
             - name: PUID
               value: "1000"
             - name: PGID
               value: "1000"
-            - name: SONARR__AUTH__APIKEY
+            - name: RADARR__AUTH__APIKEY
               valueFrom:
                 secretKeyRef:
                   name: servarr-api-key
                   key: value
           ports:
-            - containerPort: 8989
+            - containerPort: 7878
           volumeMounts:
             - name: config
               mountPath: /config
-            - name: series
-              mountPath: /series
+            - name: movies
+              mountPath: /movies
             - name: downloads
               mountPath: /downloads
       volumes:
-        - name: series
+        - name: movies
           hostPath:
-            path: /mnt/spike/mass-storage/videos/series
+            path: /mnt/spike/mass-storage/videos/movies
             type: Directory
         - name: config
           persistentVolumeClaim:
-            claimName: sonarr-config
+            claimName: radarr-config
         - name: downloads
           hostPath:
             path: /mnt/spike/mass-storage/downloads
@@ -82,7 +82,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: sonarr-config
+  name: radarr-config
   namespace: app-servarr
 spec:
   accessModes:
@@ -91,3 +91,16 @@ spec:
     requests:
       storage: 1Gi
   storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: radarr
+  namespace: app-servarr
+
+spec:
+  ports:
+    - name: http
+      port: 7878
+  selector:
+    app: radarr

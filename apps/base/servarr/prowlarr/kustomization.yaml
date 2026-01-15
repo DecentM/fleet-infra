@@ -1,6 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - config.yaml
-  - deployment.yaml
-  - service.yaml
+  - prowlarr.yaml
+
+configMapGenerator:
+  - name: prowlarr-config
+    namespace: app-servarr
+    envs:
+      - prowlarr-config.env

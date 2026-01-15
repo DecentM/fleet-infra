@@ -2,73 +2,77 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: prowlarr
+  name: qbittorrent
   namespace: app-servarr
 
 spec:
   selector:
     matchLabels:
-      app: prowlarr
+      app: qbittorrent
   strategy:
-    type: RollingUpdate
-  rollingUpdate:
-    maxUnavailable: 0
-    maxSurge: 1
+    type: Recreate
+  replicas: 1
   template:
     metadata:
       labels:
-        app: prowlarr
+        app: qbittorrent
     spec:
+      hostNetwork: true
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 1000
       containers:
-        - name: prowlarr
-          image: lscr.io/linuxserver/prowlarr:2.3.0.5236-ls134
+        - name: qbittorrent
+          image: lscr.io/linuxserver/qbittorrent:5.1.4-r1-ls435
           imagePullPolicy: IfNotPresent
           readinessProbe:
             tcpSocket:
-              port: 6969
+              port: 30688
             initialDelaySeconds: 2
             periodSeconds: 5
             failureThreshold: 20
           livenessProbe:
             tcpSocket:
-              port: 6969
+              port: 30688
             initialDelaySeconds: 60
             periodSeconds: 5
             failureThreshold: 20
-          envFrom:
-            - configMapRef:
-                name: prowlarr-config
+          ports:
+            - containerPort: 30688
           env:
+            - name: HOME
+              value: /config
             - name: PUID
               value: "1000"
             - name: PGID
               value: "1000"
-            - name: PROWLARR__AUTH__APIKEY
-              valueFrom:
-                secretKeyRef:
-                  name: servarr-api-key
-                  key: value
-          ports:
-            - containerPort: 6969
+            - name: TZ
+              value: "Europe/Tallinn"
+            - name: WEBUI_PORT
+              value: "8081"
+            - name: TORRENTING_PORT
+              value: "30688"
+            # From `qbittorrent --help`
+            - name: QBT_NO_SPLASH
+              value: "true"
+            - name: QBT_SAVE_PATH
+              value: "/downloads"
+            - name: QBT_PROFILE
+              value: "/config"
           volumeMounts:
-            - name: config
-              mountPath: /config
-            - name: movies
-              mountPath: /movies
             - name: downloads
               mountPath: /downloads
+            - name: config
+              mountPath: /config
       volumes:
-        - name: movies
-          hostPath:
-            path: /mnt/spike/mass-storage/videos/movies
-            type: Directory
-        - name: config
-          persistentVolumeClaim:
-            claimName: prowlarr-config
         - name: downloads
           hostPath:
             path: /mnt/spike/mass-storage/downloads
             type: Directory
+        - name: config
+          persistentVolumeClaim:
+            claimName: qbittorrent-config
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -82,7 +86,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: prowlarr-config
+  name: qbittorrent-config
   namespace: app-servarr
 spec:
   accessModes:
@@ -91,3 +95,16 @@ spec:
     requests:
       storage: 1Gi
   storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qbittorrent-web
+  namespace: app-servarr
+
+spec:
+  ports:
+    - name: http
+      port: 8081
+  selector:
+    app: qbittorrent
