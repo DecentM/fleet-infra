@@ -3,6 +3,4 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - mcp-grafana.yaml
-  - mcp-chess.yaml
-  - chess-mcp.yaml
   - ingressroute.yaml
