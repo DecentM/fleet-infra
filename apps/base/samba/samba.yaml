@@ -108,3 +108,16 @@ spec:
                     operator: In
                     values:
                       - "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: samba
+  namespace: app-samba
+
+spec:
+  ports:
+    - name: tcp
+      port: 445
+  selector:
+    app: samba
