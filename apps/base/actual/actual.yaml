@@ -61,3 +61,16 @@ spec:
                     operator: In
                     values:
                       - "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: actual
+  namespace: app-actual
+
+spec:
+  ports:
+    - name: http
+      port: 5006
+  selector:
+    app: actual
