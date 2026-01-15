@@ -18,6 +18,10 @@ spec:
       labels:
         app: opencode
     spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
         - name: opencode
           image: ghcr.io/anomalyco/opencode:1.1.21
@@ -28,6 +32,9 @@ spec:
             - "0.0.0.0"
             - --port
             - "4096"
+          env:
+            - name: HOME
+              value: /home/opencode
           readinessProbe:
             httpGet:
               path: /global/health
@@ -45,6 +52,27 @@ spec:
           ports:
             - containerPort: 4096
               name: http
+          volumeMounts:
+            - name: data
+              mountPath: /home/opencode/.opencode
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: opencode-data
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: opencode-data
+  namespace: app-opencode
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: longhorn-local
 
 ---
 apiVersion: v1
