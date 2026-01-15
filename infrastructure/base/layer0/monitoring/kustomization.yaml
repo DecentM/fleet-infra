@@ -16,3 +16,11 @@ configMapGenerator:
       disableNameSuffixHash: true
       labels:
         grafana_dashboard: "1"
+  - name: grafana-dashboard-spectrum
+    namespace: monitoring-system
+    files:
+      - dashboards/spectrum.json
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_dashboard: "1"
