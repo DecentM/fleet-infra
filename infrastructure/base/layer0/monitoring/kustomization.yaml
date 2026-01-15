@@ -32,3 +32,11 @@ configMapGenerator:
       disableNameSuffixHash: true
       labels:
         grafana_dashboard: "1"
+  - name: grafana-dashboard-traefik
+    namespace: monitoring-system
+    files:
+      - dashboards/traefik.json
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_dashboard: "1"
