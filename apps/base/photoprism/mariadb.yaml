@@ -52,7 +52,8 @@ spec:
             - mountPath: /var/lib/mysql
               name: mariadb
         - name: exporter
-          image: prom/mysqld-exporter:v0.16.0
+          image: prom/mysqld-exporter:v0.18.0
+          imagePullPolicy: IfNotPresent
           args:
             - --mysqld.address=localhost:3306
             - --mysqld.username=root

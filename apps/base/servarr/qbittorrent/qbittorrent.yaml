@@ -70,6 +70,7 @@ spec:
               mountPath: /config
         - name: exporter
           image: caseyscarborough/qbittorrent-exporter:v1.3.5
+          imagePullPolicy: IfNotPresent
           env:
             - name: QBITTORRENT_HOST
               value: "localhost"
