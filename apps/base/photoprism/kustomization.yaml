@@ -4,7 +4,6 @@ resources:
   - namespace.yaml
   - sealed-db-secrets.yaml
   - sealed-admin-secrets.yaml
-  - sealed-oidc-secret.yaml
   - mariadb.yaml
   - photoprism.yaml
   - ingressroute.yaml

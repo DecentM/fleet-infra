@@ -11,9 +11,6 @@ spec:
   routes:
     - match: Host(`traefik.cluster.arpa`)
       kind: Rule
-      middlewares:
-        - name: keycloak-auth
-          namespace: oauth2-proxy-system
       services:
         - name: dashboard
           namespace: traefik-system

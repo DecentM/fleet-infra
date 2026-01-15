@@ -6,5 +6,3 @@ resources:
   - cert-manager
   - kubevirt
   - cdi
-  - keycloak
-  - oauth2-proxy

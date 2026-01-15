@@ -9,7 +9,6 @@ resources:
   - ingressroute.yaml
   - alertmanager-discord.yaml
   - sealed-discord-webhook.yaml
-  - sealed-grafana-oidc.yaml
 configMapGenerator:
   # Dashboards
   - name: grafana-dashboard-kubernetes-namespace

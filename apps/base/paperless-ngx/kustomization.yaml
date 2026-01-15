@@ -8,7 +8,6 @@ resources:
   - gotenberg.yaml
   - paperless.yaml
   - ingressroute.yaml
-  - sealed-oidc-secret.yaml
 
 configMapGenerator:
   - name: paperless-config

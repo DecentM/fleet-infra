@@ -11,9 +11,6 @@ spec:
   routes:
     - match: Host(`jellyfin.cluster.arpa`)
       kind: Rule
-      middlewares:
-        - name: keycloak-auth
-          namespace: oauth2-proxy-system
       services:
         - name: jellyfin
           namespace: app-jellyfin
