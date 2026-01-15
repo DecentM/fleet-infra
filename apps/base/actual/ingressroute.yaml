@@ -11,6 +11,9 @@ spec:
   routes:
     - match: Host(`actual.cluster.arpa`)
       kind: Rule
+      middlewares:
+        - name: keycloak-auth
+          namespace: oauth2-proxy-system
       services:
         - name: actual
           namespace: app-actual

@@ -43,6 +43,9 @@ spec:
           envFrom:
             - configMapRef:
                 name: paperless-config
+            - secretRef:
+                name: paperless-oidc-secret
+                optional: true
           env:
             - name: PAPERLESS_DBHOST
               valueFrom:

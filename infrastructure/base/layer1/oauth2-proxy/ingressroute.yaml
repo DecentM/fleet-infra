@@ -1,21 +1,16 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: home-assistant
-  namespace: app-home-assistant
-
+  name: oauth2-proxy
+  namespace: oauth2-proxy-system
 spec:
   entryPoints:
     - websecure
-
   routes:
-    - match: Host(`hass.cluster.arpa`)
+    - match: Host(`oauth.cluster.arpa`)
       kind: Rule
-      middlewares:
-        - name: keycloak-auth
-          namespace: oauth2-proxy-system
       services:
-        - name: home-assistant-web
+        - name: oauth2-proxy
           port: http
   tls:
     secretName: traefik-tls
@@ -24,7 +19,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: traefik-cert
-  namespace: app-home-assistant
+  namespace: oauth2-proxy-system
 spec:
   secretName: traefik-tls
   duration: 672h # 28d
@@ -32,16 +27,15 @@ spec:
   issuerRef:
     name: custom-ca-cluster-issuer
     kind: ClusterIssuer
-  commonName: "hass.cluster.arpa"
+  commonName: "oauth.cluster.arpa"
   dnsNames:
-    - "hass.cluster.arpa"
+    - "oauth.cluster.arpa"
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: traefik-ingress-controller
-  namespace: app-home-assistant
-
+  namespace: oauth2-proxy-system
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole

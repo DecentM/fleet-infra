@@ -1,0 +1,311 @@
+{
+  "realm": "cluster",
+  "enabled": true,
+  "displayName": "Cluster Authentication",
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "permanentLockout": false,
+  "maxFailureWaitSeconds": 900,
+  "minimumQuickLoginWaitSeconds": 60,
+  "waitIncrementSeconds": 60,
+  "quickLoginCheckMilliSeconds": 1000,
+  "maxDeltaTimeSeconds": 43200,
+  "failureFactor": 5,
+  "roles": {
+    "realm": [
+      {
+        "name": "admin",
+        "description": "Administrator access to all services"
+      },
+      {
+        "name": "user",
+        "description": "Standard user access"
+      }
+    ],
+    "client": {
+      "grafana": [
+        {
+          "name": "admin",
+          "description": "Grafana Admin"
+        },
+        {
+          "name": "editor",
+          "description": "Grafana Editor"
+        },
+        {
+          "name": "viewer",
+          "description": "Grafana Viewer"
+        }
+      ],
+      "jellyfin": [
+        {
+          "name": "user",
+          "description": "Jellyfin User"
+        }
+      ],
+      "paperless-ngx": [
+        {
+          "name": "user",
+          "description": "Paperless User"
+        }
+      ],
+      "photoprism": [
+        {
+          "name": "user",
+          "description": "PhotoPrism User"
+        }
+      ],
+      "home-assistant": [
+        {
+          "name": "user",
+          "description": "Home Assistant User"
+        }
+      ]
+    }
+  },
+  "groups": [
+    {
+      "name": "admins",
+      "realmRoles": ["admin", "user"]
+    },
+    {
+      "name": "users",
+      "realmRoles": ["user"]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "oauth2-proxy",
+      "name": "OAuth2 Proxy (ForwardAuth)",
+      "description": "OAuth2 Proxy for Traefik ForwardAuth - handles services without native SSO",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "${OAUTH2_PROXY_CLIENT_SECRET}",
+      "redirectUris": [
+        "https://oauth.cluster.arpa/oauth2/callback"
+      ],
+      "webOrigins": [
+        "https://*.cluster.arpa"
+      ],
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "fullScopeAllowed": true,
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "email",
+        "groups"
+      ]
+    },
+    {
+      "clientId": "grafana",
+      "name": "Grafana",
+      "description": "Grafana monitoring dashboard",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "${GRAFANA_CLIENT_SECRET}",
+      "redirectUris": [
+        "https://grafana.cluster.arpa/login/generic_oauth"
+      ],
+      "webOrigins": [
+        "https://grafana.cluster.arpa"
+      ],
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "fullScopeAllowed": true,
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "email",
+        "groups"
+      ],
+      "protocolMappers": [
+        {
+          "name": "grafana-roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-client-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "jsonType.label": "String",
+            "usermodel.clientRoleMapping.clientId": "grafana",
+            "multivalued": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "jellyfin",
+      "name": "Jellyfin",
+      "description": "Jellyfin media server",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "${JELLYFIN_CLIENT_SECRET}",
+      "redirectUris": [
+        "https://jellyfin.cluster.arpa/sso/OID/redirect/keycloak"
+      ],
+      "webOrigins": [
+        "https://jellyfin.cluster.arpa"
+      ],
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "fullScopeAllowed": true,
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "email",
+        "groups"
+      ]
+    },
+    {
+      "clientId": "paperless-ngx",
+      "name": "Paperless-NGX",
+      "description": "Paperless-NGX document management",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "${PAPERLESS_CLIENT_SECRET}",
+      "redirectUris": [
+        "https://paperless-ngx.cluster.arpa/accounts/oidc/keycloak/login/callback/"
+      ],
+      "webOrigins": [
+        "https://paperless-ngx.cluster.arpa"
+      ],
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "fullScopeAllowed": true,
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "email",
+        "groups"
+      ]
+    },
+    {
+      "clientId": "photoprism",
+      "name": "PhotoPrism",
+      "description": "PhotoPrism photo management",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "${PHOTOPRISM_CLIENT_SECRET}",
+      "redirectUris": [
+        "https://photoprism.cluster.arpa/api/v1/oidc/redirect"
+      ],
+      "webOrigins": [
+        "https://photoprism.cluster.arpa"
+      ],
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "fullScopeAllowed": true,
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "email",
+        "groups"
+      ]
+    },
+    {
+      "clientId": "home-assistant",
+      "name": "Home Assistant",
+      "description": "Home Assistant smart home",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "${HOME_ASSISTANT_CLIENT_SECRET}",
+      "redirectUris": [
+        "https://hass.cluster.arpa/auth/oidc/callback"
+      ],
+      "webOrigins": [
+        "https://hass.cluster.arpa"
+      ],
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "fullScopeAllowed": true,
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "email",
+        "groups"
+      ]
+    }
+  ],
+  "clientScopes": [
+    {
+      "name": "groups",
+      "description": "Group membership",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "true"
+      },
+      "protocolMappers": [
+        {
+          "name": "groups",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-group-membership-mapper",
+          "config": {
+            "claim.name": "groups",
+            "full.path": "false",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "defaultDefaultClientScopes": [
+    "web-origins",
+    "acr",
+    "profile",
+    "roles",
+    "email"
+  ],
+  "defaultOptionalClientScopes": [
+    "offline_access",
+    "address",
+    "phone",
+    "groups"
+  ]
+}

@@ -68,6 +68,9 @@ spec:
                 name: photoprism-admin-secrets
             - secretRef:
                 name: photoprism-db-secrets
+            - secretRef:
+                name: photoprism-oidc-secret
+                optional: true
           ports:
             - containerPort: 2342
               name: http

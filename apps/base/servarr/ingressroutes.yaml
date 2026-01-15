@@ -26,6 +26,9 @@ spec:
   routes:
     - match: Host(`qbittorrent.cluster.arpa`)
       kind: Rule
+      middlewares:
+        - name: keycloak-auth
+          namespace: oauth2-proxy-system
       services:
         - name: qbittorrent-web
           namespace: app-servarr
@@ -46,6 +49,9 @@ spec:
   routes:
     - match: Host(`sonarr.cluster.arpa`)
       kind: Rule
+      middlewares:
+        - name: keycloak-auth
+          namespace: oauth2-proxy-system
       services:
         - name: sonarr
           namespace: app-servarr
@@ -66,6 +72,9 @@ spec:
   routes:
     - match: Host(`prowlarr.cluster.arpa`)
       kind: Rule
+      middlewares:
+        - name: keycloak-auth
+          namespace: oauth2-proxy-system
       services:
         - name: prowlarr
           namespace: app-servarr
@@ -86,6 +95,9 @@ spec:
   routes:
     - match: Host(`radarr.cluster.arpa`)
       kind: Rule
+      middlewares:
+        - name: keycloak-auth
+          namespace: oauth2-proxy-system
       services:
         - name: radarr
           namespace: app-servarr
@@ -106,6 +118,9 @@ spec:
   routes:
     - match: Host(`pinchflat.cluster.arpa`)
       kind: Rule
+      middlewares:
+        - name: keycloak-auth
+          namespace: oauth2-proxy-system
       services:
         - name: pinchflat
           namespace: app-servarr

@@ -1,0 +1,13 @@
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: grafana-oidc-secret
+  namespace: monitoring-system
+spec:
+  encryptedData:
+    GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET: AgCTozb/r8t7I/qF4U+vlWfI1gr5sPu4/gxJ09nBFqfy/FE+Zl40gYz8245ZNu2XQJ7AjzNU3w7TUJTd9E9Vb2qONvnh567nY4FxEdk7WqqO5tNfectd5UMer5OthlemAgiBoRL87q860AsJGHpbK9959PNxPE3BXbcOHA7Jb0y79j3cZDKTHupB8kFBCPfFON2iX21dnmP7P+kZSxRfUQrl69oGklwZR9NN1OLrntteum+cXmYyNKI110qKo86YojPFUS+1pl9SjVLpqXFm8ufIKOXaEKAcAzew2X53ktJ37rtbbOXG0bFVLwo699qlBORnLcrvJtwTEt6HhYB4O4znqSm5ouX1BHSH47focpOAkRhGyTVZOJUHQohy4dCbkGwMmj2viC/55lIVjEdcxjCHDJOyu7ljZfELSTNT5RUkWFXKR7iue661gXEIv1v/XLMAJnklY+k+6+NZHzUcSGev4p4O2uyTwJhBRHg/3FXUwVubDf0/gtNdVXfodTptqrzXkLsVFQreD47f3rIWLfoo75kdudKDiJOw0L4q2OojCPkSw2GgSQbofqWDTfChMjJEjTgTlc1OHH3L5gJdavKfkxOv8ixer9SQTp7Pq+T2mOufPwzMnmNvNkPpO3my9VUH+y6QvWpgzMOFGbPgY4ZzpTTvwxGsUcdrZ/nt9juI7eUxK8Po9DQe6BItbPfw3Q5Um5j1v5Emuv2Zvis9Yyeka9MiCLNeDMFVv4EIb0Igvh6fJGtbYVfHR9s5LRXYb9i1lfjQM3C27Asnv6IzbQNs
+  template:
+    metadata:
+      name: grafana-oidc-secret
+      namespace: monitoring-system
