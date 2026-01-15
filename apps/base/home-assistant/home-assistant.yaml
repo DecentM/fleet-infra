@@ -1,3 +1,20 @@
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: DataVolume
+metadata:
+  name: homeassistant-disk
+  namespace: app-home-assistant
+spec:
+  source:
+    http:
+      url: "https://github.com/home-assistant/operating-system/releases/download/14.1/haos_ova-14.1.qcow2.xz"
+  pvc:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 35Gi
+    storageClassName: "longhorn-local"
+---
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
@@ -54,3 +71,15 @@ spec:
                     operator: In
                     values:
                       - "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: home-assistant-web
+  namespace: app-home-assistant
+spec:
+  ports:
+    - name: web
+      port: 8123
+  selector:
+    app: home-assistant
