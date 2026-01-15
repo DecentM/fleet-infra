@@ -4,5 +4,6 @@ resources:
   - namespace.yaml
   - prometheus.yaml
   - loki.yaml
+  - promtail.yaml
   - grafana.yaml
   - ingressroute.yaml

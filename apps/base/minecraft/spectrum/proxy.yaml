@@ -21,20 +21,6 @@ spec:
     spec:
       terminationGracePeriodSeconds: 130
       containers:
-        - name: promtail
-          image: grafana/promtail:3.3.2
-          args:
-            - -config.file=/etc/promtail/promtail.yaml
-            - -config.expand-env=true
-          env:
-            - name: COMPONENT
-              value: proxy
-          volumeMounts:
-            - name: promtail-config
-              mountPath: /etc/promtail
-            - name: proxy-logs
-              mountPath: /logs
-              readOnly: true
         - name: proxy
           image: ghcr.io/decentm/minecraft-servers:proxy-9b404b9a08840f5f4bfeb7625793153051241754
           securityContext:
@@ -140,12 +126,7 @@ spec:
               mountPath: /forwarding-secret
               subPath: forwarding-secret
               readOnly: true
-            - name: proxy-logs
-              mountPath: /data/logs
       volumes:
-        - name: promtail-config
-          configMap:
-            name: promtail-config
         - name: proxy-logs
           persistentVolumeClaim:
             claimName: proxy-logs

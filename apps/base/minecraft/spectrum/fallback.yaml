@@ -21,20 +21,6 @@ spec:
     spec:
       terminationGracePeriodSeconds: 130
       containers:
-        - name: promtail
-          image: grafana/promtail:3.3.2
-          args:
-            - -config.file=/etc/promtail/promtail.yaml
-            - -config.expand-env=true
-          env:
-            - name: COMPONENT
-              value: fallback
-          volumeMounts:
-            - name: promtail-config
-              mountPath: /etc/promtail
-            - name: fallback-logs
-              mountPath: /logs
-              readOnly: true
         - name: fallback
           image: ghcr.io/decentm/minecraft-servers:fallback-5f6064b8c75a08c8778ecc74c722cfff9bc99106
           securityContext:
@@ -104,9 +90,6 @@ spec:
             - name: fallback-logs
               mountPath: /data/logs
       volumes:
-        - name: promtail-config
-          configMap:
-            name: promtail-config
         - name: fallback-logs
           persistentVolumeClaim:
             claimName: fallback-logs

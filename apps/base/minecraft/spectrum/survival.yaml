@@ -19,20 +19,6 @@ spec:
     spec:
       terminationGracePeriodSeconds: 130
       containers:
-        - name: promtail
-          image: grafana/promtail:3.3.2
-          args:
-            - -config.file=/etc/promtail/promtail.yaml
-            - -config.expand-env=true
-          env:
-            - name: COMPONENT
-              value: survival
-          volumeMounts:
-            - name: promtail-config
-              mountPath: /etc/promtail
-            - name: survival-logs
-              mountPath: /logs
-              readOnly: true
         - name: survival
           image: ghcr.io/decentm/minecraft-servers:spectrum-35e37a89f01fd6f5232d8263ebcb02c55f83de62
           securityContext:
@@ -125,9 +111,6 @@ spec:
             - name: survival-world
               mountPath: /data/world
       volumes:
-        - name: promtail-config
-          configMap:
-            name: promtail-config
         - name: survival-logs
           persistentVolumeClaim:
             claimName: spectrum-logs
