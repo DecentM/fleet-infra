@@ -10,4 +10,4 @@ spec:
     storageClass: longhorn-local
     size: 5Gi
   monitoring:
-    enablePodMonitor: false
+    enablePodMonitor: true
