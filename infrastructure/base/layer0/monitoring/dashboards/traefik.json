@@ -1538,11 +1538,11 @@
               },
               {
                 "id": "min",
-                "value": 0
+                "value": 7
               },
               {
                 "id": "max",
-                "value": 90
+                "value": 28
               },
               {
                 "id": "unit",
@@ -1576,7 +1576,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "(traefik_tls_certs_not_after - time()) / 86400",
+          "expr": "(max by (cn, sans) (traefik_tls_certs_not_after) - time()) / 86400",
           "format": "table",
           "instant": true,
           "refId": "A"
@@ -1591,7 +1591,13 @@
               "Time": true,
               "__name__": true,
               "instance": true,
-              "job": true
+              "job": true,
+              "app": true,
+              "kustomize_toolkit_fluxcd_io_name": true,
+              "kustomize_toolkit_fluxcd_io_namespace": true,
+              "namespace": true,
+              "node": true,
+              "service": true
             },
             "indexByName": {},
             "renameByName": {

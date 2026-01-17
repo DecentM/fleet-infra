@@ -167,7 +167,7 @@ groups:
               to: 0
             datasourceUid: prometheus
             model:
-              expr: (traefik_tls_certs_not_after - time()) / 86400 < 7
+              expr: (max by (cn, sans) (traefik_tls_certs_not_after) - time()) / 86400 < 7
               instant: true
               refId: A
           - refId: C
@@ -205,7 +205,7 @@ groups:
               to: 0
             datasourceUid: prometheus
             model:
-              expr: (traefik_tls_certs_not_after - time()) / 86400 < 3
+              expr: (max by (cn, sans) (traefik_tls_certs_not_after) - time()) / 86400 < 3
               instant: true
               refId: A
           - refId: C
@@ -243,7 +243,7 @@ groups:
               to: 0
             datasourceUid: prometheus
             model:
-              expr: (traefik_tls_certs_not_after - time()) < 0
+              expr: (max by (cn, sans) (traefik_tls_certs_not_after) - time()) < 0
               instant: true
               refId: A
           - refId: C
