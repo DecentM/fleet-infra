@@ -1,0 +1,416 @@
+apiVersion: 1
+groups:
+  - orgId: 1
+    name: minecraft
+    folder: Infrastructure
+    interval: 1m
+    rules:
+      # Server health alerts
+      - uid: minecraft-server-down
+        title: Minecraft Server Down
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: minecraft_status_healthy == 0
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 2m
+        labels:
+          severity: critical
+          namespace: app-minecraft
+        annotations:
+          summary: "Minecraft server {{ index $labels \"server_host\" }} is down"
+          description: "Server has been unresponsive for more than 2 minutes."
+
+      - uid: minecraft-high-response-time
+        title: Minecraft High Response Time
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: minecraft_status_response_time_seconds > 1
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 5m
+        labels:
+          severity: warning
+          namespace: app-minecraft
+        annotations:
+          summary: "Minecraft server {{ index $labels \"server_host\" }} has high response time"
+          description: "Response time is above 1 second for more than 5 minutes."
+
+      - uid: minecraft-very-high-response-time
+        title: Minecraft Very High Response Time
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: minecraft_status_response_time_seconds > 3
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 2m
+        labels:
+          severity: critical
+          namespace: app-minecraft
+        annotations:
+          summary: "Minecraft server {{ index $labels \"server_host\" }} has very high response time"
+          description: "Response time is above 3 seconds. Server may be overloaded."
+
+      # Player count alerts
+      - uid: minecraft-player-count-drop
+        title: Minecraft Player Count Dropped
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                (
+                  max_over_time(minecraft_status_players_online_count{server_host="spectrum-mc"}[10m])
+                  - minecraft_status_players_online_count{server_host="spectrum-mc"}
+                ) > 5
+                and minecraft_status_players_online_count{server_host="spectrum-mc"} > 0
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 1m
+        labels:
+          severity: warning
+          namespace: app-minecraft
+        annotations:
+          summary: "Minecraft player count dropped significantly"
+          description: "More than 5 players left in the last 10 minutes. Possible server issue."
+
+      # Container/Pod alerts
+      - uid: minecraft-pod-crash-looping
+        title: Minecraft Pod Crash Looping
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 900
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: rate(kube_pod_container_status_restarts_total{namespace="app-minecraft", pod=~"spectrum-.*"}[15m]) * 60 * 15 > 2
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 900
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 5m
+        labels:
+          severity: critical
+          namespace: app-minecraft
+        annotations:
+          summary: "Minecraft pod {{ index $labels \"pod\" }} is crash looping"
+          description: "Pod has restarted more than 2 times in the last 15 minutes."
+
+      - uid: minecraft-pod-not-ready
+        title: Minecraft Pod Not Ready
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                kube_pod_status_ready{namespace="app-minecraft", pod=~"spectrum-.*", condition="true"} == 0
+                and on(pod, namespace) kube_pod_status_phase{phase=~"Running|Pending"} == 1
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 5m
+        labels:
+          severity: warning
+          namespace: app-minecraft
+        annotations:
+          summary: "Minecraft pod {{ index $labels \"pod\" }} is not ready"
+          description: "Pod has been not ready for more than 5 minutes."
+
+  # Log-based alerts (Loki)
+  - orgId: 1
+    name: minecraft-logs
+    folder: Infrastructure
+    interval: 1m
+    rules:
+      - uid: minecraft-ticks-behind
+        title: Minecraft Server Ticks Behind
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: loki
+            model:
+              expr: |
+                sum(count_over_time({namespace="app-minecraft", pod=~"spectrum-survival.*"} |~ "Can't keep up! Is the server overloaded|Running \\d+ms or \\d+ ticks behind"[5m]))
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [3]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 0s
+        labels:
+          severity: warning
+          namespace: app-minecraft
+        annotations:
+          summary: "Minecraft server is running behind on ticks"
+          description: "Server logged 'Can't keep up' warnings more than 3 times in the last 5 minutes."
+
+      - uid: minecraft-chat-spam
+        title: Minecraft Chat Spam Detected
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 60
+              to: 0
+            datasourceUid: loki
+            model:
+              expr: |
+                sum(count_over_time({namespace="app-minecraft", pod=~"spectrum-.*"} |~ "\\[carbon:|issued server command:"[1m]))
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 60
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [50]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 0s
+        labels:
+          severity: warning
+          namespace: app-minecraft
+        annotations:
+          summary: "Minecraft chat spam detected"
+          description: "More than 50 chat messages or commands in the last minute."
+
+      - uid: minecraft-login-spam
+        title: Minecraft Login Spam Detected
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: loki
+            model:
+              expr: |
+                sum(count_over_time({namespace="app-minecraft", pod=~"spectrum-.*"} |~ "logged in with entity id|UUID of player"[5m]))
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [30]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 0s
+        labels:
+          severity: warning
+          namespace: app-minecraft
+        annotations:
+          summary: "Minecraft login spam detected"
+          description: "More than 30 player logins in the last 5 minutes. Possible bot attack."
+
+      - uid: minecraft-server-error
+        title: Minecraft Server Error
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: loki
+            model:
+              expr: |
+                sum(count_over_time({namespace="app-minecraft", pod=~"spectrum-survival.*"} |~ "ERROR|SEVERE|Exception|OutOfMemoryError"[5m]))
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [5]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 0s
+        labels:
+          severity: warning
+          namespace: app-minecraft
+        annotations:
+          summary: "Minecraft server errors detected"
+          description: "More than 5 errors logged in the last 5 minutes."

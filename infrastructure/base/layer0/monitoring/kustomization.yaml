@@ -130,3 +130,11 @@ configMapGenerator:
       disableNameSuffixHash: true
       labels:
         grafana_alert: "1"
+  - name: grafana-alerting-rules-minecraft
+    namespace: monitoring-system
+    files:
+      - alerting/rules-minecraft.yaml
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_alert: "1"
