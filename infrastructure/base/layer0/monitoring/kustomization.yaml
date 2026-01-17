@@ -42,6 +42,14 @@ configMapGenerator:
       disableNameSuffixHash: true
       labels:
         grafana_dashboard: "1"
+  - name: grafana-dashboard-restic
+    namespace: monitoring-system
+    files:
+      - dashboards/restic.json
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_dashboard: "1"
   # Alerting - Contact Points
   - name: grafana-alerting-contactpoints
     namespace: monitoring-system
