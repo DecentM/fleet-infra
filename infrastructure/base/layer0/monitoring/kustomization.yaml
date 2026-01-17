@@ -9,6 +9,11 @@ resources:
   - ingressroute.yaml
   - event-exporter.yaml
 configMapGenerator:
+  # Event Exporter Config
+  - name: event-exporter-config
+    namespace: monitoring-system
+    files:
+      - config.yaml=configs/event-exporter-config.yaml
   # Dashboards
   - name: grafana-dashboard-kubernetes-namespace
     namespace: monitoring-system

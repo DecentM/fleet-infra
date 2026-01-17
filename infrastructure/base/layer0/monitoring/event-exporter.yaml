@@ -26,31 +26,6 @@ subjects:
     name: event-exporter
     namespace: monitoring-system
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: event-exporter-config
-  namespace: monitoring-system
-data:
-  config.yaml: |
-    logLevel: error
-    logFormat: json
-    route:
-      routes:
-        - match:
-            - receiver: loki
-    receivers:
-      - name: loki
-        loki:
-          streamLabels:
-            job: kubernetes-events
-            namespace: "{{ .InvolvedObject.Namespace }}"
-            kind: "{{ .InvolvedObject.Kind }}"
-            name: "{{ .InvolvedObject.Name }}"
-            reason: "{{ .Reason }}"
-            type: "{{ .Type }}"
-          url: http://loki.monitoring-system.svc.cluster.local:3100/loki/api/v1/push
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
