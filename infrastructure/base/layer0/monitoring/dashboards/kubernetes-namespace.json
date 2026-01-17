@@ -1129,7 +1129,7 @@
             "type": "loki",
             "uid": "${loki_datasource}"
           },
-          "expr": "{namespace=\"$namespace\"} |= \"$log_filter\"",
+          "expr": "{namespace=\"$namespace\"} |= \"$log_filter\" | json | drop __error__",
           "legendFormat": "",
           "refId": "A"
         },
@@ -1138,7 +1138,7 @@
             "type": "loki",
             "uid": "${loki_datasource}"
           },
-          "expr": "{job=\"kubernetes-events\", namespace=\"$namespace\"} |= \"$log_filter\"",
+          "expr": "{job=\"kubernetes-events\", namespace=\"$namespace\"} |= \"$log_filter\" | json | drop __error__",
           "legendFormat": "",
           "refId": "B"
         }

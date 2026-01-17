@@ -1647,7 +1647,7 @@
             "type": "loki",
             "uid": "${loki_datasource}"
           },
-          "expr": "{namespace=\"traefik-system\", app=\"traefik\"} |= \"$log_filter\"",
+          "expr": "{namespace=\"traefik-system\", app=\"traefik\"} |= \"$log_filter\" | json | drop __error__",
           "refId": "A"
         }
       ],

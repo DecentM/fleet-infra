@@ -1488,7 +1488,7 @@
             "type": "loki",
             "uid": "${loki_datasource}"
           },
-          "expr": "{namespace=\"app-minecraft\", pod=~\"spectrum-.*\"} |= \"$log_filter\"",
+          "expr": "{namespace=\"app-minecraft\", pod=~\"spectrum-.*\"} |= \"$log_filter\" | json | drop __error__",
           "refId": "A"
         }
       ],

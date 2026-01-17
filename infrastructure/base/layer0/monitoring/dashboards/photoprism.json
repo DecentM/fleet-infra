@@ -1343,7 +1343,7 @@
             "type": "loki",
             "uid": "${loki_datasource}"
           },
-          "expr": "{namespace=\"app-photoprism\"} |= \"$log_filter\"",
+          "expr": "{namespace=\"app-photoprism\"} |= \"$log_filter\" | json | drop __error__",
           "refId": "A"
         }
       ],
