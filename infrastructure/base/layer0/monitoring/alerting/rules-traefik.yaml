@@ -167,7 +167,7 @@ groups:
               to: 0
             datasourceUid: prometheus
             model:
-              expr: (traefik_tls_certs_not_after - time()) / 86400 < 14
+              expr: (traefik_tls_certs_not_after - time()) / 86400 < 7
               instant: true
               refId: A
           - refId: C
@@ -193,7 +193,45 @@ groups:
           severity: warning
         annotations:
           summary: "TLS certificate expiring soon"
-          description: "Certificate for {{ index $labels \"cn\" }} expires in less than 14 days."
+          description: "Certificate for {{ index $labels \"cn\" }} expires in less than 7 days. Auto-renewal may have failed."
+
+      - uid: traefik-cert-expiring-critical
+        title: TLS Certificate Expiring Critical
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 3600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: (traefik_tls_certs_not_after - time()) / 86400 < 3
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 3600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 30m
+        labels:
+          severity: critical
+        annotations:
+          summary: "TLS certificate expiring critically soon"
+          description: "Certificate for {{ index $labels \"cn\" }} expires in less than 3 days. Immediate action required."
 
       - uid: traefik-cert-expired
         title: TLS Certificate Expired
