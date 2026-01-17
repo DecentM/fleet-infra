@@ -1,0 +1,206 @@
+apiVersion: 1
+groups:
+  - orgId: 1
+    name: restic-backups
+    folder: Infrastructure
+    interval: 1m
+    rules:
+      - uid: restic-backup-failed
+        title: Restic Backup Failed
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 604800
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                kube_job_status_failed{namespace="app-restic", job_name=~"restic-backup-.*"} == 1
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 604800
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 0s
+        labels:
+          severity: critical
+          namespace: app-restic
+        annotations:
+          summary: "Restic backup job failed"
+          description: "Backup job {{ index $labels \"job_name\" }} has failed."
+
+      - uid: restic-backup-stale
+        title: Restic Backup Stale
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 1209600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                time() - max(kube_job_status_completion_time{namespace="app-restic", job_name=~"restic-backup-.*"} > 0) > 604800
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 1209600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 1h
+        labels:
+          severity: warning
+          namespace: app-restic
+        annotations:
+          summary: "Restic backup is stale"
+          description: "No successful backup has completed in over 7 days. Check CronJob status."
+
+      - uid: restic-backup-very-stale
+        title: Restic Backup Very Stale
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 2592000
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                time() - max(kube_job_status_completion_time{namespace="app-restic", job_name=~"restic-backup-.*"} > 0) > 1209600
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 2592000
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 1h
+        labels:
+          severity: critical
+          namespace: app-restic
+        annotations:
+          summary: "Restic backup is very stale"
+          description: "No successful backup has completed in over 14 days. Immediate attention required."
+
+      - uid: restic-cronjob-suspended
+        title: Restic CronJob Suspended
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                kube_cronjob_spec_suspend{namespace="app-restic", cronjob="restic-backup"} == 1
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 10m
+        labels:
+          severity: warning
+          namespace: app-restic
+        annotations:
+          summary: "Restic backup CronJob is suspended"
+          description: "The restic-backup CronJob has been suspended for more than 10 minutes."
+
+      - uid: restic-backup-running-long
+        title: Restic Backup Running Too Long
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 14400
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                kube_cronjob_status_active{namespace="app-restic", cronjob="restic-backup"} > 0
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 14400
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 4h
+        labels:
+          severity: warning
+          namespace: app-restic
+        annotations:
+          summary: "Restic backup is running too long"
+          description: "A restic backup job has been running for more than 4 hours."

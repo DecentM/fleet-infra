@@ -122,3 +122,11 @@ configMapGenerator:
       disableNameSuffixHash: true
       labels:
         grafana_alert: "1"
+  - name: grafana-alerting-rules-restic
+    namespace: monitoring-system
+    files:
+      - alerting/rules-restic.yaml
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_alert: "1"
