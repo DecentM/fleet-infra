@@ -31,6 +31,8 @@ spec:
               env:
                 - name: TZ
                   value: Europe/Tallinn
+                - name: LOCALDOMAIN
+                  value: cluster.local # Fix c-ares DNS resolution with ndots:5
                 - name: SERVARR_API_KEY
                   valueFrom:
                     secretKeyRef:
