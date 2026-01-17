@@ -12,7 +12,6 @@ resources:
   - ../base/restic
   - ../base/samba
   - ../base/servarr
-  - ../base/zerobyte
   - ../base/opencode
   - ../base/mcps
 patches:
