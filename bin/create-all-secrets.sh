@@ -138,4 +138,3 @@ create_secret \
     generic \
     "repository password aws-access-key-id aws-secret-access-key" \
     "apps/base/restic/sealed-secrets.yaml"
-

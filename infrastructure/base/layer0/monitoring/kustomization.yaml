@@ -55,24 +55,6 @@ configMapGenerator:
       disableNameSuffixHash: true
       labels:
         grafana_dashboard: "1"
-  # Alerting - Contact Points
-  - name: grafana-alerting-contactpoints
-    namespace: monitoring-system
-    files:
-      - alerting/contactpoints.yaml
-    options:
-      disableNameSuffixHash: true
-      labels:
-        grafana_alert: "1"
-  # Alerting - Notification Policies
-  - name: grafana-alerting-policies
-    namespace: monitoring-system
-    files:
-      - alerting/policies.yaml
-    options:
-      disableNameSuffixHash: true
-      labels:
-        grafana_alert: "1"
   # Alerting - Rules
   - name: grafana-alerting-rules-nodes
     namespace: monitoring-system
