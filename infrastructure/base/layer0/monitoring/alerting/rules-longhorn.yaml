@@ -42,7 +42,7 @@ groups:
           severity: warning
         annotations:
           summary: "Longhorn volume {{ index $labels \"volume\" }} is more than 80% full"
-          description: "Volume is using more than 80% of its capacity."
+          description: "Volume {{ index $labels \"volume\" }} on node {{ index $labels \"node\" }} is using more than 80% of its capacity."
 
       - uid: longhorn-volume-space-critical
         title: Longhorn Volume Space Critical
@@ -81,7 +81,7 @@ groups:
           severity: critical
         annotations:
           summary: "Longhorn volume {{ index $labels \"volume\" }} is almost full"
-          description: "Volume is more than 95% full."
+          description: "Volume {{ index $labels \"volume\" }} on node {{ index $labels \"node\" }} is more than 95% full."
 
       - uid: longhorn-volume-degraded
         title: Longhorn Volume Degraded
@@ -120,7 +120,7 @@ groups:
           severity: warning
         annotations:
           summary: "Longhorn volume {{ index $labels \"volume\" }} is degraded"
-          description: "Volume is in degraded state."
+          description: "Volume {{ index $labels \"volume\" }} is in degraded state. Some replicas may be unavailable."
 
       - uid: longhorn-volume-faulted
         title: Longhorn Volume Faulted
@@ -159,7 +159,7 @@ groups:
           severity: critical
         annotations:
           summary: "Longhorn volume {{ index $labels \"volume\" }} is faulted"
-          description: "Volume is in faulted state and may have data loss."
+          description: "Volume {{ index $labels \"volume\" }} is in faulted state and may have data loss."
 
       - uid: longhorn-node-down
         title: Longhorn Node Down
@@ -198,12 +198,129 @@ groups:
           severity: critical
         annotations:
           summary: "Longhorn node {{ index $labels \"node\" }} is down"
-          description: "Longhorn storage node is not ready."
+          description: "Longhorn storage node {{ index $labels \"node\" }} is not ready."
+
+      - uid: longhorn-node-storage-warning
+        title: Longhorn Node Storage Warning
+        condition: C
+        noDataState: OK
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: (longhorn_node_storage_usage_bytes / longhorn_node_storage_capacity_bytes) * 100 > 70
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Longhorn node {{ index $labels \"node\" }} storage is more than 70% full"
+          description: "Node {{ index $labels \"node\" }} storage is using more than 70% of its capacity."
+
+      - uid: longhorn-node-storage-critical
+        title: Longhorn Node Storage Critical
+        condition: C
+        noDataState: OK
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: (longhorn_node_storage_usage_bytes / longhorn_node_storage_capacity_bytes) * 100 > 90
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Longhorn node {{ index $labels \"node\" }} storage is almost full"
+          description: "Node {{ index $labels \"node\" }} storage is using more than 90% of its capacity."
+
+      - uid: longhorn-disk-not-ready
+        title: Longhorn Disk Not Ready
+        condition: C
+        noDataState: OK
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: longhorn_disk_status{condition="ready"} == 0
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Longhorn disk {{ index $labels \"disk\" }} is not ready"
+          description: "Disk {{ index $labels \"disk\" }} on node {{ index $labels \"node\" }} is not ready."
 
       - uid: longhorn-metrics-missing
         title: Longhorn Metrics Missing
         condition: C
-        noDataState: Alerting
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -237,4 +354,4 @@ groups:
           severity: warning
         annotations:
           summary: "Longhorn metrics are not being scraped"
-          description: "Prometheus is unable to scrape Longhorn metrics. Check the longhorn-backend service."
+          description: "Prometheus is unable to scrape Longhorn metrics. Check the longhorn-manager service in the longhorn-system namespace."

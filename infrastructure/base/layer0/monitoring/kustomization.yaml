@@ -48,6 +48,14 @@ configMapGenerator:
       disableNameSuffixHash: true
       labels:
         grafana_dashboard: "1"
+  - name: grafana-dashboard-longhorn
+    namespace: monitoring-system
+    files:
+      - dashboards/longhorn.json
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_dashboard: "1"
 
   # Alerting - Rules
   - name: grafana-alerting-rules-nodes

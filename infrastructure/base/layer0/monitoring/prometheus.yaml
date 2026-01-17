@@ -111,12 +111,24 @@ spec:
               names:
                 - longhorn-system
         relabel_configs:
-          - source_labels: [__meta_kubernetes_service_name]
+          - source_labels: [__meta_kubernetes_service_label_app]
             action: keep
-            regex: longhorn-backend
+            regex: longhorn-manager
           - source_labels: [__meta_kubernetes_endpoint_port_name]
             action: keep
             regex: manager
+          - source_labels: [__meta_kubernetes_namespace]
+            action: replace
+            target_label: namespace
+          - source_labels: [__meta_kubernetes_service_name]
+            action: replace
+            target_label: service
+          - source_labels: [__meta_kubernetes_pod_name]
+            action: replace
+            target_label: pod
+          - source_labels: [__meta_kubernetes_pod_node_name]
+            action: replace
+            target_label: node
 
       # CNPG PostgreSQL clusters (port 9187)
       - job_name: 'cnpg-clusters'
