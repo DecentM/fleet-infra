@@ -8,6 +8,7 @@ groups:
       - uid: node-not-ready
         title: Node Not Ready
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -46,6 +47,7 @@ groups:
       - uid: node-memory-pressure
         title: Node Memory Pressure
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -84,6 +86,7 @@ groups:
       - uid: node-disk-pressure
         title: Node Disk Pressure
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -122,6 +125,7 @@ groups:
       - uid: node-high-cpu
         title: Node High CPU
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -160,6 +164,7 @@ groups:
       - uid: node-high-memory
         title: Node High Memory
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -198,6 +203,7 @@ groups:
       - uid: node-filesystem-almost-full
         title: Node Filesystem Almost Full
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -236,6 +242,7 @@ groups:
       - uid: node-filesystem-full
         title: Node Filesystem Full
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:

@@ -8,6 +8,7 @@ groups:
       - uid: traefik-high-error-rate
         title: Traefik High Error Rate
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -46,6 +47,7 @@ groups:
       - uid: traefik-service-high-error-rate
         title: Traefik Service High Error Rate
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -84,6 +86,7 @@ groups:
       - uid: traefik-high-latency
         title: Traefik High Latency
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -122,6 +125,7 @@ groups:
       - uid: traefik-down
         title: Traefik Down
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -160,6 +164,7 @@ groups:
       - uid: traefik-cert-expiring-soon
         title: TLS Certificate Expiring Soon
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -198,6 +203,7 @@ groups:
       - uid: traefik-cert-expiring-critical
         title: TLS Certificate Expiring Critical
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -236,6 +242,7 @@ groups:
       - uid: traefik-cert-expired
         title: TLS Certificate Expired
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:

@@ -9,6 +9,7 @@ groups:
       - uid: minecraft-server-down
         title: Minecraft Server Down
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -48,6 +49,7 @@ groups:
       - uid: minecraft-high-response-time
         title: Minecraft High Response Time
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -87,6 +89,7 @@ groups:
       - uid: minecraft-very-high-response-time
         title: Minecraft Very High Response Time
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -127,6 +130,7 @@ groups:
       - uid: minecraft-player-count-drop
         title: Minecraft Player Count Dropped
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -172,6 +176,7 @@ groups:
       - uid: minecraft-pod-crash-looping
         title: Minecraft Pod Crash Looping
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -211,6 +216,7 @@ groups:
       - uid: minecraft-pod-not-ready
         title: Minecraft Pod Not Ready
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -258,6 +264,7 @@ groups:
       - uid: minecraft-ticks-behind
         title: Minecraft Server Ticks Behind
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -298,6 +305,7 @@ groups:
       - uid: minecraft-chat-spam
         title: Minecraft Chat Spam Detected
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -338,6 +346,7 @@ groups:
       - uid: minecraft-login-spam
         title: Minecraft Login Spam Detected
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -378,6 +387,7 @@ groups:
       - uid: minecraft-server-error
         title: Minecraft Server Error
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:

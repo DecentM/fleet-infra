@@ -8,6 +8,7 @@ groups:
       - uid: target-down
         title: Target Down
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -46,6 +47,7 @@ groups:
       - uid: prometheus-config-reload-failed
         title: Prometheus Config Reload Failed
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -84,6 +86,7 @@ groups:
       - uid: alertmanager-config-reload-failed
         title: Alertmanager Config Reload Failed
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:

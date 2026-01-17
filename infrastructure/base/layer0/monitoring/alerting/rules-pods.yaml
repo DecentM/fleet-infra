@@ -8,6 +8,7 @@ groups:
       - uid: pod-crash-looping
         title: Pod Crash Looping
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -46,6 +47,7 @@ groups:
       - uid: pod-not-ready
         title: Pod Not Ready
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -84,6 +86,7 @@ groups:
       - uid: container-oom-killed
         title: Container OOM Killed
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -122,6 +125,7 @@ groups:
       - uid: pod-pending
         title: Pod Pending
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:

@@ -8,6 +8,7 @@ groups:
       - uid: restic-backup-failed
         title: Restic Backup Failed
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -48,6 +49,7 @@ groups:
       - uid: restic-backup-stale
         title: Restic Backup Stale
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -88,6 +90,7 @@ groups:
       - uid: restic-backup-very-stale
         title: Restic Backup Very Stale
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -128,6 +131,7 @@ groups:
       - uid: restic-cronjob-suspended
         title: Restic CronJob Suspended
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
@@ -168,6 +172,7 @@ groups:
       - uid: restic-backup-running-long
         title: Restic Backup Running Too Long
         condition: C
+        noDataState: OK
         data:
           - refId: A
             relativeTimeRange:
