@@ -139,9 +139,3 @@ create_secret \
     "repository password aws-access-key-id aws-secret-access-key" \
     "apps/base/restic/sealed-secrets.yaml"
 
-create_secret \
-    monitoring-system \
-    alertmanager-discord-webhook \
-    generic \
-    "webhook-url" \
-    "infrastructure/base/layer0/monitoring/sealed-discord-webhook.yaml"
