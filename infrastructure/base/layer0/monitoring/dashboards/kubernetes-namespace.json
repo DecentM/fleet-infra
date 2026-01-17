@@ -1130,10 +1130,20 @@
             "uid": "${loki_datasource}"
           },
           "expr": "{namespace=\"$namespace\"} |= \"$log_filter\"",
+          "legendFormat": "",
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki_datasource}"
+          },
+          "expr": "{job=\"kubernetes-events\", namespace=\"$namespace\"} |= \"$log_filter\"",
+          "legendFormat": "",
+          "refId": "B"
         }
       ],
-      "title": "Namespace Logs",
+      "title": "Namespace Logs & Events",
       "type": "logs"
     },
     {
