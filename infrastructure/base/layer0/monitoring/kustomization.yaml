@@ -56,6 +56,14 @@ configMapGenerator:
       disableNameSuffixHash: true
       labels:
         grafana_dashboard: "1"
+  - name: grafana-dashboard-servarr
+    namespace: monitoring-system
+    files:
+      - dashboards/servarr.json
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_dashboard: "1"
 
   # Alerting - Rules
   - name: grafana-alerting-rules-nodes
@@ -118,6 +126,14 @@ configMapGenerator:
     namespace: monitoring-system
     files:
       - alerting/rules-minecraft.yaml
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_alert: "1"
+  - name: grafana-alerting-rules-servarr
+    namespace: monitoring-system
+    files:
+      - alerting/rules-servarr.yaml
     options:
       disableNameSuffixHash: true
       labels:

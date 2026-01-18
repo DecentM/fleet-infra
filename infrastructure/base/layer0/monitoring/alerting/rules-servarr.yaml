@@ -1,0 +1,326 @@
+apiVersion: 1
+groups:
+  - orgId: 1
+    name: servarr
+    folder: Infrastructure
+    interval: 1m
+    rules:
+      - uid: sonarr-down
+        title: Sonarr Down
+        condition: C
+        noDataState: Alerting
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: sonarr_system_status == 0
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 5m
+        labels:
+          severity: critical
+          service: servarr
+        annotations:
+          summary: "Sonarr is down"
+          description: "Sonarr has been unreachable for more than 5 minutes."
+
+      - uid: radarr-down
+        title: Radarr Down
+        condition: C
+        noDataState: Alerting
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: radarr_system_status == 0
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 5m
+        labels:
+          severity: critical
+          service: servarr
+        annotations:
+          summary: "Radarr is down"
+          description: "Radarr has been unreachable for more than 5 minutes."
+
+      - uid: prowlarr-down
+        title: Prowlarr Down
+        condition: C
+        noDataState: Alerting
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: prowlarr_system_status == 0
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 5m
+        labels:
+          severity: critical
+          service: servarr
+        annotations:
+          summary: "Prowlarr is down"
+          description: "Prowlarr has been unreachable for more than 5 minutes."
+
+      - uid: sonarr-high-missing-episodes
+        title: Sonarr High Missing Episodes
+        condition: C
+        noDataState: OK
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: sonarr_episode_missing_total
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [100]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 1h
+        labels:
+          severity: warning
+          service: servarr
+        annotations:
+          summary: "High number of missing episodes in Sonarr"
+          description: "Sonarr has more than 100 missing episodes. Current: {{ $values.A.Value }}"
+
+      - uid: radarr-high-missing-movies
+        title: Radarr High Missing Movies
+        condition: C
+        noDataState: OK
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: radarr_movie_missing_total
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [50]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 1h
+        labels:
+          severity: warning
+          service: servarr
+        annotations:
+          summary: "High number of missing movies in Radarr"
+          description: "Radarr has more than 50 missing movies. Current: {{ $values.A.Value }}"
+
+      - uid: prowlarr-indexer-slow
+        title: Prowlarr Indexer Slow Response
+        condition: C
+        noDataState: OK
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: prowlarr_indexer_average_response_time_ms > 2000
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 15m
+        labels:
+          severity: warning
+          service: servarr
+        annotations:
+          summary: "Prowlarr indexer responding slowly"
+          description: "One or more Prowlarr indexers have response times over 2 seconds for more than 15 minutes."
+
+      - uid: prowlarr-indexer-failing
+        title: Prowlarr Indexer Failing
+        condition: C
+        noDataState: OK
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 3600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: increase(prowlarr_indexer_failed_queries_total[1h]) > 10
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 5m
+        labels:
+          severity: warning
+          service: servarr
+        annotations:
+          summary: "Prowlarr indexer has high failure rate"
+          description: "One or more Prowlarr indexers have had more than 10 failed queries in the last hour."
+
+      - uid: servarr-exporter-down
+        title: Servarr Exporter Down
+        condition: C
+        noDataState: Alerting
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: up{job=~"sonarr-metrics|radarr-metrics|prowlarr-metrics"} == 0
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 5m
+        labels:
+          severity: warning
+          service: servarr
+        annotations:
+          summary: "Servarr metrics exporter is down"
+          description: "One of the Servarr exportarr metrics endpoints has been unreachable for more than 5 minutes."
