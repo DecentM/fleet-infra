@@ -84,6 +84,13 @@ create_secret \
     "apps/base/servarr/secrets/sealed-api-key.yaml"
 
 create_secret \
+    app-servarr \
+    qbittorrent-credentials \
+    generic \
+    "username password" \
+    "apps/base/servarr/secrets/sealed-qbittorrent-credentials.yaml"
+
+create_secret \
     app-joplin \
     joplin-secrets \
     generic \

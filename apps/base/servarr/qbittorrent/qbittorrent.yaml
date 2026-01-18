@@ -69,6 +69,44 @@ spec:
               mountPath: /downloads
             - name: config
               mountPath: /config
+        - name: exporter
+          image: ghcr.io/esanchezm/prometheus-qbittorrent-exporter:v1.6.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: QBITTORRENT_HOST
+              value: "localhost"
+            - name: QBITTORRENT_PORT
+              value: "8081"
+            - name: EXPORTER_PORT
+              value: "9022"
+            - name: EXPORTER_LOG_LEVEL
+              value: "INFO"
+            # Credentials from secret
+            - name: QBITTORRENT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: qbittorrent-credentials
+                  key: username
+            - name: QBITTORRENT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: qbittorrent-credentials
+                  key: password
+          ports:
+            - containerPort: 9022
+              name: metrics
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 10
+            periodSeconds: 30
 
       volumes:
         - name: downloads
@@ -114,4 +152,19 @@ spec:
       targetPort: http
   selector:
     app: qbittorrent
-
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qbittorrent-metrics
+  namespace: app-servarr
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9022"
+spec:
+  ports:
+    - name: metrics
+      port: 9022
+      targetPort: metrics
+  selector:
+    app: qbittorrent

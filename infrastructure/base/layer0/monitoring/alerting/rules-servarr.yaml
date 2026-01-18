@@ -296,7 +296,7 @@ groups:
               to: 0
             datasourceUid: prometheus
             model:
-              expr: up{job=~"sonarr-metrics|radarr-metrics|prowlarr-metrics"} == 0
+              expr: up{job=~"sonarr-metrics|radarr-metrics|prowlarr-metrics|qbittorrent-metrics"} == 0
               instant: true
               refId: A
           - refId: C
@@ -324,3 +324,163 @@ groups:
         annotations:
           summary: "Servarr metrics exporter is down"
           description: "One of the Servarr exportarr metrics endpoints has been unreachable for more than 5 minutes."
+
+      - uid: qbittorrent-down
+        title: qBittorrent Down
+        condition: C
+        noDataState: Alerting
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: qbittorrent_up == 0
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 5m
+        labels:
+          severity: critical
+          service: servarr
+        annotations:
+          summary: "qBittorrent is down"
+          description: "qBittorrent has been unreachable for more than 5 minutes."
+
+      - uid: qbittorrent-disconnected
+        title: qBittorrent Network Disconnected
+        condition: C
+        noDataState: OK
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: qbittorrent_connected == 0
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 10m
+        labels:
+          severity: warning
+          service: servarr
+        annotations:
+          summary: "qBittorrent is disconnected from BitTorrent network"
+          description: "qBittorrent has been disconnected from the BitTorrent network for more than 10 minutes."
+
+      - uid: qbittorrent-firewalled
+        title: qBittorrent Behind Firewall
+        condition: C
+        noDataState: OK
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: qbittorrent_firewalled == 1
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 30m
+        labels:
+          severity: warning
+          service: servarr
+        annotations:
+          summary: "qBittorrent is behind a firewall"
+          description: "qBittorrent has been behind a firewall for more than 30 minutes. Port forwarding may not be working correctly."
+
+      - uid: qbittorrent-no-dht
+        title: qBittorrent No DHT Nodes
+        condition: C
+        noDataState: OK
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: qbittorrent_dht_nodes
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [10]
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 15m
+        labels:
+          severity: warning
+          service: servarr
+        annotations:
+          summary: "qBittorrent has very few DHT nodes"
+          description: "qBittorrent has fewer than 10 DHT nodes connected for more than 15 minutes. This may indicate network connectivity issues."
