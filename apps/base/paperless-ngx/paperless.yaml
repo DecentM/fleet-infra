@@ -6,6 +6,7 @@ metadata:
   labels:
     app: paperless-ngx
 spec:
+  revisionHistoryLimit: 2
   selector:
     matchLabels:
       app: paperless-ngx

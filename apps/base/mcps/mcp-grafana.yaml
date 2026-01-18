@@ -5,6 +5,7 @@ metadata:
   namespace: app-mcps
 
 spec:
+  revisionHistoryLimit: 2
   selector:
     matchLabels:
       app: mcp-grafana

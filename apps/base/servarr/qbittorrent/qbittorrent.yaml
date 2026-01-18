@@ -6,6 +6,7 @@ metadata:
   namespace: app-servarr
 
 spec:
+  revisionHistoryLimit: 2
   selector:
     matchLabels:
       app: qbittorrent

@@ -4,6 +4,7 @@ metadata:
   name: inv-sig-helper
   namespace: app-invidious
 spec:
+  revisionHistoryLimit: 2
   replicas: 0
   selector:
     matchLabels:

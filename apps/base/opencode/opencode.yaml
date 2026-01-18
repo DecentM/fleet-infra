@@ -5,6 +5,7 @@ metadata:
   namespace: app-opencode
 
 spec:
+  revisionHistoryLimit: 2
   selector:
     matchLabels:
       app: opencode

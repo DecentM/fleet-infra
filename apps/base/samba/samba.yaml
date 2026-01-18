@@ -4,6 +4,7 @@ metadata:
   name: samba
   namespace: app-samba
 spec:
+  revisionHistoryLimit: 2
   selector:
     matchLabels:
       app: samba
