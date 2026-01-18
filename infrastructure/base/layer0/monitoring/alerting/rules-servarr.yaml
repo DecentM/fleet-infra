@@ -484,3 +484,43 @@ groups:
         annotations:
           summary: "qBittorrent has very few DHT nodes"
           description: "qBittorrent has fewer than 10 DHT nodes connected for more than 15 minutes. This may indicate network connectivity issues."
+
+      - uid: qbittorrent-private-tracker-not-seeding
+        title: Private Tracker Torrent Not Seeding
+        condition: C
+        noDataState: OK
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: sum(qbittorrent_torrents_count{category="post-import", status=~"error|missingFiles|pausedUP|stoppedUP|pausedDL|stoppedDL"}) or vector(0)
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 5m
+        labels:
+          severity: critical
+          service: servarr
+        annotations:
+          summary: "Private tracker torrent not seeding"
+          description: "One or more torrents in the post-import category (private tracker) are in a non-seeding state (error, missing files, or stopped). This could result in a hit-and-run violation."
