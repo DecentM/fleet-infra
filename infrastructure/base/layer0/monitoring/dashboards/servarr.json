@@ -916,6 +916,11 @@
               "__name__": true,
               "instance": true,
               "job": true,
+              "namespace": true,
+              "node": true,
+              "service": true,
+              "toolkit": true,
+              "url": true,
               "weight": true
             },
             "indexByName": {},
@@ -1490,6 +1495,11 @@
               "__name__": true,
               "instance": true,
               "job": true,
+              "namespace": true,
+              "node": true,
+              "service": true,
+              "toolkit": true,
+              "url": true,
               "weight": true
             },
             "indexByName": {},
