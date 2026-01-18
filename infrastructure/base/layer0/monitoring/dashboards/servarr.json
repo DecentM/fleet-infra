@@ -1149,7 +1149,6 @@
             }
           },
           "mappings": [],
-          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1220,7 +1219,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(qbittorrent_dl_info_data[5m])",
+          "expr": "rate(qbittorrent_dl_info_data_total[5m])",
           "legendFormat": "Download",
           "refId": "A"
         },
@@ -1229,7 +1228,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(qbittorrent_up_info_data[5m])",
+          "expr": "-rate(qbittorrent_up_info_data_total[5m])",
           "legendFormat": "Upload",
           "refId": "B"
         }
@@ -1675,13 +1674,6 @@
           "color": {
             "mode": "thresholds"
           },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "inspect": false
-          },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -1691,20 +1683,51 @@
                 "value": null
               }
             ]
-          }
+          },
+          "unit": "short"
         },
         "overrides": [
           {
             "matcher": {
               "id": "byName",
-              "options": "Count"
+              "options": "Downloaded"
             },
             "properties": [
               {
-                "id": "custom.cellOptions",
+                "id": "color",
                 "value": {
-                  "mode": "gradient",
-                  "type": "gauge"
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Missing"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Cutoff Unmet"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
                 }
               }
             ]
@@ -1719,20 +1742,18 @@
       },
       "id": 15,
       "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
           "fields": "",
-          "reducer": ["sum"],
-          "show": false
+          "values": false
         },
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Count"
-          }
-        ]
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
       "pluginVersion": "10.0.0",
       "targets": [
@@ -1741,42 +1762,31 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sonarr_episode_quality_total",
-          "format": "table",
-          "instant": true,
+          "expr": "sonarr_episode_downloaded_total",
+          "legendFormat": "Downloaded",
           "refId": "A"
-        }
-      ],
-      "title": "Episodes by Quality",
-      "transformations": [
+        },
         {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true,
-              "__name__": true,
-              "container": true,
-              "endpoint": true,
-              "instance": true,
-              "job": true,
-              "kustomize_toolkit_fluxcd_io_name": true,
-              "kustomize_toolkit_fluxcd_io_namespace": true,
-              "namespace": true,
-              "node": true,
-              "pod": true,
-              "service": true,
-              "url": true,
-              "weight": true
-            },
-            "indexByName": {},
-            "renameByName": {
-              "Value": "Count",
-              "quality": "Quality"
-            }
-          }
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sonarr_episode_missing_total",
+          "legendFormat": "Missing",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sonarr_episode_cutoff_unmet_total",
+          "legendFormat": "Cutoff Unmet",
+          "refId": "C"
         }
       ],
-      "type": "table"
+      "title": "Episode Status",
+      "type": "stat"
     },
     {
       "datasource": {
