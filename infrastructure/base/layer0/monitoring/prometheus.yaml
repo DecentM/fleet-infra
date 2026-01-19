@@ -77,7 +77,7 @@ spec:
       readinessProbeTimeout: 10
     extraScrapeConfigs: |
       # Scrape services with prometheus.io/scrape annotation
-      - job_name: 'kubernetes-service-endpoints'
+      - job_name: 'kubernetes-service-endpoints-custom'
         kubernetes_sd_configs:
           - role: endpoints
         relabel_configs:
@@ -110,7 +110,7 @@ spec:
             target_label: pod
 
       # Scrape pods with prometheus.io/scrape annotation (for CNPG and other pods)
-      - job_name: 'kubernetes-pods'
+      - job_name: 'kubernetes-pods-custom'
         kubernetes_sd_configs:
           - role: pod
         relabel_configs:
