@@ -27,8 +27,40 @@ spec:
       enabled: false
     kube-state-metrics:
       enabled: true
+      livenessProbe:
+        httpGet:
+          path: /healthz
+          port: 8080
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 3
+      readinessProbe:
+        httpGet:
+          path: /
+          port: 8080
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 3
     prometheus-node-exporter:
       enabled: true
+      livenessProbe:
+        httpGet:
+          path: /
+          port: 9100
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 3
+      readinessProbe:
+        httpGet:
+          path: /
+          port: 9100
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 3
     prometheus-pushgateway:
       enabled: false
     server:
@@ -39,6 +71,10 @@ spec:
       retention: "15d"
       service:
         type: ClusterIP
+      livenessProbeInitialDelay: 30
+      livenessProbeTimeout: 10
+      readinessProbeInitialDelay: 30
+      readinessProbeTimeout: 10
     extraScrapeConfigs: |
       # Scrape services with prometheus.io/scrape annotation
       - job_name: 'kubernetes-service-endpoints'
