@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: warp-proxy
+  namespace: app-warp-proxy
+spec:
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: warp-proxy
+  strategy:
+    type: Recreate
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: warp-proxy
+    spec:
+      containers:
+        - name: warp
+          image: docker.io/caomingjun/warp:2025.10.186.0-2.12.0
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+            privileged: true
+          ports:
+            - containerPort: 1080
+              name: socks5
+              protocol: TCP
+          env:
+            - name: WARP_SLEEP
+              value: "2"
+            # Accept Cloudflare's TOS
+            - name: WARP_LICENSE_ACCEPT
+              value: "true"
+          volumeMounts:
+            - name: warp-data
+              mountPath: /var/lib/cloudflare-warp
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          readinessProbe:
+            tcpSocket:
+              port: 1080
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: 1080
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+
+      volumes:
+        - name: warp-data
+          persistentVolumeClaim:
+            claimName: warp-data
+
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: warp-data
+  namespace: app-warp-proxy
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: longhorn-local

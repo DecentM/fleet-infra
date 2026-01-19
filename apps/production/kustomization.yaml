@@ -14,6 +14,7 @@ resources:
   - ../base/servarr
   - ../base/opencode
   - ../base/mcps
+  - ../base/warp-proxy
 patches:
   - path: patches/photoprism.yaml
   - path: patches/spectrum-mc-rp-tunnel.yaml

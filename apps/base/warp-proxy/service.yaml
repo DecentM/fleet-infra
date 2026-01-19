@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: warp-proxy
+  namespace: app-warp-proxy
+  labels:
+    tailscale.com/proxy-class: privileged-proxy
+  annotations:
+    # Set the hostname in Tailscale to 'warp-proxy'
+    tailscale.com/hostname: warp-proxy
+spec:
+  type: LoadBalancer
+  loadBalancerClass: tailscale
+  selector:
+    app: warp-proxy
+  ports:
+    - name: socks5
+      protocol: TCP
+      port: 1080
+      targetPort: socks5
