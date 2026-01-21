@@ -13,11 +13,6 @@ spec:
   rollingUpdate:
     maxUnavailable: 0
     maxSurge: 1
-  securityContext:
-    runAsUser: 1000
-    runAsGroup: 1000
-    fsGroup: 1000
-    fsGroupChangePolicy: "OnRootMismatch"
   template:
     metadata:
       labels:
