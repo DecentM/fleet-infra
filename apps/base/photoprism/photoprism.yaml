@@ -98,19 +98,6 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: originals
-  namespace: app-photoprism
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 200Gi
-  storageClassName: longhorn-pool
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
   name: storage
   namespace: app-photoprism
 spec:

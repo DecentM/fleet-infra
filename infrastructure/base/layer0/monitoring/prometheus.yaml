@@ -67,7 +67,7 @@ spec:
       persistentVolume:
         enabled: true
         storageClass: longhorn-local
-        size: 10Gi
+        size: 21Gi
       retention: "15d"
       service:
         type: ClusterIP

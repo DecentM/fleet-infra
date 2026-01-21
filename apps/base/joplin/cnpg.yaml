@@ -8,6 +8,6 @@ spec:
   imageName: ghcr.io/cloudnative-pg/postgresql:13.16
   storage:
     storageClass: longhorn-local
-    size: 5Gi
+    size: 13Gi
   monitoring:
     enablePodMonitor: true

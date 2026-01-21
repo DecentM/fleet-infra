@@ -98,7 +98,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 15Gi
+      storage: 56Gi
   storageClassName: longhorn-local
 ---
 apiVersion: v1
