@@ -78,7 +78,7 @@ spec:
       volumes:
         - name: data
           persistentVolumeClaim:
-            claimName: data
+            claimName: data-restore
         - name: media
           persistentVolumeClaim:
             claimName: media
@@ -89,7 +89,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: data
+  name: data-restore
   namespace: app-paperless-ngx
 spec:
   accessModes:
@@ -97,6 +97,7 @@ spec:
   resources:
     requests:
       storage: 5Gi
+  volumeName: pvc-c0f60167-32b3-4ffd-b045-baf4cd48287b
   storageClassName: longhorn-pool
 ---
 apiVersion: v1
