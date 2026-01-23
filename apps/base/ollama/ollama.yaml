@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: ollama
+  namespace: app-ollama
+
+spec:
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: ollama
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: ollama
+    spec:
+      containers:
+        - name: ollama
+          image: ollama/ollama:0.14.3
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: OLLAMA_HOST
+              value: "0.0.0.0:11434"
+            - name: OLLAMA_ORIGINS
+              value: "https://ollama.cluster.arpa,http://localhost"
+            - name: OLLAMA_KEEP_ALIVE
+              value: "5m"
+          ports:
+            - containerPort: 11434
+              name: http
+          resources:
+            requests:
+              memory: 8Gi
+              cpu: 2000m
+              nvidia.com/gpu: "1"
+            limits:
+              memory: 16Gi
+              cpu: 4000m
+              nvidia.com/gpu: "1"
+          readinessProbe:
+            httpGet:
+              path: /api/tags
+              port: 11434
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 11434
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 6
+          volumeMounts:
+            - name: data
+              mountPath: /root/.ollama
+      volumes:
+        - name: data
+          hostPath:
+            path: /mnt/spike/storage/k8s/namespaces/app-ollama/data
+            type: Directory
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: home.arpa/zfs-pool
+                    operator: In
+                    values:
+                      - "true"
+                  - key: nvidia.com/gpu.present
+                    operator: In
+                    values:
+                      - "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama
+  namespace: app-ollama
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "11434"
+
+spec:
+  ports:
+    - name: http
+      port: 11434
+      targetPort: http
+  selector:
+    app: ollama
