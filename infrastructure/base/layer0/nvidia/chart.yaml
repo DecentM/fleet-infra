@@ -22,7 +22,7 @@ spec:
         name: nvidia-repo
   values:
     driver:
-      enabled: false
+      enabled: true
     toolkit:
       enabled: true
     operator:
