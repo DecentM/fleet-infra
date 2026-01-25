@@ -12,7 +12,6 @@ resources:
   - ../base/restic
   - ../base/samba
   - ../base/servarr
-  - ../base/opencode
   - ../base/mcps
   - ../base/ollama
   - ../base/warp-proxy
