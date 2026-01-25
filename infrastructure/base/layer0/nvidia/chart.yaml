@@ -23,6 +23,7 @@ spec:
   values:
     driver:
       enabled: true
+      version: "sha256:317c7ab01f28c87dc8c209b38c49fb2758a595d9ffbc1d71e18530788dcf34be"
     toolkit:
       enabled: true
     operator:
