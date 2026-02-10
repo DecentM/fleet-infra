@@ -75,53 +75,17 @@ spec:
               name: http
       volumes:
         - name: data
-          persistentVolumeClaim:
-            claimName: data
+          hostPath:
+            path: /mnt/spike/storage/k8s/namespaces/app-paperless-ngx/paperless-ngx/data
+            type: DirectoryOrCreate
         - name: media
-          persistentVolumeClaim:
-            claimName: media
+          hostPath:
+            path: /mnt/spike/storage/k8s/namespaces/app-paperless-ngx/paperless-ngx/media
+            type: DirectoryOrCreate
         - name: trash
-          persistentVolumeClaim:
-            claimName: trash
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: data
-  namespace: app-paperless-ngx
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
-  storageClassName: longhorn-pool
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: media
-  namespace: app-paperless-ngx
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
-  storageClassName: longhorn-pool
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: trash
-  namespace: app-paperless-ngx
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
-  storageClassName: longhorn-local
+          hostPath:
+            path: /mnt/spike/storage/k8s/namespaces/app-paperless-ngx/paperless-ngx/trash
+            type: DirectoryOrCreate
 ---
 apiVersion: v1
 kind: Service

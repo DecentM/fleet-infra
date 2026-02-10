@@ -60,8 +60,9 @@ spec:
             periodSeconds: 30
       volumes:
         - name: redisdata
-          persistentVolumeClaim:
-            claimName: redisdata
+          hostPath:
+            path: /mnt/spike/storage/k8s/namespaces/app-paperless-ngx/broker/redisdata
+            type: DirectoryOrCreate
 ---
 apiVersion: v1
 kind: Service
@@ -91,16 +92,3 @@ spec:
       targetPort: metrics
   selector:
     app: paperless-ngx-redis
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: redisdata
-  namespace: app-paperless-ngx
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
-    storageClassName: longhorn-local
