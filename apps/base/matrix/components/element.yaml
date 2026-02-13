@@ -28,13 +28,16 @@ spec:
         app.kubernetes.io/name: element
     spec:
       securityContext:
-        runAsUser: 101
-        runAsGroup: 101
-        fsGroup: 101
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
         - name: element
           image: vectorim/element-web:v1.12.10
           imagePullPolicy: IfNotPresent
+          environment:
+            - key: ELEMENT_WEB_PORT
+              value: 8000
           resources:
             requests:
               cpu: 10m
@@ -43,13 +46,13 @@ spec:
               cpu: 100m
               memory: 64Mi
           securityContext:
-            runAsUser: 101
-            runAsGroup: 101
+            runAsUser: 1000
+            runAsGroup: 1000
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 8000
               protocol: TCP
           readinessProbe:
             httpGet:
@@ -105,7 +108,7 @@ spec:
   type: ClusterIP
   ports:
     - name: http
-      port: 80
+      port: 8000
       targetPort: http
       protocol: TCP
   selector:
