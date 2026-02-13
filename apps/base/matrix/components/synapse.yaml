@@ -49,7 +49,7 @@ spec:
             readOnlyRootFilesystem: true
       containers:
         - name: synapse
-          image: matrixdotorg/synapse:1.147.0
+          image: matrixdotorg/synapse:v1.147.1
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -123,6 +123,11 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: synapse-media
+        # IMPORTANT: The synapse-signing-key secret must contain a properly formatted
+        # Matrix signing key in the format: "ed25519 a_<id> <base64-seed>"
+        # Generate using: docker run --rm -v /tmp:/data matrixdotorg/synapse:v1.147.1 generate
+        # The signing.key file content should look like:
+        #   ed25519 a_abcd dGhpc2lzYW4zMmJ5dGVzZWVkZm9ybmFjbGVkMjU1MTk
         - name: signing-key
           secret:
             secretName: synapse-signing-key

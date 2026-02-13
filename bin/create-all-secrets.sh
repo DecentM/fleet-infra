@@ -47,17 +47,28 @@ create_secret() {
 
         printf "> TLS key (PEM encoded conten, press CTRL+D to submit):\n"
         extra=$(cat)
+
+        printf "…"
+
+        bin/create-secret.sh "$namespace" "$secret_name" "$secret_type" "$input_literals" "$output_path" "$extra"
     else
+        # Build newline-separated key=value pairs for generic secrets
         for key in $input_keys; do
             printf "> %s: " "$key"
             read -r value
-            input_literals="$key=$value $input_literals"
+            if [ -z "$input_literals" ]; then
+                input_literals="$key=$value"
+            else
+                input_literals="$input_literals
+$key=$value"
+            fi
         done
+
+        printf "…"
+
+        # Pass the newline-separated input to create-secret.sh as the 4th argument
+        bin/create-secret.sh "$namespace" "$secret_name" "$secret_type" "$input_literals" "$output_path" "$extra"
     fi
-
-    printf "…"
-
-    bin/create-secret.sh "$namespace" "$secret_name" "$secret_type" "$input_literals" "$output_path" "$extra"
 
     printf "\r✓\n"
 }
@@ -145,9 +156,6 @@ create_secret \
     generic \
     "repository password aws-access-key-id aws-secret-access-key" \
     "apps/base/restic/sealed-secrets.yaml"
-
-# Matrix Stack Secrets
-echo "=== Matrix Stack Secrets ==="
 
 create_secret \
     app-matrix \

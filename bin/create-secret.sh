@@ -28,8 +28,8 @@ if [ $# -eq 0 ]; then
     printf "> Secret type (e.g. generic, docker-registry, etc.): "
     read -r secret_type
 
-    printf "> Enter space separated literals (like a=b c=d): "
-    read -r input_literals
+    printf "> Enter newline-separated literals (key=value per line, Ctrl+D when done):\n"
+    input_literals=$(cat)
 
     printf "> TLS key (if applicable): "
     read -r tls_key
@@ -48,6 +48,9 @@ if [ "$secret_type" = "docker-registry" ]; then
     for word in $input_literals; do
         literals="--$word $literals"
     done
+
+    # shellcheck disable=SC2086 # literals is a string of arguments
+    kubectl -n "$namespace" create secret "$secret_type" "$secret_name" $literals --dry-run=client -o yaml >/tmp/secret.yaml
 elif [ "$secret_type" = "tls" ]; then
     if [ -z "$input_literals" ]; then
         echo "TLS secret requires a cert file. Please provide the PEM encoded certificate in \$4."
@@ -66,14 +69,35 @@ elif [ "$secret_type" = "tls" ]; then
     # In this case, literals are the cert
     literals="--cert=/tmp/cert.pem $literals"
     literals="--key=/tmp/key.pem $literals"
+
+    # shellcheck disable=SC2086 # literals is a string of arguments
+    kubectl -n "$namespace" create secret "$secret_type" "$secret_name" $literals --dry-run=client -o yaml >/tmp/secret.yaml
 else
-    for word in $input_literals; do
-        literals="--from-literal=$word $literals"
+    # For generic secrets, use stringData YAML generation to handle special characters
+    # This avoids shell word-splitting and kubectl argument parsing issues
+    cat >/tmp/secret.yaml <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: $secret_name
+  namespace: $namespace
+type: Opaque
+stringData:
+EOF
+
+    # Parse key=value pairs from newline-delimited input
+    # Each line should be in format: key=value (value can contain spaces, special chars, etc.)
+    echo "$input_literals" | while IFS= read -r line; do
+        [ -z "$line" ] && continue
+        key="${line%%=*}"
+        value="${line#*=}"
+        # Use proper YAML multi-line string format to handle any value
+        # Indent with 2 spaces for the key, then use literal block scalar for value
+        printf "  %s: |-\n" "$key" >>/tmp/secret.yaml
+        # Indent each line of the value with 4 spaces
+        echo "$value" | sed 's/^/    /' >>/tmp/secret.yaml
     done
 fi
-
-# shellcheck disable=SC2086 # literals is a string of arguments
-kubectl -n "$namespace" create secret "$secret_type" "$secret_name" $literals --dry-run=client -o yaml >/tmp/secret.yaml
 kubeseal --format=yaml --cert=/tmp/sealed-secrets.pub.pem </tmp/secret.yaml >/tmp/sealed-secret.yaml
 
 if [ $# -eq 0 ]; then

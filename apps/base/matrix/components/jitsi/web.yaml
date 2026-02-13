@@ -12,7 +12,6 @@ metadata:
     app.kubernetes.io/component: web-interface
     app.kubernetes.io/part-of: jitsi
 spec:
-  replicas: 1
   revisionHistoryLimit: 2
   selector:
     matchLabels:
