@@ -8,9 +8,9 @@ pid_file: /data/homeserver.pid
 database:
   name: psycopg2
   args:
-    user: "${SYNAPSE_DATABASE_USER}"
+    user: synapse
     password: "${SYNAPSE_DATABASE_PASSWORD}"
-    database: "${SYNAPSE_DATABASE_DBNAME}"
+    database: synapse
     host: matrix-db-rw.app-matrix.svc
     port: 5432
     cp_min: 5
