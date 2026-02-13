@@ -1,0 +1,102 @@
+# Jicofo - Jitsi Conference Focus
+# Manages conference sessions and coordinates between participants
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jitsi-jicofo
+  namespace: app-matrix
+  labels:
+    app: jitsi-jicofo
+    app.kubernetes.io/name: jicofo
+    app.kubernetes.io/component: conference-focus
+    app.kubernetes.io/part-of: jitsi
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: jitsi-jicofo
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: jitsi-jicofo
+        app.kubernetes.io/name: jicofo
+    spec:
+      # Wait for Prosody to be ready
+      initContainers:
+        - name: wait-for-prosody
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z prosody.app-matrix.svc 5222; do
+                echo "Waiting for Prosody..."
+                sleep 2
+              done
+              echo "Prosody is ready"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+      containers:
+        - name: jicofo
+          image: jitsi/jicofo:stable-10741
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          envFrom:
+            - configMapRef:
+                name: jitsi-common-config
+            - configMapRef:
+                name: jitsi-jicofo-config
+          env:
+            - name: JICOFO_AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: jitsi-secrets
+                  key: jicofo-auth-password
+          readinessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - "curl -s http://localhost:8888/stats | grep -q conference_sizes"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - "curl -s http://localhost:8888/stats | grep -q conference_sizes"
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jicofo
+  namespace: app-matrix
+  labels:
+    app: jitsi-jicofo
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8888
+      targetPort: 8888
+      protocol: TCP
+  selector:
+    app: jitsi-jicofo

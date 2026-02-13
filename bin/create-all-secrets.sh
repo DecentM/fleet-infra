@@ -145,3 +145,27 @@ create_secret \
     generic \
     "repository password aws-access-key-id aws-secret-access-key" \
     "apps/base/restic/sealed-secrets.yaml"
+
+# Matrix Stack Secrets
+echo "=== Matrix Stack Secrets ==="
+
+create_secret \
+    app-matrix \
+    synapse-secrets \
+    generic \
+    "registration-shared-secret macaroon-secret-key form-secret" \
+    "apps/base/matrix/sealed-synapse-secrets.yaml"
+
+create_secret \
+    app-matrix \
+    synapse-signing-key \
+    generic \
+    "signing.key" \
+    "apps/base/matrix/sealed-synapse-signing-key.yaml"
+
+create_secret \
+    app-matrix \
+    jitsi-secrets \
+    generic \
+    "jicofo-auth-password jvb-auth-password" \
+    "apps/base/matrix/sealed-jitsi-secrets.yaml"

@@ -1,0 +1,13 @@
+# Persistent storage for Synapse media files (avatars, attachments, etc.)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: synapse-media
+  namespace: app-matrix
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn-local
+  resources:
+    requests:
+      storage: 20Gi

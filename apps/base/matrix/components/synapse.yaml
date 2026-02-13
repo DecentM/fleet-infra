@@ -1,0 +1,148 @@
+# Synapse Matrix Homeserver
+# Documentation: https://matrix-org.github.io/synapse/latest/
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: synapse
+  namespace: app-matrix
+  labels:
+    app: synapse
+    app.kubernetes.io/name: synapse
+    app.kubernetes.io/component: homeserver
+    app.kubernetes.io/part-of: matrix
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: synapse
+  strategy:
+    type: Recreate  # Single replica with PVC requires Recreate
+  template:
+    metadata:
+      labels:
+        app: synapse
+        app.kubernetes.io/name: synapse
+    spec:
+      securityContext:
+        runAsUser: 991
+        runAsGroup: 991
+        fsGroup: 991
+      # Wait for database to be ready
+      initContainers:
+        - name: wait-for-db
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z matrix-db-rw.app-matrix.svc 5432; do
+                echo "Waiting for database..."
+                sleep 2
+              done
+              echo "Database is ready"
+          securityContext:
+            runAsUser: 991
+            runAsGroup: 991
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+      containers:
+        - name: synapse
+          image: matrixdotorg/synapse:1.147.0
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: "2"
+              memory: 2Gi
+          securityContext:
+            runAsUser: 991
+            runAsGroup: 991
+            allowPrivilegeEscalation: false
+          env:
+            - name: SYNAPSE_CONFIG_PATH
+              value: /config/homeserver.yaml
+            # Database password from CNPG-generated secret
+            - name: SYNAPSE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: matrix-db-app
+                  key: password
+            - name: SYNAPSE_REGISTRATION_SHARED_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: synapse-secrets
+                  key: registration-shared-secret
+            - name: SYNAPSE_MACAROON_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: synapse-secrets
+                  key: macaroon-secret-key
+            - name: SYNAPSE_FORM_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: synapse-secrets
+                  key: form-secret
+          ports:
+            - name: http
+              containerPort: 8008
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
+            - name: data
+              mountPath: /data
+            - name: signing-key
+              mountPath: /data/testing.borooka.ee.signing.key
+              subPath: testing.borooka.ee.signing.key
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: synapse-config
+        - name: data
+          persistentVolumeClaim:
+            claimName: synapse-media
+        - name: signing-key
+          secret:
+            secretName: synapse-signing-key
+            items:
+              - key: signing.key
+                path: testing.borooka.ee.signing.key
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: synapse
+  namespace: app-matrix
+  labels:
+    app: synapse
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8008
+      targetPort: http
+      protocol: TCP
+  selector:
+    app: synapse

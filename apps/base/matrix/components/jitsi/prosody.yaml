@@ -1,0 +1,116 @@
+# Prosody - XMPP server for Jitsi
+# Core communication component that handles XMPP messaging between Jitsi services
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jitsi-prosody
+  namespace: app-matrix
+  labels:
+    app: jitsi-prosody
+    app.kubernetes.io/name: prosody
+    app.kubernetes.io/component: xmpp-server
+    app.kubernetes.io/part-of: jitsi
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: jitsi-prosody
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: jitsi-prosody
+        app.kubernetes.io/name: prosody
+    spec:
+      containers:
+        - name: prosody
+          image: jitsi/prosody:stable-10741
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          envFrom:
+            - configMapRef:
+                name: jitsi-common-config
+            - configMapRef:
+                name: jitsi-prosody-config
+          env:
+            - name: JICOFO_AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: jitsi-secrets
+                  key: jicofo-auth-password
+            - name: JVB_AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: jitsi-secrets
+                  key: jvb-auth-password
+          ports:
+            - name: xmpp-c2s
+              containerPort: 5222
+              protocol: TCP
+            - name: xmpp-s2s
+              containerPort: 5269
+              protocol: TCP
+            - name: xmpp-component
+              containerPort: 5347
+              protocol: TCP
+            - name: bosh
+              containerPort: 5280
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: xmpp-c2s
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: xmpp-c2s
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: prosody-data
+              mountPath: /config/data
+      volumes:
+        - name: prosody-data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prosody
+  namespace: app-matrix
+  labels:
+    app: jitsi-prosody
+spec:
+  type: ClusterIP
+  ports:
+    - name: xmpp-c2s
+      port: 5222
+      targetPort: xmpp-c2s
+      protocol: TCP
+    - name: xmpp-s2s
+      port: 5269
+      targetPort: xmpp-s2s
+      protocol: TCP
+    - name: xmpp-component
+      port: 5347
+      targetPort: xmpp-component
+      protocol: TCP
+    - name: bosh
+      port: 5280
+      targetPort: bosh
+      protocol: TCP
+  selector:
+    app: jitsi-prosody

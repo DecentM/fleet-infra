@@ -1,0 +1,22 @@
+# CloudNativePG PostgreSQL cluster for Synapse
+# Synapse requires the btree_gist extension for efficient state resolution
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: matrix-db
+  namespace: app-matrix
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.10
+  storage:
+    storageClass: longhorn-local
+    size: 5Gi
+  monitoring:
+    enablePodMonitor: true
+  bootstrap:
+    initdb:
+      database: synapse
+      owner: synapse
+      # Synapse requires btree_gist for state group conflict resolution
+      postInitSQL:
+        - CREATE EXTENSION IF NOT EXISTS btree_gist;

@@ -1,0 +1,53 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Matrix Communication Stack: Synapse + Element Web + Jitsi Meet
+# 
+# Prerequisites:
+# 1. CloudNativePG operator installed
+# 2. Longhorn storage class available
+# 3. cert-manager with custom-ca-cluster-issuer
+# 4. Traefik ingress controller
+#
+# Post-deployment steps:
+# 1. Generate Synapse signing key and create SealedSecret
+# 2. Generate Jitsi auth passwords and create SealedSecret
+# 3. Create first admin user via Synapse admin API
+
+resources:
+  # Namespace must be created first
+  - namespace.yaml
+  
+  # Sealed secrets
+  - sealed-synapse-secrets.yaml
+  - sealed-synapse-signing-key.yaml
+  - sealed-jitsi-secrets.yaml
+  
+  # Database and storage
+  - data/cnpg-cluster.yaml
+  - data/pvc-media.yaml
+  
+  # Configuration
+  - config/synapse-config.yaml
+  - config/element-config.yaml
+  - config/jitsi-config.yaml
+  
+  # Core components
+  - components/synapse.yaml
+  - components/element.yaml
+  
+  # Jitsi components (order matters: prosody first)
+  - components/jitsi/prosody.yaml
+  - components/jitsi/jicofo.yaml
+  - components/jitsi/jvb.yaml
+  - components/jitsi/web.yaml
+  
+  # Networking/Ingress
+  - networking/synapse-ingress.yaml
+  - networking/element-ingress.yaml
+  - networking/jitsi-ingress.yaml
+  - networking/tunnel.yaml
+
+# Common labels for all resources
+commonLabels:
+  app.kubernetes.io/part-of: matrix-stack

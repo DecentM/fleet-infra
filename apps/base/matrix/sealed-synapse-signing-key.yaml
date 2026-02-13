@@ -1,0 +1,13 @@
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: synapse-signing-key
+  namespace: app-matrix
+spec:
+  encryptedData:
+    signing.key: AgCYb/qvGy6dTJiapZ7JLjqpunoa+5HJqXNPkxHJAERdhJZhJ05vYBXA+zI9yhGpZpCXHkG9qDHMI+AsT4biKvOt5b3pu4yUN/6LSb5X14JwFTMw9lPzooov6j47XFlA7uHIgCpV5l0tZGiCUMLqcYQvZYXiN8OvTiIa1qr1ltGQyj5uOsK9vbqUPh1f9AUaERKODOQ/cSnEpuwrKZ4Sj1T1FGNB0h8RvvHMbzr3aTnrPTTmXjXn18wZVnfnC7J6KVWACzqUINgCMJneEdJT9gYB2fnCWhIWIoWoBipmRgtxA9hVngPJTvFNlphIFaFmgwSdi8Q41IK6DIy/N5KDfPppY7192yV5z5/Tefds/hJr9brz4GwsGdBHe4X5IrYLy1JDA3BW/HuupmFjbxLoIJBRfxmUyyFUr7xPgx5NMf4aF8b1K5JM4jc3Y6biPOkmIZxiHu6CFCTxZeCB1aa/4XTqIN8Yy45xrMOvFZiXAHDE9pgL9EJ/qMd6NiG2y37gEBlSyNdaDogEqrl/arfSIjAP5Qw7PlBXIysk9CgG8aJa/retA73j9lGx06c0nYG2q2GuNpOQcO++ZWUry+FrjcGd2fALKVvUprL41rHALunc1/av+ObsZI57PdCkkvCHTpKq2HUxQAeQM2sNNcMC3jQZrQgLKXhRiYbTYdy/bgIv5F/36DskjSutUNrsnyFfH2j7q1FNObOT8bHXvB3pLqHB3tCBpo6YctQhm5tPP2Yvqg==
+  template:
+    metadata:
+      name: synapse-signing-key
+      namespace: app-matrix
