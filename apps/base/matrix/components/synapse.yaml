@@ -65,6 +65,11 @@ spec:
           env:
             - name: SYNAPSE_CONFIG_PATH
               value: /config/homeserver.yaml
+            - name: SYNAPSE_DATABASE_DBNAME
+              valueFrom:
+                secretKeyRef:
+                  name: matrix-db-app
+                  key: dbname
             - name: SYNAPSE_DATABASE_USER
               valueFrom:
                 secretKeyRef:

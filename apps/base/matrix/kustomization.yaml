@@ -27,11 +27,6 @@ resources:
   - data/cnpg-cluster.yaml
   - data/pvc-media.yaml
   
-  # Configuration
-  - config/synapse-config.yaml
-  - config/element-config.yaml
-  - config/jitsi-config.yaml
-  
   # Core components
   - components/synapse.yaml
   - components/element.yaml
@@ -47,6 +42,44 @@ resources:
   - networking/element-ingress.yaml
   - networking/jitsi-ingress.yaml
   - networking/tunnel.yaml
+
+# ConfigMap generation with automatic hash suffixing for rolling updates
+configMapGenerator:
+  - name: synapse-config
+    namespace: app-matrix
+    files:
+      - config/homeserver.yaml
+      - config/log.config
+  
+  - name: element-config
+    namespace: app-matrix
+    files:
+      - config.json=config/element-config.json
+  
+  - name: jitsi-common-config
+    namespace: app-matrix
+    envs:
+      - config/jitsi-common.env
+  
+  - name: jitsi-web-config
+    namespace: app-matrix
+    envs:
+      - config/jitsi-web.env
+  
+  - name: jitsi-prosody-config
+    namespace: app-matrix
+    envs:
+      - config/jitsi-prosody.env
+  
+  - name: jitsi-jicofo-config
+    namespace: app-matrix
+    envs:
+      - config/jitsi-jicofo.env
+  
+  - name: jitsi-jvb-config
+    namespace: app-matrix
+    envs:
+      - config/jitsi-jvb.env
 
 # Common labels for all resources
 commonLabels:
