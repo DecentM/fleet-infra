@@ -1,0 +1,13 @@
+{
+  "m.homeserver": {
+    "base_url": "https://matrix-testing.borooka.ee"
+  },
+  "m.integrations": {
+    "managers": [
+      {
+        "api_url": "https://scalar.vector.im/api",
+        "ui_url": "https://scalar.vector.im/"
+      }
+    ]
+  }
+}

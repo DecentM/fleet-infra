@@ -4,6 +4,14 @@ metadata:
   name: matrix-stack-tunnel
   namespace: app-matrix
 subjects:
+  # Well-Known Federation Delegation (must be first for testing.borooka.ee)
+  # Serves /.well-known/matrix/server and /.well-known/matrix/client
+  - name: well-known
+    spec:
+      fqdn: testing.borooka.ee
+      protocol: http
+      target: http://well-known.app-matrix.svc:80
+
   # Matrix Synapse
   - name: synapse
     spec:

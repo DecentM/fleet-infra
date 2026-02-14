@@ -35,6 +35,7 @@ resources:
   - components/element.yaml
   - components/hookshot.yaml
   - components/redis.yaml
+  - components/well-known.yaml
 
   # Jitsi components (order matters: prosody first)
   - components/jitsi/prosody.yaml
@@ -94,6 +95,17 @@ configMapGenerator:
     files:
       - hookshot-config.yml=config/hookshot-config.yml
       - hookshot-registration.yml=config/hookshot-registration.yml
+
+  - name: well-known-config
+    namespace: app-matrix
+    files:
+      - server=config/well-known-server.json
+      - client=config/well-known-client.json
+
+  - name: well-known-nginx
+    namespace: app-matrix
+    files:
+      - default.conf=config/well-known-nginx.conf
 
 # Common labels for all resources
 commonLabels:
