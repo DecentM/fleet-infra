@@ -90,6 +90,9 @@ spec:
             - name: public
               containerPort: 9000
               protocol: TCP
+            - name: metrics
+              containerPort: 9001
+              protocol: TCP
           readinessProbe:
             httpGet:
               path: /healthz
@@ -162,6 +165,28 @@ spec:
     - name: public
       port: 9000
       targetPort: public
+      protocol: TCP
+  selector:
+    app: hookshot
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hookshot-metrics
+  namespace: app-matrix
+  labels:
+    app: hookshot
+  # Prometheus annotations for service discovery
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9001"
+    prometheus.io/path: "/metrics"
+spec:
+  type: ClusterIP
+  ports:
+    - name: metrics
+      port: 9001
+      targetPort: metrics
       protocol: TCP
   selector:
     app: hookshot

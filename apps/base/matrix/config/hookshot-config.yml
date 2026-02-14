@@ -27,6 +27,11 @@ listeners:
     resources:
       - webhooks
       - widgets
+  # Metrics listener for Prometheus scraping
+  - port: 9001
+    bindAddress: 0.0.0.0
+    resources:
+      - metrics
 
 # Generic webhook configuration
 generic:
