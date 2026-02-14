@@ -9,5 +9,8 @@
         "ui_url": "https://scalar.vector.im/"
       }
     ]
+  },
+  "m.tile_server": {
+    "map_style_url": "https://tiles.openfreemap.org/styles/liberty"
   }
 }
