@@ -16,7 +16,7 @@ subjects:
     spec:
       fqdn: element.testing.borooka.ee
       protocol: http
-      target: http://element.app-matrix.svc:80
+      target: http://element.app-matrix.svc:8000
 
   # Jitsi Meet (Web)
   - name: jitsi-web
