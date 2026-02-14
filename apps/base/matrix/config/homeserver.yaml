@@ -1,6 +1,6 @@
 # Server identification
 server_name: "testing.borooka.ee"
-public_baseurl: "https://matrix.testing.borooka.ee/"
+public_baseurl: "https://matrix-testing.borooka.ee/"
 pid_file: /data/homeserver.pid
 
 # Database configuration - uses CNPG secret for credentials

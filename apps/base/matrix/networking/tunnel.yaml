@@ -7,21 +7,21 @@ subjects:
   # Matrix Synapse
   - name: synapse
     spec:
-      fqdn: matrix.testing.borooka.ee
+      fqdn: matrix-testing.borooka.ee
       protocol: http
       target: http://synapse.app-matrix.svc:8008
 
   # Element Web
   - name: element
     spec:
-      fqdn: element.testing.borooka.ee
+      fqdn: element-testing.borooka.ee
       protocol: http
       target: http://element.app-matrix.svc:8000
 
   # Jitsi Meet (Web)
   - name: jitsi-web
     spec:
-      fqdn: meet.testing.borooka.ee
+      fqdn: meet-testing.borooka.ee
       protocol: http
       target: http://jitsi-web.app-matrix.svc:80
 

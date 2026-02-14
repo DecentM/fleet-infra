@@ -1,7 +1,7 @@
 {
   "default_server_config": {
     "m.homeserver": {
-      "base_url": "https://matrix.testing.borooka.ee",
+      "base_url": "https://matrix-testing.borooka.ee",
       "server_name": "testing.borooka.ee"
     }
   },
@@ -18,7 +18,7 @@
     "feature_element_call_video_rooms": true
   },
   "jitsi": {
-    "preferredDomain": "meet.testing.borooka.ee",
+    "preferredDomain": "meet-testing.borooka.ee",
     "useFor1To1Calls": false
   },
   "element_call": {
