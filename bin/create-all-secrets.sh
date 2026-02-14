@@ -166,6 +166,13 @@ create_secret \
 
 create_secret \
     app-matrix \
+    turn-secrets \
+    generic \
+    "turn-username turn-password" \
+    "apps/base/matrix/sealed-turn-secrets.yaml"
+
+create_secret \
+    app-matrix \
     synapse-signing-key \
     generic \
     "signing.key" \

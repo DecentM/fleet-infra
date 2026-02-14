@@ -22,6 +22,7 @@ resources:
   - sealed-synapse-secrets.yaml
   - sealed-synapse-signing-key.yaml
   - sealed-jitsi-secrets.yaml
+  - sealed-turn-secrets.yaml
 
   # Database and storage
   - data/cnpg-cluster.yaml

@@ -93,6 +93,16 @@ spec:
                 secretKeyRef:
                   name: synapse-secrets
                   key: form-secret
+            - name: SYNAPSE_TURN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: turn-secrets
+                  key: turn-username
+            - name: SYNAPSE_TURN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: turn-secrets
+                  key: turn-password
           volumeMounts:
             - name: config-template
               mountPath: /config-template
@@ -152,6 +162,16 @@ spec:
                 secretKeyRef:
                   name: synapse-secrets
                   key: form-secret
+            - name: SYNAPSE_TURN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: turn-secrets
+                  key: turn-username
+            - name: SYNAPSE_TURN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: turn-secrets
+                  key: turn-password
           ports:
             - name: http
               containerPort: 8008

@@ -62,5 +62,14 @@ enable_metrics: true
 # Report anonymous statistics to help improve Synapse
 report_stats: false
 
+# TURN server configuration for VoIP
+turn_uris:
+  - "turn:eu.relay.metered.ca:80"
+  - "turn:eu.relay.metered.ca:80?transport=tcp"
+  - "turns:eu.relay.metered.ca:443?transport=tcp"
+turn_username: "${SYNAPSE_TURN_USERNAME}"
+turn_password: "${SYNAPSE_TURN_PASSWORD}"
+turn_allow_guests: true
+
 # Logging configuration
 log_config: "/config/log.config"
