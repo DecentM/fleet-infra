@@ -15,5 +15,11 @@
   },
   "im.vector.riot.jitsi": {
     "preferredDomain": "meet-testing.borooka.ee"
-  }
+  },
+  "org.matrix.msc4143.rtc_foci": [
+    {
+      "type": "livekit",
+      "livekit_service_url": "https://jwt.call.element.io"
+    }
+  ]
 }
