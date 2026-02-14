@@ -60,6 +60,12 @@ spec:
                 echo "Processing $filename..."
                 envsubst < "$file" > "/config-processed/$filename"
               done
+              # Process hookshot registration template separately
+              for file in /hookshot-template/*; do
+                filename=$(basename "$file")
+                echo "Processing hookshot template: $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
               echo "Config templating complete"
               ls -la /config-processed/
           env:
@@ -120,8 +126,7 @@ spec:
             - name: config-processed
               mountPath: /config-processed
             - name: hookshot-registration-template
-              mountPath: /config-template/hookshot-registration.yml
-              subPath: hookshot-registration.yml
+              mountPath: /hookshot-template
               readOnly: true
           securityContext:
             runAsUser: 991
