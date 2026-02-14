@@ -199,3 +199,10 @@ create_secret \
     generic \
     "as-token hs-token passkey.pem" \
     "apps/base/matrix/sealed-hookshot-secrets.yaml"
+
+create_secret \
+    app-matrix \
+    livekit-secrets \
+    generic \
+    "api-key api-secret" \
+    "apps/base/matrix/sealed-livekit-secrets.yaml"

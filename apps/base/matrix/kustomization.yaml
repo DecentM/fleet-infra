@@ -24,6 +24,7 @@ resources:
   - sealed-jitsi-secrets.yaml
   - sealed-turn-secrets.yaml
   - sealed-hookshot-secrets.yaml
+  - sealed-livekit-secrets.yaml
 
   # Database and storage
   - data/cnpg-cluster.yaml
@@ -42,6 +43,11 @@ resources:
   - components/jitsi/jicofo.yaml
   - components/jitsi/jvb.yaml
   - components/jitsi/web.yaml
+
+  # LiveKit components (Element Call)
+  - components/livekit.yaml
+  - components/lk-jwt-service.yaml
+  - components/livekit-proxy.yaml
 
   # Networking/Ingress
   - networking/tunnel.yaml
@@ -106,6 +112,16 @@ configMapGenerator:
     namespace: app-matrix
     files:
       - default.conf=config/well-known-nginx.conf
+
+  - name: livekit-config
+    namespace: app-matrix
+    files:
+      - config/livekit.yaml
+
+  - name: livekit-nginx
+    namespace: app-matrix
+    files:
+      - default.conf=config/livekit-nginx.conf
 
 # Common labels for all resources
 commonLabels:

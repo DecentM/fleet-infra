@@ -84,3 +84,6 @@ experimental_features:
   msc3202_device_masquerading: true
   msc3202_transaction_extensions: true
   msc2409_to_device_messages_enabled: true
+  # MatrixRTC / Element Call support (MSC4140, MSC3266)
+  msc4140_enabled: true  # Delayed events for proper call signalling
+  msc3266_enabled: true  # Room summaries

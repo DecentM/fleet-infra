@@ -19,7 +19,7 @@
   "org.matrix.msc4143.rtc_foci": [
     {
       "type": "livekit",
-      "livekit_service_url": "https://jwt.call.element.io"
+      "livekit_service_url": "https://livekit-testing.borooka.ee/livekit/jwt"
     }
   ]
 }

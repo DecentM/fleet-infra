@@ -1,0 +1,147 @@
+# LiveKit SFU - WebRTC media server for Element Call
+# Documentation: https://docs.livekit.io/
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: livekit
+  namespace: app-matrix
+  labels:
+    app: livekit
+    app.kubernetes.io/name: livekit
+    app.kubernetes.io/component: sfu
+    app.kubernetes.io/part-of: matrix
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: livekit
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: livekit
+        app.kubernetes.io/name: livekit
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      # Process config template with environment variable substitution
+      initContainers:
+        - name: config-templating
+          image: oaudry/envsubst:1.6
+          command:
+            - sh
+            - -c
+            - |
+              echo "Processing LiveKit config template with envsubst..."
+              envsubst < /config-template/livekit.yaml > /config-processed/livekit.yaml
+              echo "Config templating complete"
+              cat /config-processed/livekit.yaml
+          env:
+            - name: LIVEKIT_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: livekit-secrets
+                  key: api-key
+            - name: LIVEKIT_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: livekit-secrets
+                  key: api-secret
+            - name: LIVEKIT_TURN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: turn-secrets
+                  key: turn-username
+            - name: LIVEKIT_TURN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: turn-secrets
+                  key: turn-password
+          volumeMounts:
+            - name: config-template
+              mountPath: /config-template
+              readOnly: true
+            - name: config-processed
+              mountPath: /config-processed
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+      containers:
+        - name: livekit
+          image: livekit/livekit-server:v1.9.4
+          imagePullPolicy: IfNotPresent
+          args:
+            - --config
+            - /etc/livekit.yaml
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: "2"
+              memory: 4Gi
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+          ports:
+            - name: http
+              containerPort: 7880
+              protocol: TCP
+            - name: ice-tcp
+              containerPort: 7881
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: config-processed
+              mountPath: /etc/livekit.yaml
+              subPath: livekit.yaml
+              readOnly: true
+      volumes:
+        - name: config-template
+          configMap:
+            name: livekit-config
+        - name: config-processed
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: livekit-svc
+  namespace: app-matrix
+  labels:
+    app: livekit
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 7880
+      targetPort: http
+      protocol: TCP
+    - name: ice-tcp
+      port: 7881
+      targetPort: ice-tcp
+      protocol: TCP
+  selector:
+    app: livekit

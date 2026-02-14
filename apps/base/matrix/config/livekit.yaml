@@ -1,0 +1,57 @@
+# LiveKit Server Configuration
+# Documentation: https://docs.livekit.io/realtime/self-hosting/deployment/
+
+# HTTP/WebSocket port for signaling
+port: 7880
+
+# API keys for authentication (substituted via envsubst)
+keys:
+  ${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}
+
+# Room configuration
+room:
+  # Disable auto_create for Matrix access control
+  # Rooms should be created through the JWT service
+  auto_create: false
+  # Maximum number of participants per room
+  max_participants: 50
+  # Empty room timeout in seconds
+  empty_timeout: 300
+
+# RTC (WebRTC) configuration
+rtc:
+  # UDP port range for media
+  port_range_start: 50000
+  port_range_end: 60000
+  # We're behind Cloudflare Tunnel, so use internal IP
+  use_external_ip: false
+  # TCP fallback port for ICE (when UDP is blocked)
+  tcp_port: 7881
+  # Use ICE Lite for better NAT traversal
+  use_ice_lite: true
+
+  # Use external Metered TURN servers
+  turn_servers:
+    - host: eu.relay.metered.ca
+      port: 80
+      protocol: udp
+      username: ${LIVEKIT_TURN_USERNAME}
+      credential: ${LIVEKIT_TURN_PASSWORD}
+    - host: eu.relay.metered.ca
+      port: 80
+      protocol: tcp
+      username: ${LIVEKIT_TURN_USERNAME}
+      credential: ${LIVEKIT_TURN_PASSWORD}
+    - host: eu.relay.metered.ca
+      port: 443
+      protocol: tls
+      username: ${LIVEKIT_TURN_USERNAME}
+      credential: ${LIVEKIT_TURN_PASSWORD}
+
+# Logging configuration
+logging:
+  level: info
+  # JSON format for structured logging
+  json: true
+  # Enable log sampling (reduces log volume)
+  sample: false

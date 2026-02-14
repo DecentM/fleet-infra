@@ -33,6 +33,14 @@ subjects:
       protocol: http
       target: http://jitsi-web.app-matrix.svc:80
 
+  # LiveKit Proxy (Element Call)
+  # Routes /livekit/jwt → lk-jwt-service and /livekit/sfu → livekit
+  - name: livekit-proxy
+    spec:
+      fqdn: livekit-testing.borooka.ee
+      protocol: http
+      target: http://livekit-proxy.app-matrix.svc:8000
+
 tunnelRef:
   kind: ClusterTunnel
   name: cluster-tunnel-borooka
