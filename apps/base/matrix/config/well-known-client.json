@@ -12,5 +12,8 @@
   },
   "m.tile_server": {
     "map_style_url": "https://tiles.openfreemap.org/styles/liberty"
+  },
+  "im.vector.riot.jitsi": {
+    "preferredDomain": "meet-testing.borooka.ee"
   }
 }
