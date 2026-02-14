@@ -52,22 +52,30 @@ create_secret() {
 
         bin/create-secret.sh "$namespace" "$secret_name" "$secret_type" "$input_literals" "$output_path" "$extra"
     else
-        # Build newline-separated key=value pairs for generic secrets
+        # Create a temporary directory for secret values
+        tmpdir=$(mktemp -d)
+        trap "rm -rf '$tmpdir'" EXIT
+
+        # Build space-separated list of temp file paths for generic secrets
         for key in $input_keys; do
-            printf "> %s: " "$key"
-            read -r value
-            if [ -z "$input_literals" ]; then
-                input_literals="$key=$value"
-            else
-                input_literals="$input_literals
-$key=$value"
-            fi
+            # Check if key ends with a known multiline extension (e.g., .pem, .key, .crt, .cert)
+            case "$key" in
+                *.pem|*.key|*.crt|*.cert|*.pub)
+                    printf "> %s (multiline, press CTRL+D when done):\n" "$key"
+                    cat > "$tmpdir/$key"
+                    ;;
+                *)
+                    printf "> %s: " "$key"
+                    read -r value
+                    printf '%s' "$value" > "$tmpdir/$key"
+                    ;;
+            esac
         done
 
         printf "…"
 
-        # Pass the newline-separated input to create-secret.sh as the 4th argument
-        bin/create-secret.sh "$namespace" "$secret_name" "$secret_type" "$input_literals" "$output_path" "$extra"
+        # Pass the temp directory path to create-secret.sh
+        bin/create-secret.sh "$namespace" "$secret_name" "$secret_type" "$tmpdir" "$output_path" "$extra"
     fi
 
     printf "\r✓\n"
@@ -184,3 +192,10 @@ create_secret \
     generic \
     "jicofo-auth-password jvb-auth-password" \
     "apps/base/matrix/sealed-jitsi-secrets.yaml"
+
+create_secret \
+    app-matrix \
+    hookshot-secrets \
+    generic \
+    "as-token hs-token passkey.pem" \
+    "apps/base/matrix/sealed-hookshot-secrets.yaml"

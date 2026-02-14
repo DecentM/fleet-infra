@@ -73,3 +73,7 @@ turn_allow_guests: true
 
 # Logging configuration
 log_config: "/config/log.config"
+
+# Application services (bridges)
+app_service_config_files:
+  - /data/hookshot-registration.yml

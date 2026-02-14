@@ -1,0 +1,61 @@
+# Hookshot Configuration
+# Documentation: https://matrix-org.github.io/matrix-hookshot/setup/
+
+# Bridge connection settings
+bridge:
+  domain: testing.borooka.ee
+  url: http://synapse.app-matrix.svc:8008
+  mediaUrl: https://matrix-testing.borooka.ee
+  port: 9993
+  bindAddress: 0.0.0.0
+
+# Passkey for encryption (must match the generated key)
+passFile: /data/passkey.pem
+
+# Logging configuration
+logging:
+  level: info
+  colorize: true
+  json: false
+  timestampFormat: HH:mm:ss:SSS
+
+# Listeners configuration
+listeners:
+  # Webhooks and widgets listener
+  - port: 9000
+    bindAddress: 0.0.0.0
+    resources:
+      - webhooks
+      - widgets
+
+# Generic webhook configuration
+generic:
+  enabled: true
+  outbound: false
+  urlPrefix: https://hookshot-testing.borooka.ee/webhook
+  userIdPrefix: _webhooks_
+  allowJsTransformationFunctions: false
+  waitForComplete: false
+
+# Widget configuration
+widgets:
+  addToAdminRooms: true
+  publicUrl: https://hookshot-testing.borooka.ee/widgets
+  branding:
+    widgetTitle: Hookshot Configuration
+
+# Permissions - who can configure the bridge
+permissions:
+  - actor: testing.borooka.ee
+    services:
+      - service: "*"
+        level: admin
+
+# Metrics for prometheus (optional)
+metrics:
+  enabled: true
+
+# Bot configuration
+bot:
+  displayname: Hookshot Bot
+  avatar: mxc://half-shot.uk/2876e89ccade4cb615e210c458e2a7a6883571c4

@@ -1,0 +1,167 @@
+# Matrix Hookshot - Generic webhook bridge
+# Documentation: https://matrix-org.github.io/matrix-hookshot/
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hookshot
+  namespace: app-matrix
+  labels:
+    app: hookshot
+    app.kubernetes.io/name: hookshot
+    app.kubernetes.io/component: bridge
+    app.kubernetes.io/part-of: matrix
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: hookshot
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: hookshot
+        app.kubernetes.io/name: hookshot
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      # Process config templates with environment variable substitution
+      initContainers:
+        - name: config-templating
+          image: oaudry/envsubst:1.6
+          command:
+            - sh
+            - -c
+            - |
+              echo "Processing config templates with envsubst..."
+              for file in /config-template/*; do
+                filename=$(basename "$file")
+                echo "Processing $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
+              echo "Config templating complete"
+              ls -la /config-processed/
+          env:
+            - name: HOOKSHOT_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hookshot-secrets
+                  key: as-token
+            - name: HOOKSHOT_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hookshot-secrets
+                  key: hs-token
+          volumeMounts:
+            - name: config-template
+              mountPath: /config-template
+              readOnly: true
+            - name: config-processed
+              mountPath: /config-processed
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+      containers:
+        - name: hookshot
+          image: halfshot/matrix-hookshot:7.3.2
+          imagePullPolicy: IfNotPresent
+          # Use image's default CMD: node /bin/matrix-hookshot/App/BridgeApp.js /data/config.yml /data/registration.yml
+          # Config and registration are mounted at the expected default paths
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+          ports:
+            - name: appservice
+              containerPort: 9993
+              protocol: TCP
+            - name: public
+              containerPort: 9000
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: appservice
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: appservice
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: config-processed
+              mountPath: /data/config.yml
+              subPath: hookshot-config.yml
+              readOnly: true
+            - name: config-processed
+              mountPath: /data/registration.yml
+              subPath: hookshot-registration.yml
+              readOnly: true
+            - name: passkey
+              mountPath: /data/passkey.pem
+              subPath: passkey.pem
+              readOnly: true
+      volumes:
+        - name: config-template
+          configMap:
+            name: hookshot-config
+        - name: config-processed
+          emptyDir: {}
+        - name: passkey
+          secret:
+            secretName: hookshot-secrets
+            items:
+              - key: passkey.pem
+                path: passkey.pem
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hookshot-appservice
+  namespace: app-matrix
+  labels:
+    app: hookshot
+spec:
+  type: ClusterIP
+  ports:
+    - name: appservice
+      port: 9993
+      targetPort: appservice
+      protocol: TCP
+  selector:
+    app: hookshot
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hookshot-public
+  namespace: app-matrix
+  labels:
+    app: hookshot
+spec:
+  type: ClusterIP
+  ports:
+    - name: public
+      port: 9000
+      targetPort: public
+      protocol: TCP
+  selector:
+    app: hookshot

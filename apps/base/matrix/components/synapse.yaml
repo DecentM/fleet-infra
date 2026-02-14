@@ -103,12 +103,26 @@ spec:
                 secretKeyRef:
                   name: turn-secrets
                   key: turn-password
+            - name: HOOKSHOT_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hookshot-secrets
+                  key: as-token
+            - name: HOOKSHOT_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hookshot-secrets
+                  key: hs-token
           volumeMounts:
             - name: config-template
               mountPath: /config-template
               readOnly: true
             - name: config-processed
               mountPath: /config-processed
+            - name: hookshot-registration-template
+              mountPath: /config-template/hookshot-registration.yml
+              subPath: hookshot-registration.yml
+              readOnly: true
           securityContext:
             runAsUser: 991
             runAsGroup: 991
@@ -202,6 +216,10 @@ spec:
               mountPath: /data/testing.borooka.ee.signing.key
               subPath: testing.borooka.ee.signing.key
               readOnly: true
+            - name: config-processed
+              mountPath: /data/hookshot-registration.yml
+              subPath: hookshot-registration.yml
+              readOnly: true
       volumes:
         - name: config-template
           configMap:
@@ -218,6 +236,12 @@ spec:
             items:
               - key: signing.key
                 path: testing.borooka.ee.signing.key
+        - name: hookshot-registration-template
+          configMap:
+            name: hookshot-config
+            items:
+              - key: hookshot-registration.yml
+                path: hookshot-registration.yml
 ---
 apiVersion: v1
 kind: Service

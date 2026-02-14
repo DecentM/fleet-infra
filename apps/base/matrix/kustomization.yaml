@@ -23,6 +23,7 @@ resources:
   - sealed-synapse-signing-key.yaml
   - sealed-jitsi-secrets.yaml
   - sealed-turn-secrets.yaml
+  - sealed-hookshot-secrets.yaml
 
   # Database and storage
   - data/cnpg-cluster.yaml
@@ -31,6 +32,7 @@ resources:
   # Core components
   - components/synapse.yaml
   - components/element.yaml
+  - components/hookshot.yaml
 
   # Jitsi components (order matters: prosody first)
   - components/jitsi/prosody.yaml
@@ -40,6 +42,7 @@ resources:
 
   # Networking/Ingress
   - networking/tunnel.yaml
+  - networking/hookshot-tunnel.yaml
 
 # ConfigMap generation with automatic hash suffixing for rolling updates
 configMapGenerator:
@@ -83,6 +86,12 @@ configMapGenerator:
     namespace: app-matrix
     envs:
       - config/jitsi-jvb.env
+
+  - name: hookshot-config
+    namespace: app-matrix
+    files:
+      - hookshot-config.yml=config/hookshot-config.yml
+      - hookshot-registration.yml=config/hookshot-registration.yml
 
 # Common labels for all resources
 commonLabels:

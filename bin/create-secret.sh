@@ -85,18 +85,39 @@ type: Opaque
 stringData:
 EOF
 
-    # Parse key=value pairs from newline-delimited input
-    # Each line should be in format: key=value (value can contain spaces, special chars, etc.)
-    echo "$input_literals" | while IFS= read -r line; do
-        [ -z "$line" ] && continue
-        key="${line%%=*}"
-        value="${line#*=}"
-        # Use proper YAML multi-line string format to handle any value
-        # Indent with 2 spaces for the key, then use literal block scalar for value
-        printf "  %s: |-\n" "$key" >>/tmp/secret.yaml
-        # Indent each line of the value with 4 spaces
-        echo "$value" | sed 's/^/    /' >>/tmp/secret.yaml
-    done
+    # Check if input_literals is a directory (temp dir with files) or string (legacy key=value format)
+    if [ -d "$input_literals" ]; then
+        # New approach: read from temp files in directory
+        # Each file in the directory is a key, and its content is the value
+        for filepath in "$input_literals"/*; do
+            [ -f "$filepath" ] || continue
+            key=$(basename "$filepath")
+            # Use proper YAML multi-line string format to handle any value
+            # Indent with 2 spaces for the key, then use literal block scalar for value
+            printf "  %s: |-\n" "$key" >>/tmp/secret.yaml
+            # Indent each line of the value with 4 spaces
+            sed 's/^/    /' "$filepath" >>/tmp/secret.yaml
+            # Ensure trailing newline (fixes YAML corruption when files don't end with newline)
+            # tail -c 1 returns empty string (after $() strips trailing newline) if file ends with \n
+            if [ -n "$(tail -c 1 "$filepath")" ]; then
+                echo >>/tmp/secret.yaml
+            fi
+        done
+    else
+        # Legacy approach: parse key=value pairs from newline-delimited input
+        # Each line should be in format: key=value (value can contain spaces, special chars, etc.)
+        # WARNING: This approach does NOT support multiline values!
+        echo "$input_literals" | while IFS= read -r line; do
+            [ -z "$line" ] && continue
+            key="${line%%=*}"
+            value="${line#*=}"
+            # Use proper YAML multi-line string format to handle any value
+            # Indent with 2 spaces for the key, then use literal block scalar for value
+            printf "  %s: |-\n" "$key" >>/tmp/secret.yaml
+            # Indent each line of the value with 4 spaces
+            echo "$value" | sed 's/^/    /' >>/tmp/secret.yaml
+        done
+    fi
 fi
 kubeseal --format=yaml --cert=/tmp/sealed-secrets.pub.pem </tmp/secret.yaml >/tmp/sealed-secret.yaml
 

@@ -1,0 +1,15 @@
+# Hookshot Appservice Registration
+# This file must be registered with Synapse in homeserver.yaml under app_service_config_files
+id: hookshot
+url: http://hookshot-appservice.app-matrix.svc:9993
+as_token: ${HOOKSHOT_AS_TOKEN}
+hs_token: ${HOOKSHOT_HS_TOKEN}
+sender_localpart: hookshot
+rate_limited: false
+
+namespaces:
+  users:
+    - regex: "^@_webhooks_.*:testing\\.borooka\\.ee$"
+      exclusive: true
+  rooms: []
+  aliases: []
