@@ -12,6 +12,7 @@ subjects:
       fqdn: mc-rp.borooka.ee
 
 tunnelRef:
+  kind: ClusterTunnel
   name: cluster-tunnel-borooka
 ---
 apiVersion: networking.cfargotunnel.com/v1alpha1
@@ -28,4 +29,5 @@ subjects:
       fqdn: mc.borooka.ee
 
 tunnelRef:
+  kind: ClusterTunnel
   name: cluster-tunnel-borooka
