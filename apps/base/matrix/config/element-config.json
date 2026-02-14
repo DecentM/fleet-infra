@@ -5,6 +5,12 @@
       "server_name": "testing.borooka.ee"
     }
   },
+  "integrations_ui_url": "https://scalar.vector.im/",
+  "integrations_rest_url": "https://scalar.vector.im/api",
+  "integrations_widgets_urls": [
+    "https://scalar.vector.im/_matrix/integrations/v1",
+    "https://scalar.vector.im/api"
+  ],
   "brand": "Element",
   "disable_guests": true,
   "disable_login_language_selector": false,
