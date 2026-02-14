@@ -82,6 +82,8 @@ spec:
             - name: nginx-conf
               mountPath: /etc/nginx/templates/default.conf.template
               subPath: default.conf
+            - name: nginx-conf-processed
+              mountPath: /etc/nginx/conf.d
       volumes:
         - name: config
           configMap:
@@ -95,6 +97,8 @@ spec:
         - name: nginx-conf
           configMap:
             name: element-nginx-config
+        - name: nginx-conf-processed
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
