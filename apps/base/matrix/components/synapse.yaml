@@ -47,6 +47,62 @@ spec:
             runAsGroup: 991
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
+        # Process config templates with environment variable substitution
+        - name: config-templating
+          image: oaudry/envsubst:1.6
+          command:
+            - sh
+            - -c
+            - |
+              echo "Processing config templates with envsubst..."
+              for file in /config-template/*; do
+                filename=$(basename "$file")
+                echo "Processing $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
+              echo "Config templating complete"
+              ls -la /config-processed/
+          env:
+            - name: SYNAPSE_DATABASE_DBNAME
+              valueFrom:
+                secretKeyRef:
+                  name: matrix-db-app
+                  key: dbname
+            - name: SYNAPSE_DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: matrix-db-app
+                  key: user
+            - name: SYNAPSE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: matrix-db-app
+                  key: password
+            - name: SYNAPSE_REGISTRATION_SHARED_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: synapse-secrets
+                  key: registration-shared-secret
+            - name: SYNAPSE_MACAROON_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: synapse-secrets
+                  key: macaroon-secret-key
+            - name: SYNAPSE_FORM_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: synapse-secrets
+                  key: form-secret
+          volumeMounts:
+            - name: config-template
+              mountPath: /config-template
+              readOnly: true
+            - name: config-processed
+              mountPath: /config-processed
+          securityContext:
+            runAsUser: 991
+            runAsGroup: 991
+            allowPrivilegeEscalation: false
       containers:
         - name: synapse
           image: matrixdotorg/synapse:v1.147.1
@@ -117,7 +173,7 @@ spec:
             timeoutSeconds: 5
             failureThreshold: 3
           volumeMounts:
-            - name: config
+            - name: config-processed
               mountPath: /config
               readOnly: true
             - name: data
@@ -127,17 +183,15 @@ spec:
               subPath: testing.borooka.ee.signing.key
               readOnly: true
       volumes:
-        - name: config
+        - name: config-template
           configMap:
             name: synapse-config
+        - name: config-processed
+          emptyDir: {}
         - name: data
           persistentVolumeClaim:
             claimName: synapse-media
-        # IMPORTANT: The synapse-signing-key secret must contain a properly formatted
-        # Matrix signing key in the format: "ed25519 a_<id> <base64-seed>"
         # Generate using: docker run --rm -v /tmp:/data matrixdotorg/synapse:v1.147.1 generate
-        # The signing.key file content should look like:
-        #   ed25519 a_abcd dGhpc2lzYW4zMmJ5dGVzZWVkZm9ybmFjbGVkMjU1MTk
         - name: signing-key
           secret:
             secretName: synapse-signing-key
