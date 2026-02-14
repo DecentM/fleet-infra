@@ -122,6 +122,8 @@ spec:
               mountPath: /data/passkey.pem
               subPath: passkey.pem
               readOnly: true
+            - name: cryptostore
+              mountPath: /data/cryptostore
       volumes:
         - name: config-template
           configMap:
@@ -134,6 +136,9 @@ spec:
             items:
               - key: passkey.pem
                 path: passkey.pem
+        - name: cryptostore
+          persistentVolumeClaim:
+            claimName: hookshot-cryptostore
 ---
 apiVersion: v1
 kind: Service

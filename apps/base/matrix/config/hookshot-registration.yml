@@ -13,3 +13,9 @@ namespaces:
       exclusive: true
   rooms: []
   aliases: []
+
+# End-to-end encryption support flags
+# Required for Hookshot to receive and send encrypted messages
+de.sorunome.msc2409.push_ephemeral: true
+push_ephemeral: true
+org.matrix.msc3202: true

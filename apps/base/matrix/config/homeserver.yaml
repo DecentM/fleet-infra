@@ -77,3 +77,10 @@ log_config: "/config/log.config"
 # Application services (bridges)
 app_service_config_files:
   - /data/hookshot-registration.yml
+
+# Experimental features for E2E encryption bridge support (MSC2409, MSC3202)
+# Required for Hookshot to work in encrypted rooms
+experimental_features:
+  msc3202_device_masquerading: true
+  msc3202_transaction_extensions: true
+  msc2409_to_device_messages_enabled: true

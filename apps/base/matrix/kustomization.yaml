@@ -28,11 +28,13 @@ resources:
   # Database and storage
   - data/cnpg-cluster.yaml
   - data/pvc-media.yaml
+  - data/hookshot-cryptostore-pvc.yaml
 
   # Core components
   - components/synapse.yaml
   - components/element.yaml
   - components/hookshot.yaml
+  - components/redis.yaml
 
   # Jitsi components (order matters: prosody first)
   - components/jitsi/prosody.yaml

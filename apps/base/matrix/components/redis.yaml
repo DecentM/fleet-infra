@@ -1,0 +1,91 @@
+# Redis for Hookshot encryption support
+# Provides caching for E2E encryption key storage and lookups
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hookshot-redis
+  namespace: app-matrix
+  labels:
+    app: hookshot-redis
+    app.kubernetes.io/name: hookshot-redis
+    app.kubernetes.io/component: cache
+    app.kubernetes.io/part-of: matrix
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: hookshot-redis
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: hookshot-redis
+        app.kubernetes.io/name: hookshot-redis
+    spec:
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          imagePullPolicy: IfNotPresent
+          args:
+            - redis-server
+            - --save
+            - ""
+            - --appendonly
+            - "no"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+            allowPrivilegeEscalation: false
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 3
+            failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hookshot-redis
+  namespace: app-matrix
+  labels:
+    app: hookshot-redis
+spec:
+  type: ClusterIP
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: redis
+      protocol: TCP
+  selector:
+    app: hookshot-redis

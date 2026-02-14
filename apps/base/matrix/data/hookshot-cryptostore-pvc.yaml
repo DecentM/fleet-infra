@@ -1,0 +1,14 @@
+# Persistent storage for Hookshot E2E encryption crypto store
+# Stores encryption keys and device state for encrypted room support
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hookshot-cryptostore
+  namespace: app-matrix
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn-local
+  resources:
+    requests:
+      storage: 100Mi
