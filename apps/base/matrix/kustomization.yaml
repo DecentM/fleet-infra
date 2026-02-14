@@ -53,6 +53,11 @@ configMapGenerator:
     files:
       - config.json=config/element-config.json
 
+  - name: element-nginx-config
+    namespace: app-matrix
+    files:
+      - default.conf=config/element-nginx.conf
+
   - name: jitsi-common-config
     namespace: app-matrix
     envs:
