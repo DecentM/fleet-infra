@@ -11,6 +11,7 @@
 
 import {
   Appservice,
+  AutojoinRoomsMixin,
   IAppserviceRegistration,
   SimpleFsStorageProvider,
 } from 'matrix-bot-sdk';
@@ -145,6 +146,10 @@ const main = async (): Promise<void> => {
   // Get bot's Matrix client for API calls
   const botClient = appservice.botClient;
 
+  // Set up auto-join for room invitations
+  AutojoinRoomsMixin.setupOnClient(botClient);
+  log('AutojoinRoomsMixin configured - bot will auto-accept invitations');
+
   // Initialize call monitor
   const callMonitor = new CallMonitor(
     botClient,
@@ -165,6 +170,20 @@ const main = async (): Promise<void> => {
     if (!event.type.endsWith('.call.member') || !event.state_key) {
       log(`[DEBUG] Skipping event (not a call.member state event)`);
       return;
+    }
+
+    // Ensure the bot is in the room before processing the event
+    try {
+      const joinedRooms = await appservice.botClient.getJoinedRooms();
+      if (!joinedRooms.includes(roomId)) {
+        log(`[Main] Bot not in room ${roomId}, joining...`);
+        await appservice.botClient.joinRoom(roomId);
+        log(`[Main] Successfully joined room ${roomId}`);
+      }
+    } catch (joinError) {
+      const message = joinError instanceof Error ? joinError.message : String(joinError);
+      log(`[Main] Warning: Failed to join room ${roomId}: ${message}`, 'warn');
+      // Continue anyway - the bot might already be in the room
     }
 
     try {
