@@ -127,6 +127,11 @@ configMapGenerator:
     files:
       - default.conf=config/livekit-nginx.conf
 
+  - name: synapse-admin-config
+    namespace: app-matrix
+    files:
+      - config/synapse-admin-nginx.conf
+
 # Common labels for all resources
 commonLabels:
   app.kubernetes.io/part-of: matrix-stack
