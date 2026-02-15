@@ -1,0 +1,511 @@
+apiVersion: 1
+groups:
+  - orgId: 1
+    name: matrix-synapse
+    folder: Applications
+    interval: 1m
+    rules:
+      - uid: synapse-down
+        title: Synapse Down
+        condition: C
+        noDataState: Alerting
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: up{job="synapse"} == 0
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 5m
+        labels:
+          severity: critical
+          service: matrix
+        annotations:
+          summary: "Synapse homeserver is down"
+          description: "The Matrix Synapse homeserver has been unreachable for more than 5 minutes."
+
+      - uid: synapse-http-5xx-rate
+        title: Synapse High HTTP 5xx Rate
+        condition: C
+        noDataState: OK
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                (
+                  sum(rate(synapse_http_server_responses_total{code=~"5.."}[5m])) /
+                  sum(rate(synapse_http_server_responses_total[5m]))
+                ) * 100 > 1
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 10m
+        labels:
+          severity: warning
+          service: matrix
+        annotations:
+          summary: "Synapse HTTP 5xx error rate is high"
+          description: "Synapse is returning more than 1% HTTP 5xx errors for the last 10 minutes."
+
+      - uid: synapse-http-latency-high
+        title: Synapse High HTTP Latency
+        condition: C
+        noDataState: OK
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                histogram_quantile(0.99, sum(rate(synapse_http_server_response_time_seconds_bucket[5m])) by (le)) > 5
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 10m
+        labels:
+          severity: warning
+          service: matrix
+        annotations:
+          summary: "Synapse P99 HTTP latency is high"
+          description: "Synapse P99 HTTP response time has exceeded 5 seconds for the last 10 minutes."
+
+      - uid: synapse-event-processing-stalled
+        title: Synapse Event Processing Stalled
+        condition: C
+        noDataState: OK
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                (time() - synapse_event_processing_last_ts) > 120
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 5m
+        labels:
+          severity: critical
+          service: matrix
+        annotations:
+          summary: "Synapse event processing has stalled"
+          description: "No event processing progress for more than 120 seconds. Check for database issues or lock contention."
+
+      - uid: synapse-federation-queue-backlog
+        title: Synapse Federation Queue Backlog
+        condition: C
+        noDataState: OK
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 900
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                synapse_federation_send_queue_pending_pdus > 1000 or synapse_federation_send_queue_pending_edus > 5000
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 900
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 15m
+        labels:
+          severity: warning
+          service: matrix
+        annotations:
+          summary: "Synapse federation queue has large backlog"
+          description: "Federation outbound queue has more than 1000 pending PDUs or 5000 EDUs for 15 minutes."
+
+      - uid: synapse-inbound-federation-old
+        title: Synapse Inbound Federation Staging Stale
+        condition: C
+        noDataState: OK
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                synapse_federation_inbound_staging_oldest_pdu_age_seconds > 1800
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 10m
+        labels:
+          severity: warning
+          service: matrix
+        annotations:
+          summary: "Synapse inbound federation PDU is stale"
+          description: "Oldest PDU in inbound federation staging is older than 30 minutes."
+
+      - uid: synapse-reactor-tick-slow
+        title: Synapse Twisted Reactor Tick Slow
+        condition: C
+        noDataState: OK
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                histogram_quantile(0.99, sum(rate(synapse_twisted_reactor_tick_time_bucket[5m])) by (le)) > 2
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 5m
+        labels:
+          severity: warning
+          service: matrix
+        annotations:
+          summary: "Synapse reactor tick time is high"
+          description: "Twisted reactor P99 tick time exceeds 2 seconds. May indicate event loop blocking."
+
+  - orgId: 1
+    name: matrix-hookshot
+    folder: Applications
+    interval: 1m
+    rules:
+      - uid: hookshot-down
+        title: Hookshot Down
+        condition: C
+        noDataState: Alerting
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: up{job="hookshot"} == 0
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 5m
+        labels:
+          severity: critical
+          service: matrix
+        annotations:
+          summary: "Hookshot bridge is down"
+          description: "The Matrix Hookshot bridge has been unreachable for more than 5 minutes."
+
+      - uid: hookshot-high-error-rate
+        title: Hookshot High Error Rate
+        condition: C
+        noDataState: OK
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                (
+                  sum(rate(hookshot_http_requests_total{code=~"5.."}[5m])) /
+                  sum(rate(hookshot_http_requests_total[5m]))
+                ) * 100 > 5
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 10m
+        labels:
+          severity: warning
+          service: matrix
+        annotations:
+          summary: "Hookshot error rate is high"
+          description: "Hookshot is returning more than 5% HTTP errors for the last 10 minutes."
+
+  - orgId: 1
+    name: matrix-redis
+    folder: Applications
+    interval: 1m
+    rules:
+      - uid: hookshot-redis-down
+        title: Hookshot Redis Down
+        condition: C
+        noDataState: Alerting
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: redis_up{job=~".*hookshot-redis.*"} == 0
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 5m
+        labels:
+          severity: critical
+          service: matrix
+        annotations:
+          summary: "Hookshot Redis is down"
+          description: "Redis instance for Hookshot encryption has been unreachable for more than 5 minutes."
+
+      - uid: hookshot-redis-high-memory
+        title: Hookshot Redis High Memory Usage
+        condition: C
+        noDataState: OK
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                (redis_memory_used_bytes{job=~".*hookshot-redis.*"} / redis_memory_max_bytes{job=~".*hookshot-redis.*"}) * 100 > 90
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 5m
+        labels:
+          severity: warning
+          service: matrix
+        annotations:
+          summary: "Hookshot Redis memory usage is high"
+          description: "Redis memory usage exceeds 90% of max configured memory."
+
+      - uid: hookshot-redis-evictions
+        title: Hookshot Redis Evictions Increasing
+        condition: C
+        noDataState: OK
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                increase(redis_evicted_keys_total{job=~".*hookshot-redis.*"}[5m]) > 0
+              instant: true
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+                  reducer:
+                    type: last
+              refId: C
+              type: classic_conditions
+        for: 10m
+        labels:
+          severity: warning
+          service: matrix
+        annotations:
+          summary: "Hookshot Redis is evicting keys"
+          description: "Redis is evicting keys due to memory pressure. Consider increasing memory limits."

@@ -255,6 +255,15 @@ metadata:
   namespace: app-matrix
   labels:
     app: synapse
+    app.kubernetes.io/name: synapse
+    app.kubernetes.io/component: homeserver
+    app.kubernetes.io/part-of: matrix
+    job: synapse
+  # Prometheus annotations for service discovery
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8008"
+    prometheus.io/path: "/_synapse/metrics"
 spec:
   type: ClusterIP
   ports:

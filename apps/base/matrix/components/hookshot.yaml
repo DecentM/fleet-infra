@@ -23,6 +23,7 @@ spec:
     metadata:
       labels:
         app: hookshot
+        job: hookshot
         app.kubernetes.io/name: hookshot
     spec:
       securityContext:
@@ -181,6 +182,7 @@ metadata:
   namespace: app-matrix
   labels:
     app: hookshot
+    job: hookshot
   # Prometheus annotations for service discovery
   annotations:
     prometheus.io/scrape: "true"

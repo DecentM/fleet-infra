@@ -72,6 +72,45 @@ spec:
             periodSeconds: 30
             timeoutSeconds: 3
             failureThreshold: 3
+        # Redis exporter sidecar for Prometheus metrics
+        - name: redis-exporter
+          image: oliver006/redis_exporter:v1.81.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: REDIS_ADDR
+              value: "redis://localhost:6379"
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            runAsUser: 59000
+            runAsGroup: 59000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          ports:
+            - name: metrics
+              containerPort: 9121
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 3
+            failureThreshold: 3
 ---
 apiVersion: v1
 kind: Service
@@ -80,12 +119,42 @@ metadata:
   namespace: app-matrix
   labels:
     app: hookshot-redis
+    app.kubernetes.io/name: hookshot-redis
+    app.kubernetes.io/component: cache
+    app.kubernetes.io/part-of: matrix
 spec:
   type: ClusterIP
   ports:
     - name: redis
       port: 6379
       targetPort: redis
+      protocol: TCP
+  selector:
+    app: hookshot-redis
+---
+# Metrics Service for Prometheus scraping
+apiVersion: v1
+kind: Service
+metadata:
+  name: hookshot-redis-metrics
+  namespace: app-matrix
+  labels:
+    app: hookshot-redis
+    app.kubernetes.io/name: hookshot-redis
+    app.kubernetes.io/component: cache
+    app.kubernetes.io/part-of: matrix
+    job: hookshot-redis
+  # Prometheus annotations for service discovery
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9121"
+    prometheus.io/path: "/metrics"
+spec:
+  type: ClusterIP
+  ports:
+    - name: metrics
+      port: 9121
+      targetPort: metrics
       protocol: TCP
   selector:
     app: hookshot-redis
