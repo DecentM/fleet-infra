@@ -1,6 +1,12 @@
 {
   "brand": "Brooke's Testing Instance",
-  "default_theme": "dark",
+  "user_notice": {
+    "title": "New Discord Dark Theme Available! 🎨",
+    "description": "We've added a Discord-inspired dark theme. If you don't see 'Discord Dark' in Settings → Appearance → Theme, clear your browser cache and refresh. Instructions: DevTools (F12) → Application → Local Storage → Clear, then refresh.",
+    "show_once": true,
+    "type": "info"
+  },
+  "default_theme": "custom-Discord Dark",
   "default_server_name": "testing.borooka.ee",
   "default_server_config": {
     "m.homeserver": {
@@ -13,7 +19,7 @@
   "disable_3pid_login": false,
   "disable_custom_urls": true,
   "default_country_code": "EE",
-  "show_labs_settings": true,
+  "show_labs_settings": false,
   "features": {
     "feature_video_rooms": true,
     "feature_group_calls": true,
@@ -60,7 +66,91 @@
       "favourites": true
     },
     "Spaces.showPeopleInSpace": true,
-    "Notifications.alwaysShowBadgeCounts": true
+    "Notifications.alwaysShowBadgeCounts": true,
+    "custom_themes": [
+      {
+        "name": "Discord Dark",
+        "is_dark": true,
+        "colors": {
+          "accent-color": "#5865f2",
+          "primary-color": "#5865f2",
+          "warning-color": "#fdb833",
+          "sidebar-color": "#1a1a1e",
+          "roomlist-background-color": "#202024",
+          "roomlist-text-color": "#efeff1",
+          "roomlist-text-secondary-color": "#96979e",
+          "roomlist-highlights-color": "#2c2d32",
+          "roomlist-separator-color": "#393a41",
+          "timeline-background-color": "#242429",
+          "timeline-text-color": "#efeff1",
+          "timeline-text-secondary-color": "#abacb2",
+          "timeline-highlights-color": "#28282d",
+          "username-colors": [
+            "#5865f2",
+            "#4d96ee",
+            "#3d9e60",
+            "#fdb833",
+            "#da3e44",
+            "#798df9",
+            "#4654c0",
+            "#3a48a3"
+          ],
+          "avatar-background-colors": [
+            "#242429",
+            "#28282d",
+            "#2c2d32",
+            "#393a41",
+            "#5865f2",
+            "#4654c0",
+            "#3a48a3",
+            "#798df9"
+          ]
+        },
+        "compound": {
+          "--cpd-color-bg-canvas-default": "#121214",
+          "--cpd-color-bg-canvas-disabled": "#1a1a1e",
+          "--cpd-color-bg-subtle-primary": "#202024",
+          "--cpd-color-bg-subtle-secondary": "#242429",
+          "--cpd-color-bg-action-primary-rest": "#5865f2",
+          "--cpd-color-bg-action-primary-hovered": "#4654c0",
+          "--cpd-color-bg-action-primary-pressed": "#3a48a3",
+          "--cpd-color-bg-action-secondary-rest": "#393a41",
+          "--cpd-color-bg-action-secondary-hovered": "#2c2d32",
+          "--cpd-color-bg-action-secondary-pressed": "#28282d",
+          "--cpd-color-bg-critical-primary": "#da3e44",
+          "--cpd-color-bg-critical-subtle": "#2c2d32",
+          "--cpd-color-bg-success-subtle": "#1a1a1e",
+          "--cpd-color-text-primary": "#efeff1",
+          "--cpd-color-text-secondary": "#abacb2",
+          "--cpd-color-text-placeholder": "#96979e",
+          "--cpd-color-text-disabled": "#96979e",
+          "--cpd-color-text-action-primary": "#fbfbfb",
+          "--cpd-color-text-action-accent": "#5865f2",
+          "--cpd-color-text-link-external": "#4d96ee",
+          "--cpd-color-text-critical-primary": "#da3e44",
+          "--cpd-color-text-success-primary": "#3d9e60",
+          "--cpd-color-text-info-primary": "#4d96ee",
+          "--cpd-color-text-on-solid-primary": "#fbfbfb",
+          "--cpd-color-icon-primary": "#efeff1",
+          "--cpd-color-icon-secondary": "#abacb2",
+          "--cpd-color-icon-tertiary": "#96979e",
+          "--cpd-color-icon-disabled": "#96979e",
+          "--cpd-color-icon-accent-primary": "#5865f2",
+          "--cpd-color-icon-critical-primary": "#da3e44",
+          "--cpd-color-icon-success-primary": "#3d9e60",
+          "--cpd-color-icon-info-primary": "#4d96ee",
+          "--cpd-color-icon-on-solid-primary": "#fbfbfb",
+          "--cpd-color-border-interactive-primary": "#393a41",
+          "--cpd-color-border-interactive-hovered": "#5865f2",
+          "--cpd-color-border-interactive-secondary": "#2c2d32",
+          "--cpd-color-border-disabled": "#28282d",
+          "--cpd-color-border-focused": "#5865f2",
+          "--cpd-color-border-critical-primary": "#da3e44",
+          "--cpd-color-border-success-primary": "#3d9e60",
+          "--cpd-color-border-info-primary": "#4d96ee"
+        }
+      }
+    ]
   },
   "integrations_ui_url": "https://scalar.vector.im/",
   "integrations_rest_url": "https://scalar.vector.im/api",
