@@ -55,6 +55,7 @@ resources:
   # Networking/Ingress
   - networking/tunnel.yaml
   - networking/hookshot-tunnel.yaml
+  - networking/certificate.yaml
   - networking/synapse-admin-ingressroute.yaml
 
 # ConfigMap generation with automatic hash suffixing for rolling updates
