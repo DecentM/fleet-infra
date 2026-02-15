@@ -62,12 +62,15 @@ export interface CallFocus {
  */
 export interface AppConfig {
   homeserverUrl: string;
-  accessToken: string;
+  asToken: string;
+  hsToken: string;
   livekitUrl: string;
   livekitApiKey: string;
   livekitApiSecret: string;
   aloneTimeoutMs: number;
   dataDir: string;
+  bindAddress: string;
+  port: number;
 }
 
 /**

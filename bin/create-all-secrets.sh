@@ -211,5 +211,5 @@ create_secret \
     app-matrix \
     call-janitor-secrets \
     generic \
-    "access-token" \
+    "as-token hs-token" \
     "apps/base/matrix/sealed-call-janitor-secrets.yaml"

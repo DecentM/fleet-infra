@@ -34,6 +34,10 @@ spec:
         - name: call-janitor
           image: ghcr.io/decentm/call-janitor:sha-1c8028e
           imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
           resources:
             requests:
               cpu: 100m
@@ -50,18 +54,28 @@ spec:
             # Direct environment variables
             - name: HOMESERVER_URL
               value: "http://synapse:8008"
+            - name: LIVEKIT_URL
+              value: "http://livekit-svc:7880"
             - name: ALONE_TIMEOUT_MS
               value: "60000"
             - name: DATA_DIR
               value: "/data"
-            # Secrets from SealedSecret
-            - name: ACCESS_TOKEN
+            - name: PORT
+              value: "8080"
+            - name: BIND_ADDRESS
+              value: "0.0.0.0"
+            # AppService tokens from SealedSecret
+            - name: AS_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: call-janitor-secrets
-                  key: access-token
-            - name: LIVEKIT_URL
-              value: http://livekit-svc:7880
+                  key: as-token
+            - name: HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: call-janitor-secrets
+                  key: hs-token
+            # LiveKit credentials
             - name: LIVEKIT_API_KEY
               valueFrom:
                 secretKeyRef:
@@ -78,5 +92,4 @@ spec:
       volumes:
         - name: data
           emptyDir: {}
-# Note: No Service needed - call-janitor is a bot that initiates outbound
-# connections only (to Synapse and LiveKit). It does not receive inbound traffic.
+
