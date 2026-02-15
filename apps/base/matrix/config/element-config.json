@@ -1,9 +1,66 @@
 {
+  "brand": "Brooke's Testing Instance",
+  "default_theme": "dark",
+  "default_server_name": "testing.borooka.ee",
   "default_server_config": {
     "m.homeserver": {
-      "base_url": "https://matrix-testing.borooka.ee",
-      "server_name": "testing.borooka.ee"
+      "server_name": "testing.borooka.ee",
+      "base_url": "https://matrix-testing.borooka.ee"
     }
+  },
+  "disable_guests": true,
+  "disable_login_language_selector": false,
+  "disable_3pid_login": false,
+  "disable_custom_urls": true,
+  "default_country_code": "EE",
+  "show_labs_settings": true,
+  "features": {
+    "feature_video_rooms": true,
+    "feature_group_calls": true,
+    "feature_element_call_video_rooms": true,
+    "feature_new_room_list": true
+  },
+  "element_call": {
+    "use_exclusively": true,
+    "url": "https://element-call-testing.borooka.ee"
+  },
+  "jitsi": {
+    "preferred_domain": "meet-testing.borooka.ee",
+    "skip_built_in_welcome_screen": true
+  },
+  "setting_defaults": {
+    "MessageComposerInput.insertTrailingColon": true,
+    "room_directory_servers": [
+      "testing.borooka.ee"
+    ],
+    "MessageComposerInput.autoReplaceEmoji": true,
+    "autoplayGifs": true,
+    "autoplayVideo": true,
+    "enableSyntaxHighlightLanguageDetection": true,
+    "SpotlightSearch.showNsfwPublicRooms": true,
+    "hideAvatarChanges": true,
+    "hideDisplaynameChanges": true,
+    "hideJoinLeaves": true,
+    "layout": "group",
+    "sendTypingNotifications": true,
+    "showTypingNotifications": true,
+    "notificationsEnabled": true,
+    "audioNotificationsEnabled": true,
+    "RoomList.preferredSorting": "Unread",
+    "RoomList.showMessagePreview": false,
+    "breadcrumbs": false,
+    "Spaces.allRoomsInHome": false,
+    "Spaces.enabledMetaSpaces": {
+      "home-space": true,
+      "orphans-space": true,
+      "video-rooms-space": false,
+      "home": false,
+      "video_rooms": true,
+      "people": true,
+      "favourites": true
+    },
+    "Spaces.showPeopleInSpace": true,
+    "Notifications.alwaysShowBadgeCounts": true
   },
   "integrations_ui_url": "https://scalar.vector.im/",
   "integrations_rest_url": "https://scalar.vector.im/api",
@@ -11,30 +68,7 @@
     "https://scalar.vector.im/_matrix/integrations/v1",
     "https://scalar.vector.im/api"
   ],
-  "brand": "Element",
-  "disable_guests": true,
-  "disable_login_language_selector": false,
-  "disable_3pid_login": false,
-  "disable_custom_urls": true,
-  "default_country_code": "US",
-  "show_labs_settings": true,
-  "features": {
-    "feature_video_rooms": true,
-    "feature_group_calls": true,
-    "feature_element_call_video_rooms": true
-  },
-  "jitsi": {
-    "preferredDomain": "meet-testing.borooka.ee",
-    "useFor1To1Calls": false
-  },
-  "element_call": {
-    "url": "https://call.element.io",
-    "use_exclusively": false
-  },
   "room_directory": {
     "servers": ["testing.borooka.ee"]
-  },
-  "setting_defaults": {
-    "breadcrumbs": true
   }
 }

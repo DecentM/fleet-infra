@@ -21,5 +21,11 @@
       "type": "livekit",
       "livekit_service_url": "https://livekit-testing.borooka.ee/livekit/jwt"
     }
-  ]
+  ],
+  "org.matrix.msc3575.proxy": {
+    "url": "https://matrix-testing.borooka.ee"
+  },
+  "io.element.e2ee": {
+    "default": true
+  }
 }
