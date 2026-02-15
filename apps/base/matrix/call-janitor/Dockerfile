@@ -17,18 +17,6 @@ COPY tsconfig.json ./
 COPY src/ ./src/
 RUN pnpm run build
 
-# Production dependencies stage - separate for smaller final image
-FROM node:${NODE_VERSION}-slim AS deps
-
-WORKDIR /app
-
-# Enable corepack and activate pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
-
-# Install only production dependencies
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile --prod
-
 # Runtime stage - minimal production image
 FROM node:${NODE_VERSION}-slim AS runtime
 
@@ -36,7 +24,7 @@ WORKDIR /app
 
 # Copy compiled code and production dependencies
 COPY --from=builder /app/dist ./dist
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./
 
 # Create data directory for bot storage
