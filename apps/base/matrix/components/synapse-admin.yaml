@@ -78,6 +78,10 @@ spec:
             - name: nginx-config
               mountPath: /etc/nginx/conf.d/default.conf
               subPath: synapse-admin-nginx.conf
+            - name: synapse-admin-config
+              mountPath: /app/config.json
+              subPath: synapse-admin-config.json
+              readOnly: true
       volumes:
         - name: nginx-cache
           emptyDir: {}
@@ -86,6 +90,9 @@ spec:
         - name: tmp
           emptyDir: {}
         - name: nginx-config
+          configMap:
+            name: synapse-admin-config
+        - name: synapse-admin-config
           configMap:
             name: synapse-admin-config
 ---

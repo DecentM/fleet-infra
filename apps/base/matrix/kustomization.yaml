@@ -132,6 +132,7 @@ configMapGenerator:
     namespace: app-matrix
     files:
       - config/synapse-admin-nginx.conf
+      - config/synapse-admin-config.json
 
 # Common labels for all resources
 commonLabels:
