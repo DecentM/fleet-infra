@@ -73,7 +73,12 @@ const createRegistration = (
         },
       ],
       aliases: [],
-      rooms: [],
+      rooms: [
+        {
+          exclusive: false,
+          regex: '!.*',
+        },
+      ],
     },
     rate_limited: false,
     url: '', // Not used when creating Appservice instance
@@ -126,6 +131,12 @@ const main = async (): Promise<void> => {
     storage: storageProvider,
   });
 
+  // Debug: Log all incoming HTTP requests to the AppService
+  appservice.expressAppInstance.use((req, _res, next) => {
+    log(`[DEBUG] HTTP ${req.method} ${req.path}`);
+    next();
+  });
+
   // Get bot's user ID (uses sender_localpart from registration)
   const botUserId = appservice.botUserId;
   log(`Bot user ID: ${botUserId}`);
@@ -144,8 +155,12 @@ const main = async (): Promise<void> => {
   // Set up event handler for all room events
   // AppServices receive ALL events, so we filter for m.call.member
   appservice.on('room.event', async (roomId: string, event: any) => {
+    // Debug: Log all events received by the AppService
+    log(`[DEBUG] Received event type=${event.type} room=${roomId} state_key=${event.state_key ?? 'N/A'}`);
+
     // Only process m.call.member state events
     if (event.type !== 'm.call.member' || !event.state_key) {
+      log(`[DEBUG] Skipping event (not m.call.member state event)`);
       return;
     }
 

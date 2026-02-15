@@ -9,4 +9,6 @@ namespaces:
     - exclusive: true
       regex: "@call-janitor:.*"
   aliases: []
-  rooms: []
+  rooms:
+    - exclusive: false
+      regex: "!.*"
