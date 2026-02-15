@@ -1,7 +1,8 @@
 /**
  * Call Janitor - Matrix AppService bot for cleaning up lonely Element Call sessions
  *
- * Monitors m.call.member state events and kicks users who have been
+ * Monitors call.member state events (both stable m.call.member and
+ * unstable org.matrix.msc3401.call.member) and kicks users who have been
  * alone in a call for more than 1 minute to save bandwidth.
  *
  * Runs as an Application Service, receiving events pushed from Synapse
@@ -153,14 +154,16 @@ const main = async (): Promise<void> => {
   );
 
   // Set up event handler for all room events
-  // AppServices receive ALL events, so we filter for m.call.member
+  // AppServices receive ALL events, so we filter for call.member events
   appservice.on('room.event', async (roomId: string, event: any) => {
     // Debug: Log all events received by the AppService
     log(`[DEBUG] Received event type=${event.type} room=${roomId} state_key=${event.state_key ?? 'N/A'}`);
 
-    // Only process m.call.member state events
-    if (event.type !== 'm.call.member' || !event.state_key) {
-      log(`[DEBUG] Skipping event (not m.call.member state event)`);
+    // Only process call.member state events (both stable and unstable types)
+    // - m.call.member (stable/future)
+    // - org.matrix.msc3401.call.member (unstable/current)
+    if (!event.type.endsWith('.call.member') || !event.state_key) {
+      log(`[DEBUG] Skipping event (not a call.member state event)`);
       return;
     }
 
