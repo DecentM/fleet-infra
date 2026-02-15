@@ -61,7 +61,7 @@ spec:
                   name: call-janitor-secrets
                   key: access-token
             - name: LIVEKIT_URL
-              value: wss://livekit-testing.borooka.ee
+              value: http://livekit-svc:7880
             - name: LIVEKIT_API_KEY
               valueFrom:
                 secretKeyRef:
