@@ -49,9 +49,13 @@ resources:
   - components/lk-jwt-service.yaml
   - components/livekit-proxy.yaml
 
+  # Admin UI
+  - components/synapse-admin.yaml
+
   # Networking/Ingress
   - networking/tunnel.yaml
   - networking/hookshot-tunnel.yaml
+  - networking/synapse-admin-ingressroute.yaml
 
 # ConfigMap generation with automatic hash suffixing for rolling updates
 configMapGenerator:

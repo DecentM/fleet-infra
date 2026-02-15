@@ -1,0 +1,19 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: synapse-admin
+  namespace: app-matrix
+
+spec:
+  entryPoints:
+    - websecure
+
+  routes:
+    - match: Host(`matrix-admin.cluster.arpa`)
+      kind: Rule
+      services:
+        - name: synapse-admin
+          namespace: app-matrix
+          port: http
+  tls:
+    secretName: traefik-tls

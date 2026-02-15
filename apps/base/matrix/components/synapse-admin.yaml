@@ -1,0 +1,101 @@
+# Synapse Admin UI
+# Documentation: https://github.com/Awesome-Technologies/synapse-admin
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: synapse-admin
+  namespace: app-matrix
+  labels:
+    app: synapse-admin
+    app.kubernetes.io/name: synapse-admin
+    app.kubernetes.io/component: admin-ui
+    app.kubernetes.io/part-of: matrix
+spec:
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: synapse-admin
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: synapse-admin
+        app.kubernetes.io/name: synapse-admin
+    spec:
+      securityContext:
+        runAsUser: 101
+        runAsGroup: 101
+        fsGroup: 101
+      containers:
+        - name: synapse-admin
+          image: awesometechnologies/synapse-admin:latest
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              cpu: 50m
+              memory: 64Mi
+          securityContext:
+            runAsUser: 101
+            runAsGroup: 101
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 3
+            failureThreshold: 3
+          volumeMounts:
+            # Nginx needs write access to these directories
+            - name: nginx-cache
+              mountPath: /var/cache/nginx
+            - name: nginx-run
+              mountPath: /var/run
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: nginx-cache
+          emptyDir: {}
+        - name: nginx-run
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: synapse-admin
+  namespace: app-matrix
+  labels:
+    app: synapse-admin
+spec:
+  type: ClusterIP
+  selector:
+    app: synapse-admin
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: http
