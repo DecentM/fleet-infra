@@ -1,0 +1,82 @@
+# Matrix Call Janitor - Automatically ends stale Matrix calls/rooms
+# Bot that monitors LiveKit rooms and ends calls when only one participant remains
+# Documentation: https://github.com/element-hq/call-janitor (or your custom repo)
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: call-janitor
+  namespace: app-matrix
+  labels:
+    app: call-janitor
+    app.kubernetes.io/name: call-janitor
+    app.kubernetes.io/component: bot
+    app.kubernetes.io/part-of: matrix
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: call-janitor
+  strategy:
+    type: Recreate  # Single replica with data volume requires Recreate
+  template:
+    metadata:
+      labels:
+        app: call-janitor
+        app.kubernetes.io/name: call-janitor
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: call-janitor
+          image: ghcr.io/decentm/call-janitor:latest
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          env:
+            # Direct environment variables
+            - name: HOMESERVER_URL
+              value: "http://synapse:8008"
+            - name: ALONE_TIMEOUT_MS
+              value: "60000"
+            - name: DATA_DIR
+              value: "/data"
+            # Secrets from SealedSecret
+            - name: ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: call-janitor-secrets
+                  key: access-token
+            - name: LIVEKIT_URL
+              value: wss://livekit-testing.borooka.ee
+            - name: LIVEKIT_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: livekit-secrets
+                  key: api-key
+            - name: LIVEKIT_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: livekit-secrets
+                  key: api-secret
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          emptyDir: {}
+# Note: No Service needed - call-janitor is a bot that initiates outbound
+# connections only (to Synapse and LiveKit). It does not receive inbound traffic.

@@ -1,0 +1,31 @@
+{
+  "name": "call-janitor",
+  "version": "1.0.0",
+  "description": "Matrix bot that kicks users from Element Call sessions when alone for 1 minute",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": [
+    "matrix",
+    "element-call",
+    "livekit",
+    "bot"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "matrix-bot-sdk": "^0.7.1",
+    "livekit-server-sdk": "^2.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

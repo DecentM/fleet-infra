@@ -206,3 +206,10 @@ create_secret \
     generic \
     "api-key api-secret" \
     "apps/base/matrix/sealed-livekit-secrets.yaml"
+
+create_secret \
+    app-matrix \
+    call-janitor-secrets \
+    generic \
+    "access-token" \
+    "apps/base/matrix/sealed-call-janitor-secrets.yaml"
