@@ -32,7 +32,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: call-janitor
-          image: ghcr.io/decentm/call-janitor:sha-ecf0813
+          image: ghcr.io/decentm/call-janitor:sha-71ba453
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
