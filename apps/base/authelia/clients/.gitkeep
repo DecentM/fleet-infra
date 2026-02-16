@@ -1,0 +1,12 @@
+# OIDC Clients Directory
+#
+# This directory contains OIDC client definitions for Authelia.
+# Each client should have its own ConfigMap and SealedSecret.
+#
+# To add a new OIDC client:
+# 1. Copy example-client.yaml.template to <client-name>.yaml
+# 2. Generate a client secret and create a SealedSecret
+# 3. Update the main configuration.yml to include the client
+# 4. Add both files to kustomization.yaml resources
+#
+# See README.md for detailed instructions.

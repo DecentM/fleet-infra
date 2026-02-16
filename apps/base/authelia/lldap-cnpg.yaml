@@ -1,0 +1,19 @@
+# CloudNativePG PostgreSQL cluster for LLDAP
+# Stores LLDAP user data and configuration
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: lldap-db
+  namespace: app-authelia
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.10
+  storage:
+    storageClass: longhorn-local
+    size: 1Gi
+  monitoring:
+    enablePodMonitor: true
+  bootstrap:
+    initdb:
+      database: lldap
+      owner: lldap

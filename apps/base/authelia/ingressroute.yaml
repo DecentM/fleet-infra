@@ -1,0 +1,51 @@
+# Traefik IngressRoute for internal cluster access
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: authelia
+  namespace: app-authelia
+
+spec:
+  entryPoints:
+    - websecure
+
+  routes:
+    - match: Host(`auth.cluster.arpa`)
+      kind: Rule
+      services:
+        - name: authelia
+          namespace: app-authelia
+          port: http
+  tls:
+    secretName: traefik-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: traefik-cert
+  namespace: app-authelia
+spec:
+  secretName: traefik-tls
+  duration: 672h # 28d
+  renewBefore: 168h # 7d
+  issuerRef:
+    name: custom-ca-cluster-issuer
+    kind: ClusterIssuer
+  commonName: "auth.cluster.arpa"
+  dnsNames:
+    - "auth.cluster.arpa"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: traefik-ingress-controller
+  namespace: app-authelia
+
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: traefik-ingress-controller
+subjects:
+  - kind: ServiceAccount
+    name: traefik-ingress-controller
+    namespace: traefik-system

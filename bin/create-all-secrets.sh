@@ -1,215 +1,383 @@
-#!/bin/sh
+#!/bin/bash
+set -euo pipefail
 
-set -eu
+# Global flags
+DEBUG=false
+DRY_RUN=false
 
-if ! command -v kubectl >/dev/null; then
-    echo "kubectl is not installed. Please install it and try again."
-    exit 1
-fi
+# Color codes
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
 
-if [ ! -f bin/create-secret.sh ]; then
-    echo "This script must be run from the root of the repository."
-    exit 1
-fi
-
-secret_exists() {
-    namespace="$1"
-    secret_name="$2"
-
-    kubectl get secret -n "$namespace" "$secret_name" >/dev/null 2>/dev/null
+# Helper functions
+info() {
+    echo -e "${BLUE}[INFO]${NC} $1"
 }
 
-create_secret() {
-    namespace="$1"
-    secret_name="$2"
-    secret_type="$3"
-    input_keys="$4"
-    output_path="$5"
-    extra="${6:-''}"
+success() {
+    echo -e "${GREEN}[OK]${NC} $1"
+}
 
-    input_literals=""
+warn() {
+    echo -e "${YELLOW}[WARN]${NC} $1"
+}
 
-    secret_exists=$(secret_exists "$namespace" "$secret_name" && echo 1 || echo 0)
-    output_exists=$(test -f "$output_path" && echo 1 || echo 0)
+error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
 
-    if [ "$secret_exists" = "1" ] && [ "$output_exists" = "1" ]; then
-        echo "Skipping $namespace/$secret_name"
-        return
+# Check if secret exists in cluster
+secret_exists_in_cluster() {
+    local namespace=$1
+    local name=$2
+    kubectl -n "$namespace" get secret "$name" &>/dev/null
+}
+
+# Function to seal a secret from a YAML file
+seal_secret() {
+    local input_yaml=$1
+    local output_file=$2
+    local cert_file=$3
+
+    if kubeseal --format=yaml --cert="$cert_file" <"$input_yaml" >"$output_file"; then
+        success "Sealed secret created: $output_file"
+        return 0
+    else
+        error "Failed to seal secret"
+        return 1
+    fi
+}
+
+# Build YAML for generic secret
+build_generic_secret_yaml() {
+    local namespace=$1
+    local name=$2
+    local tmpdir=$3
+    local output_yaml=$4
+
+    cat >"$output_yaml" <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: $name
+  namespace: $namespace
+type: Opaque
+stringData:
+EOF
+
+    # Each file in the temp directory is a key, and its content is the value
+    for filepath in "$tmpdir"/*; do
+        [ -f "$filepath" ] || continue
+        key=$(basename "$filepath")
+        
+        if [ -s "$filepath" ]; then
+            # File has content - use proper YAML multi-line string format
+            printf "  %s: |-\n" "$key" >>"$output_yaml"
+            # Indent each line of the value with 4 spaces
+            sed 's/^/    /' "$filepath" >>"$output_yaml"
+            # Ensure trailing newline
+            if [ -n "$(tail -c 1 "$filepath")" ]; then
+                echo >>"$output_yaml"
+            fi
+        else
+            # Empty file - use empty string to avoid invalid YAML
+            printf '  %s: ""\n' "$key" >>"$output_yaml"
+        fi
+    done
+}
+
+# Build YAML for TLS secret
+build_tls_secret_yaml() {
+    local namespace=$1
+    local name=$2
+    local cert_content=$3
+    local key_content=$4
+    local output_yaml=$5
+
+    local tmp_cert
+    local tmp_key
+    tmp_cert=$(mktemp)
+    tmp_key=$(mktemp)
+
+    echo "$cert_content" >"$tmp_cert"
+    echo "$key_content" >"$tmp_key"
+
+    kubectl -n "$namespace" create secret tls "$name" \
+        --cert="$tmp_cert" \
+        --key="$tmp_key" \
+        --dry-run=client -o yaml >"$output_yaml"
+
+    rm -f "$tmp_cert" "$tmp_key"
+}
+
+# Check if value name indicates it should be treated as sensitive
+is_sensitive_value() {
+    local name=$1
+    local instruction=$2
+
+    # Check if name or instruction contains sensitive keywords
+    if echo "$name $instruction" | grep -qiE 'password|secret|token|key|credential'; then
+        return 0
+    fi
+    return 1
+}
+
+# Check if value should be read as multiline
+is_multiline_value() {
+    local name=$1
+    local multiline_flag=$2
+
+    # Check extension or explicit multiline flag
+    if [[ "$multiline_flag" == "true" ]]; then
+        return 0
+    fi
+    if echo "$name" | grep -qE '\.(pem|key|crt|cert|pub)$'; then
+        return 0
+    fi
+    return 1
+}
+
+# Prompt user for a value
+prompt_value() {
+    local name=$1
+    local instruction=$2
+    local multiline=$3
+    local value=""
+
+    if [[ -n "$instruction" ]]; then
+        echo -e "${YELLOW}$instruction${NC}" >&2
+    fi
+
+    if is_multiline_value "$name" "$multiline"; then
+        echo -e "${BLUE}(Enter multiline value, press Ctrl+D when done)${NC}" >&2
+        value=$(cat)
+    elif is_sensitive_value "$name" "$instruction"; then
+        read -rs -p "Enter value for $name: " value
+        echo >&2
+    else
+        read -r -p "Enter value for $name: " value
+    fi
+
+    echo "$value"
+}
+
+# Process a single secret definition
+process_secret() {
+    local secret_json=$1
+    local kubeseal_cert=$2
+
+    local namespace
+    local name
+    local file
+    local type
+
+    namespace=$(echo "$secret_json" | jq -r '.namespace')
+    name=$(echo "$secret_json" | jq -r '.name')
+    file=$(echo "$secret_json" | jq -r '.file')
+    type=$(echo "$secret_json" | jq -r '.type // "generic"')
+
+    # Check if we should skip
+    if secret_exists_in_cluster "$namespace" "$name" && [[ -f "$file" ]]; then
+        info "Skipping $namespace/$name"
+        return 0
     fi
 
     echo
-    echo "$namespace ➜ $secret_name ($secret_type)"
+    echo -e "${BLUE}$namespace${NC} -> ${GREEN}$name${NC} ($type)"
     echo "===================="
 
-    if [ "$secret_type" = "tls" ]; then
-        printf "> TLS cert (PEM encoded content, press CTRL+D to submit):\n"
-        input_literals=$(cat)
+    # Create temp directory for values
+    local tmpdir
+    tmpdir=$(mktemp -d)
+    trap "rm -rf '$tmpdir'" RETURN
 
-        printf "> TLS key (PEM encoded conten, press CTRL+D to submit):\n"
-        extra=$(cat)
+    local values_count
+    values_count=$(echo "$secret_json" | jq '.values | length')
 
-        printf "…"
+    # Variables for TLS secrets
+    local tls_cert=""
+    local tls_key=""
 
-        bin/create-secret.sh "$namespace" "$secret_name" "$secret_type" "$input_literals" "$output_path" "$extra"
+    for ((j = 0; j < values_count; j++)); do
+        local value_json
+        local value_name
+        local instruction
+        local generate
+        local multiline
+
+        value_json=$(echo "$secret_json" | jq -r ".values[$j]")
+        value_name=$(echo "$value_json" | jq -r '.name')
+        instruction=$(echo "$value_json" | jq -r '.instruction // empty')
+        generate=$(echo "$value_json" | jq -r '.generate // empty')
+        multiline=$(echo "$value_json" | jq -r '.multiline // "false"')
+
+        local value=""
+
+        if [[ -n "$generate" ]]; then
+            # Auto-generate value
+            info "Generating $value_name..."
+            if ! value=$(eval "$generate" 2>&1); then
+                warn "Generation failed for $value_name, falling back to prompt"
+                value=$(prompt_value "$value_name" "$instruction" "$multiline")
+            fi
+        else
+            # Prompt user
+            value=$(prompt_value "$value_name" "$instruction" "$multiline")
+        fi
+
+        if [[ "$type" == "tls" ]]; then
+            # For TLS secrets, store cert and key separately
+            if [[ "$value_name" == "tls.crt" ]] || [[ "$value_name" == "cert" ]]; then
+                tls_cert="$value"
+            elif [[ "$value_name" == "tls.key" ]] || [[ "$value_name" == "key" ]]; then
+                tls_key="$value"
+            fi
+        else
+            # For generic secrets, write to temp file
+            printf '%s' "$value" >"$tmpdir/$value_name"
+        fi
+    done
+
+    # Build and seal the secret
+    local tmp_yaml
+    tmp_yaml=$(mktemp)
+
+    if [[ "$type" == "tls" ]]; then
+        build_tls_secret_yaml "$namespace" "$name" "$tls_cert" "$tls_key" "$tmp_yaml"
     else
-        # Create a temporary directory for secret values
-        tmpdir=$(mktemp -d)
-        trap "rm -rf '$tmpdir'" EXIT
-
-        # Build space-separated list of temp file paths for generic secrets
-        for key in $input_keys; do
-            # Check if key ends with a known multiline extension (e.g., .pem, .key, .crt, .cert)
-            case "$key" in
-                *.pem|*.key|*.crt|*.cert|*.pub)
-                    printf "> %s (multiline, press CTRL+D when done):\n" "$key"
-                    cat > "$tmpdir/$key"
-                    ;;
-                *)
-                    printf "> %s: " "$key"
-                    read -r value
-                    printf '%s' "$value" > "$tmpdir/$key"
-                    ;;
-            esac
-        done
-
-        printf "…"
-
-        # Pass the temp directory path to create-secret.sh
-        bin/create-secret.sh "$namespace" "$secret_name" "$secret_type" "$tmpdir" "$output_path" "$extra"
+        build_generic_secret_yaml "$namespace" "$name" "$tmpdir" "$tmp_yaml"
     fi
 
-    printf "\r✓\n"
+    # Debug: Show YAML structure with redacted values
+    if [[ "$DEBUG" == "true" ]]; then
+        echo
+        info "Generated YAML structure (values redacted):"
+        echo "---"
+        # Show YAML but redact actual secret values (lines with 4+ spaces of indentation)
+        sed -E 's/^(    +).+$/\1[REDACTED]/' "$tmp_yaml"
+        echo "---"
+    fi
+
+    # Create output directory if needed
+    local output_dir
+    output_dir=$(dirname "$file")
+    mkdir -p "$output_dir"
+
+    # Skip sealing in dry-run mode
+    if [[ "$DRY_RUN" == "true" ]]; then
+        info "Dry-run mode: skipping seal for $namespace/$name"
+        rm -f "$tmp_yaml"
+        return 0
+    fi
+
+    # Seal the secret
+    if seal_secret "$tmp_yaml" "$file" "$kubeseal_cert"; then
+        rm -f "$tmp_yaml"
+        return 0
+    else
+        rm -f "$tmp_yaml"
+        return 1
+    fi
 }
 
-create_secret \
-    cloudflare-operator-system \
-    cloudflare-secrets \
-    generic \
-    "CLOUDFLARE_API_TOKEN" \
-    "infrastructure/base/layer1/cloudflare/sealed-cloudflare-secrets.yaml"
+# Main execution
+main() {
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --debug)
+                DEBUG=true
+                shift
+                ;;
+            --dry-run)
+                DRY_RUN=true
+                shift
+                ;;
+            --help|-h)
+                echo "Usage: $0 [OPTIONS]"
+                echo ""
+                echo "Create and seal Kubernetes secrets based on secrets.json definitions."
+                echo ""
+                echo "Options:"
+                echo "  --debug     Print generated YAML structure (with redacted values) before sealing"
+                echo "  --dry-run   Generate YAML but skip sealing (implies --debug)"
+                echo "  --help, -h  Show this help message"
+                exit 0
+                ;;
+            *)
+                error "Unknown option: $1"
+                echo "Use --help for usage information"
+                exit 1
+                ;;
+        esac
+    done
 
-create_secret \
-    tailscale-system \
-    oauth \
-    generic \
-    "client-id client-secret" \
-    "infrastructure/base/layer1/tailscale/sealed-tailscale-oauth.yaml"
+    # --dry-run implies --debug
+    if [[ "$DRY_RUN" == "true" ]]; then
+        DEBUG=true
+    fi
 
-create_secret \
-    app-servarr \
-    servarr-api-key \
-    generic \
-    "value" \
-    "apps/base/servarr/secrets/sealed-api-key.yaml"
+    local script_dir
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    local secrets_file="$script_dir/secrets.json"
 
-create_secret \
-    app-servarr \
-    qbittorrent-credentials \
-    generic \
-    "username password" \
-    "apps/base/servarr/secrets/sealed-qbittorrent-credentials.yaml"
+    if [[ ! -f "$secrets_file" ]]; then
+        error "secrets.json not found at $secrets_file"
+        exit 1
+    fi
 
-create_secret \
-    app-joplin \
-    joplin-secrets \
-    generic \
-    "baseurl" \
-    "apps/base/joplin/sealed-joplin-secrets.yaml"
+    # Check dependencies
+    for cmd in kubectl kubeseal jq; do
+        if ! command -v "$cmd" &>/dev/null; then
+            error "Required command not found: $cmd"
+            exit 1
+        fi
+    done
 
-create_secret \
-    longhorn-system \
-    s3-secret \
-    generic \
-    "AWS_ACCESS_KEY_ID AWS_ENDPOINTS AWS_SECRET_ACCESS_KEY" \
-    "infrastructure/production/layer1/sealed-s3-secret.yaml"
+    # Check cluster connectivity
+    if ! kubectl cluster-info &>/dev/null; then
+        error "Cannot connect to the cluster. Check your kubeconfig."
+        exit 1
+    fi
 
-create_secret \
-    app-photoprism \
-    photoprism-admin-secrets \
-    generic \
-    "PHOTOPRISM_ADMIN_PASSWORD PHOTOPRISM_ADMIN_USER" \
-    "apps/base/photoprism/sealed-admin-secrets.yaml"
+    info "Fetching sealed-secrets certificate..."
+    local kubeseal_cert
+    kubeseal_cert=$(mktemp)
+    if ! kubeseal --fetch-cert --controller-name=sealed-secrets-controller --controller-namespace=flux-system >"$kubeseal_cert"; then
+        error "Failed to fetch sealed-secrets certificate"
+        rm -f "$kubeseal_cert"
+        exit 1
+    fi
 
-create_secret \
-    app-photoprism \
-    photoprism-db-secrets \
-    generic \
-    "PHOTOPRISM_DATABASE_PASSWORD" \
-    "apps/base/photoprism/sealed-db-secrets.yaml"
+    info "Reading secret definitions from $secrets_file"
 
-create_secret \
-    app-invidious \
-    invidious-secrets \
-    generic \
-    "hmac_key db_user db_password po_token visitor_data" \
-    "apps/base/invidious/sealed-invidious-secrets.yaml"
+    local secrets_count
+    secrets_count=$(jq '.secrets | length' "$secrets_file")
 
-create_secret \
-    cert-manager-system \
-    ca-issuer \
-    tls \
-    "" \
-    "infrastructure/base/layer1/cert-manager/sealed-ca-issuer.yaml"
+    info "Found $secrets_count secret definitions"
+    echo
 
-create_secret \
-    app-minecraft \
-    secrets \
-    generic \
-    "SEED PROXY_SECRET RCON_PASSWORD" \
-    "apps/base/minecraft/sealed-secrets.yaml"
+    local failed=0
+    for ((i = 0; i < secrets_count; i++)); do
+        local secret
+        secret=$(jq -c ".secrets[$i]" "$secrets_file")
+        if ! process_secret "$secret" "$kubeseal_cert"; then
+            ((failed++))
+        fi
+    done
 
-create_secret \
-    app-restic \
-    restic-secrets \
-    generic \
-    "repository password aws-access-key-id aws-secret-access-key" \
-    "apps/base/restic/sealed-secrets.yaml"
+    rm -f "$kubeseal_cert"
 
-create_secret \
-    app-matrix \
-    synapse-secrets \
-    generic \
-    "registration-shared-secret macaroon-secret-key form-secret" \
-    "apps/base/matrix/sealed-synapse-secrets.yaml"
+    echo
+    if [[ $failed -eq 0 ]]; then
+        success "All secrets processed successfully!"
+    else
+        warn "$failed secret(s) failed to process"
+        exit 1
+    fi
+}
 
-create_secret \
-    app-matrix \
-    turn-secrets \
-    generic \
-    "turn-username turn-password" \
-    "apps/base/matrix/sealed-turn-secrets.yaml"
-
-create_secret \
-    app-matrix \
-    synapse-signing-key \
-    generic \
-    "signing.key" \
-    "apps/base/matrix/sealed-synapse-signing-key.yaml"
-
-create_secret \
-    app-matrix \
-    jitsi-secrets \
-    generic \
-    "jicofo-auth-password jvb-auth-password" \
-    "apps/base/matrix/sealed-jitsi-secrets.yaml"
-
-create_secret \
-    app-matrix \
-    hookshot-secrets \
-    generic \
-    "as-token hs-token passkey.pem" \
-    "apps/base/matrix/sealed-hookshot-secrets.yaml"
-
-create_secret \
-    app-matrix \
-    livekit-secrets \
-    generic \
-    "api-key api-secret" \
-    "apps/base/matrix/sealed-livekit-secrets.yaml"
-
-create_secret \
-    app-matrix \
-    call-janitor-secrets \
-    generic \
-    "as-token hs-token" \
-    "apps/base/matrix/sealed-call-janitor-secrets.yaml"
+main "$@"

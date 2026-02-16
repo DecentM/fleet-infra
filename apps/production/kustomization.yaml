@@ -16,6 +16,7 @@ resources:
   - ../base/ollama
   - ../base/warp-proxy
   - ../base/matrix
+  - ../base/authelia
 patches:
   - path: patches/photoprism.yaml
   - path: patches/spectrum-mc-rp-tunnel.yaml

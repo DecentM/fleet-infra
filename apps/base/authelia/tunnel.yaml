@@ -1,0 +1,17 @@
+# Cloudflare Tunnel Binding for external access
+# Exposes Authelia at auth.decentm.com via Cloudflare Tunnel
+# https://github.com/adyanth/cloudflare-operator/blob/main/docs/configuration.md
+apiVersion: networking.cfargotunnel.com/v1alpha1
+kind: TunnelBinding
+metadata:
+  name: authelia-tunnel
+  namespace: app-authelia
+subjects:
+  - name: authelia
+    spec:
+      fqdn: auth.decentm.com
+      protocol: http
+      target: http://authelia.app-authelia.svc:9091
+tunnelRef:
+  kind: ClusterTunnel
+  name: cluster-tunnel-decentm

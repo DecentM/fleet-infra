@@ -1,0 +1,61 @@
+# Example OIDC Client ConfigMap Template
+#
+# This is a template for defining an OIDC client in Authelia.
+# Copy this file, remove the .template extension, and customize.
+#
+# To add this client to Authelia:
+# 1. Copy this template: cp example-client.yaml.template myapp-client.yaml
+# 2. Generate a client secret (use the helper script or generate manually)
+# 3. Create a SealedSecret for the client secret
+# 4. Add the client to config/configuration.yml identity_providers.oidc.clients section
+# 5. Update kustomization.yaml to include any additional resources
+#
+# Client configuration should be added to config/configuration.yml:
+#
+# identity_providers:
+#   oidc:
+#     clients:
+#       - client_id: example-app
+#         client_name: Example Application
+#         client_secret: ${EXAMPLE_APP_CLIENT_SECRET}
+#         public: false
+#         authorization_policy: one_factor
+#         redirect_uris:
+#           - https://example.decentm.com/oauth2/callback
+#         scopes:
+#           - openid
+#           - profile
+#           - email
+#           - groups
+#         userinfo_signed_response_alg: none
+#         token_endpoint_auth_method: client_secret_basic
+#
+# Common scopes:
+#   - openid: Required for OIDC
+#   - profile: User's name and basic profile
+#   - email: User's email address
+#   - groups: User's group memberships
+#
+# Authorization policies:
+#   - one_factor: Password only
+#   - two_factor: Password + TOTP/WebAuthn
+#   - deny: Block access
+#
+# Note: The client_secret should be provided via environment variable
+# from a SealedSecret, not hardcoded in the configuration.
+---
+# This ConfigMap can be used to store client metadata if needed
+# Most client configuration goes directly in configuration.yml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: example-client-metadata
+  namespace: app-authelia
+  labels:
+    app.kubernetes.io/name: authelia
+    app.kubernetes.io/component: oidc-client
+data:
+  # Client metadata (for reference, actual config is in configuration.yml)
+  client-id: example-app
+  client-name: Example Application
+  description: Example OIDC client for demonstration purposes

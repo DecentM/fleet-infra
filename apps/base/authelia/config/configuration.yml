@@ -1,0 +1,150 @@
+# Authelia Configuration
+# Documentation: https://www.authelia.com/configuration/
+#
+# This configuration uses environment variable substitution for secrets.
+# Authelia automatically substitutes $ENV_VAR and ${ENV_VAR} patterns.
+# All secrets should be provided via environment variables from SealedSecrets.
+#
+# OIDC clients are configured in the identity_providers.oidc.clients section.
+# To add new clients, create client definitions in the clients/ directory.
+---
+theme: auto
+
+server:
+  address: tcp://0.0.0.0:9091/
+  buffers:
+    read: 4096
+    write: 4096
+  timeouts:
+    read: 6s
+    write: 6s
+    idle: 30s
+
+log:
+  level: info
+  format: text
+
+# JWT secret for identity validation (password reset tokens, etc.)
+identity_validation:
+  reset_password:
+    jwt_secret: ${AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET}
+
+telemetry:
+  metrics:
+    enabled: true
+    address: tcp://0.0.0.0:9959/
+
+totp:
+  issuer: auth.decentm.com
+  period: 30
+  skew: 1
+
+webauthn:
+  disable: false
+  display_name: Authelia
+  attestation_conveyance_preference: indirect
+  user_verification: preferred
+  timeout: 60s
+
+# LLDAP authentication backend
+# Users are managed via LLDAP web UI at https://lldap.cluster.arpa
+authentication_backend:
+  password_reset:
+    disable: false
+  refresh_interval: 5m
+  ldap:
+    implementation: lldap
+    address: ldap://lldap.app-authelia.svc.cluster.local:3890
+    timeout: 5s
+    start_tls: false
+    base_dn: dc=auth,dc=decentm,dc=com
+    additional_users_dn: ou=people
+    users_filter: "(&({username_attribute}={input})(objectClass=person))"
+    additional_groups_dn: ou=groups
+    groups_filter: "(member={dn})"
+    group_search_mode: filter
+    user: uid=admin,ou=people,dc=auth,dc=decentm,dc=com
+    password: ${AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD}
+    attributes:
+      username: uid
+      display_name: displayName
+      mail: mail
+      member_of: memberOf
+      group_name: cn
+
+# Access control policy
+# Default: deny all, require authentication for everything
+access_control:
+  default_policy: deny
+  rules:
+    # Allow authenticated users to access everything
+    - domain: "*.decentm.com"
+      policy: one_factor
+    - domain: "*.cluster.arpa"
+      policy: one_factor
+
+session:
+  name: authelia_session
+  same_site: lax
+  inactivity: 5m
+  expiration: 1h
+  remember_me: 1M
+  cookies:
+    - domain: decentm.com
+      authelia_url: https://auth.decentm.com
+      default_redirection_url: https://decentm.com
+  redis:
+    host: authelia-redis
+    port: 6379
+    database_index: 0
+
+regulation:
+  max_retries: 3
+  find_time: 2m
+  ban_time: 5m
+
+storage:
+  encryption_key: ${AUTHELIA_STORAGE_ENCRYPTION_KEY}
+  postgres:
+    address: tcp://authelia-db-rw:5432
+    database: authelia
+    schema: public
+    username: authelia
+    password: ${AUTHELIA_DATABASE_PASSWORD}
+    timeout: 5s
+
+# SMTP notifications for password resets, etc.
+# Note: Authelia does NOT support SMS notifications, only SMTP or filesystem
+notifier:
+  disable_startup_check: false
+  smtp:
+    address: ${AUTHELIA_NOTIFIER_SMTP_ADDRESS}
+    timeout: 5s
+    username: ${AUTHELIA_NOTIFIER_SMTP_USERNAME}
+    password: ${AUTHELIA_NOTIFIER_SMTP_PASSWORD}
+    sender: ${AUTHELIA_NOTIFIER_SMTP_SENDER}
+    identifier: authelia
+    subject: "[Authelia] {title}"
+    startup_check_address: test@authelia.com
+    disable_require_tls: false
+    disable_html_emails: false
+
+# OIDC Identity Provider configuration
+# Clients are loaded from environment or can be added to this section
+identity_providers:
+  oidc:
+    hmac_secret: ${AUTHELIA_IDENTITY_PROVIDERS_OIDC_HMAC_SECRET}
+    jwks:
+      - key: {{ secret "/config/secrets/oidc-issuer-private-key.pem" }}
+    cors:
+      endpoints:
+        - authorization
+        - token
+        - revocation
+        - introspection
+        - userinfo
+      allowed_origins_from_client_redirect_uris: true
+    # OIDC clients are configured here
+    # Add clients by editing this file or by using Kubernetes ConfigMaps
+    # See clients/ directory for examples
+    clients: []
