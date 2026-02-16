@@ -164,6 +164,11 @@ spec:
                 secretKeyRef:
                   name: authelia-secrets
                   key: oidc-client-jellyfin-secret
+            - name: AUTHELIA_OIDC_CLIENT_JELLYFIN_SECRET_DIGEST
+              valueFrom:
+                secretKeyRef:
+                  name: authelia-secrets
+                  key: oidc-client-jellyfin-secret-digest
           ports:
             - name: http
               containerPort: 9091

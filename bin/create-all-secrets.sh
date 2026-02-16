@@ -279,16 +279,36 @@ process_secret() {
         local instruction
         local generate
         local multiline
+        local derive_from
 
         value_json=$(echo "$secret_json" | jq -r ".values[$j]")
         value_name=$(echo "$value_json" | jq -r '.name')
         instruction=$(echo "$value_json" | jq -r '.instruction // empty')
         generate=$(echo "$value_json" | jq -r '.generate // empty')
         multiline=$(echo "$value_json" | jq -r '.multiline // "false"')
+        derive_from=$(echo "$value_json" | jq -r '.derive_from // empty')
 
         local value=""
 
-        if [[ -n "$generate" ]]; then
+        if [[ -n "$derive_from" ]] && [[ -n "$generate" ]]; then
+            # Derive from another value - look it up in the tmpdir
+            if [[ -f "$tmpdir/$derive_from" ]]; then
+                local VALUE
+                VALUE=$(cat "$tmpdir/$derive_from")
+                export VALUE
+                info "Deriving $value_name from $derive_from..."
+                if ! value=$(eval "$generate" 2>&1); then
+                    error "Failed to derive $value_name from $derive_from"
+                    warn "Command output: $value"
+                    return 1
+                fi
+                unset VALUE
+            else
+                error "Cannot derive $value_name: source value '$derive_from' not found"
+                error "Make sure '$derive_from' is defined before '$value_name' in secrets.json"
+                return 1
+            fi
+        elif [[ -n "$generate" ]]; then
             # Auto-generate value
             info "Generating $value_name..."
             if ! value=$(eval "$generate" 2>&1); then
