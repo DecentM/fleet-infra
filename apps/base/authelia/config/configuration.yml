@@ -93,6 +93,9 @@ session:
     - domain: decentm.com
       authelia_url: https://auth.decentm.com
       default_redirection_url: https://decentm.com
+    - domain: cluster.arpa
+      authelia_url: https://auth.cluster.arpa
+      default_redirection_url: https://whoami.cluster.arpa
   redis:
     host: authelia-redis
     port: 6379

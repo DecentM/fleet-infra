@@ -11,19 +11,21 @@ spec:
   routes:
     - match: Host(`whoami.cluster.arpa`)
       kind: Rule
+      middlewares:
+        - name: authelia-forwardauth
       services:
         - name: whoami
           port: http
   tls:
-    secretName: traefik-tls
+    secretName: whoami-tls
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: traefik-cert
+  name: whoami-tls
   namespace: app-whoami
 spec:
-  secretName: traefik-tls
+  secretName: whoami-tls
   duration: 672h # 28d
   renewBefore: 168h # 7d
   issuerRef:
