@@ -151,6 +151,12 @@ spec:
                 secretKeyRef:
                   name: authelia-secrets
                   key: smtp-sender
+            # OIDC client secrets
+            - name: AUTHELIA_OIDC_CLIENT_JELLYFIN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: authelia-secrets
+                  key: oidc-client-jellyfin-secret
           ports:
             - name: http
               containerPort: 9091

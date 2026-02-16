@@ -133,37 +133,35 @@ notifier:
     disable_html_emails: false
 
 # OIDC Identity Provider configuration
-# Uncomment and configure when OIDC clients are needed.
 # See clients/ directory for templates and examples.
-#
-# To enable OIDC:
-# 1. Generate OIDC secrets (HMAC secret and JWKS private key)
-# 2. Create at least one OIDC client
-# 3. Uncomment the identity_providers section below
-#
-# identity_providers:
-#   oidc:
-#     hmac_secret: ${AUTHELIA_IDENTITY_PROVIDERS_OIDC_HMAC_SECRET}
-#     jwks:
-#       - key_file: /config/secrets/oidc-issuer-private-key.pem
-#     cors:
-#       endpoints:
-#         - authorization
-#         - token
-#         - revocation
-#         - introspection
-#         - userinfo
-#       allowed_origins_from_client_redirect_uris: true
-#     clients:
-#       - client_id: example-app
-#         client_name: Example Application
-#         client_secret: ${EXAMPLE_APP_CLIENT_SECRET}
-#         public: false
-#         authorization_policy: one_factor
-#         redirect_uris:
-#           - https://example.decentm.com/oauth2/callback
-#         scopes:
-#           - openid
-#           - profile
-#           - email
-#           - groups
+identity_providers:
+  oidc:
+    hmac_secret: ${AUTHELIA_IDENTITY_PROVIDERS_OIDC_HMAC_SECRET}
+    jwks:
+      - key_file: /config/secrets/oidc-issuer-private-key.pem
+        algorithm: RS256
+    cors:
+      endpoints:
+        - authorization
+        - token
+        - revocation
+        - introspection
+        - userinfo
+      allowed_origins_from_client_redirect_uris: true
+    clients:
+      # Jellyfin Media Server
+      # Plugin: https://github.com/9p4/jellyfin-plugin-sso
+      # See apps/base/jellyfin/SSO-SETUP.md for configuration instructions
+      - client_id: jellyfin
+        client_name: Jellyfin
+        client_secret: ${AUTHELIA_OIDC_CLIENT_JELLYFIN_SECRET}
+        public: false
+        authorization_policy: one_factor
+        token_endpoint_auth_method: client_secret_post
+        redirect_uris:
+          - https://jellyfin.cluster.arpa/sso/OID/redirect/authelia
+          - https://jellyfin.cluster.arpa/sso/OID/r/authelia
+        scopes:
+          - openid
+          - profile
+          - groups

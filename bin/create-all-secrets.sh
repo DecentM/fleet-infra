@@ -36,6 +36,74 @@ secret_exists_in_cluster() {
     kubectl -n "$namespace" get secret "$name" &>/dev/null
 }
 
+# Check if all expected keys exist in a cluster secret
+# Returns 0 (true) if all keys exist, 1 (false) if any are missing
+all_keys_exist_in_secret() {
+    local namespace=$1
+    local name=$2
+    local expected_keys_json=$3  # JSON array of key names
+
+    # Get actual keys from the cluster secret
+    local actual_keys
+    if ! actual_keys=$(kubectl -n "$namespace" get secret "$name" -o jsonpath='{.data}' 2>/dev/null | jq -r 'keys[]' 2>/dev/null); then
+        warn "Failed to get keys from secret $namespace/$name"
+        return 1
+    fi
+
+    # Check each expected key
+    local expected_keys
+    if ! expected_keys=$(echo "$expected_keys_json" | jq -r '.[]' 2>/dev/null); then
+        warn "Failed to parse expected keys JSON"
+        return 1
+    fi
+
+    # Handle empty expected keys (shouldn't happen but be graceful)
+    if [[ -z "$expected_keys" ]]; then
+        return 0
+    fi
+
+    local missing_key=false
+    while IFS= read -r expected_key; do
+        if ! echo "$actual_keys" | grep -q "^${expected_key}$"; then
+            warn "Secret $namespace/$name is missing key: $expected_key (will recreate)"
+            missing_key=true
+        fi
+    done <<< "$expected_keys"
+
+    if [[ "$missing_key" == "true" ]]; then
+        return 1
+    fi
+
+    return 0
+}
+
+# Determine if a secret should be skipped
+# Returns 0 (true) to skip, 1 (false) to process
+should_skip_secret() {
+    local namespace=$1
+    local name=$2
+    local file=$3
+    local expected_keys_json=$4  # JSON array of key names
+
+    # Check if secret exists in cluster
+    if ! secret_exists_in_cluster "$namespace" "$name"; then
+        return 1  # Don't skip - secret doesn't exist
+    fi
+
+    # Check if sealed file exists
+    if [[ ! -f "$file" ]]; then
+        return 1  # Don't skip - file doesn't exist
+    fi
+
+    # Check if all expected keys exist in the secret
+    if ! all_keys_exist_in_secret "$namespace" "$name" "$expected_keys_json"; then
+        return 1  # Don't skip - missing keys
+    fi
+
+    # All conditions met - skip this secret
+    return 0
+}
+
 # Function to seal a secret from a YAML file
 seal_secret() {
     local input_yaml=$1
@@ -179,9 +247,13 @@ process_secret() {
     file=$(echo "$secret_json" | jq -r '.file')
     type=$(echo "$secret_json" | jq -r '.type // "generic"')
 
+    # Extract expected key names from the values array
+    local expected_keys_json
+    expected_keys_json=$(echo "$secret_json" | jq -c '[.values[].name]')
+
     # Check if we should skip
-    if secret_exists_in_cluster "$namespace" "$name" && [[ -f "$file" ]]; then
-        info "Skipping $namespace/$name"
+    if should_skip_secret "$namespace" "$name" "$file" "$expected_keys_json"; then
+        info "Skipping $namespace/$name (all keys present)"
         return 0
     fi
 
