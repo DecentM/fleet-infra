@@ -14,8 +14,6 @@ resources:
   - redis
 
   - sealed-turn-secrets.yaml
-  - certificate.yaml
-  - tunnel.yaml
 
 commonLabels:
   app.kubernetes.io/part-of: matrix-stack

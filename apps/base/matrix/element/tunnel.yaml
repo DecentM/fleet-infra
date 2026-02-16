@@ -1,0 +1,16 @@
+apiVersion: networking.cfargotunnel.com/v1alpha1
+kind: TunnelBinding
+metadata:
+  name: element-tunnel
+  namespace: app-matrix
+subjects:
+  # Element Web
+  - name: element
+    spec:
+      fqdn: element-testing.borooka.ee
+      protocol: http
+      target: http://element.app-matrix.svc:8000
+
+tunnelRef:
+  kind: ClusterTunnel
+  name: cluster-tunnel-borooka

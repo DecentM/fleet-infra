@@ -6,6 +6,7 @@ resources:
    - jvb.yaml
    - prosody.yaml
    - web.yaml
+   - tunnel.yaml
 
 configMapGenerator:
   - name: jitsi-common-config

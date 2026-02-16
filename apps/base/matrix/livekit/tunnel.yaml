@@ -1,0 +1,17 @@
+apiVersion: networking.cfargotunnel.com/v1alpha1
+kind: TunnelBinding
+metadata:
+  name: livekit-tunnel
+  namespace: app-matrix
+subjects:
+  # LiveKit Proxy (Element Call)
+  # Routes /livekit/jwt → lk-jwt-service and /livekit/sfu → livekit
+  - name: livekit-proxy
+    spec:
+      fqdn: livekit-testing.borooka.ee
+      protocol: http
+      target: http://livekit-proxy.app-matrix.svc:8000
+
+tunnelRef:
+  kind: ClusterTunnel
+  name: cluster-tunnel-borooka

@@ -1,0 +1,16 @@
+apiVersion: networking.cfargotunnel.com/v1alpha1
+kind: TunnelBinding
+metadata:
+  name: jitsi-tunnel
+  namespace: app-matrix
+subjects:
+  # Jitsi Meet (Web)
+  - name: jitsi-web
+    spec:
+      fqdn: meet-testing.borooka.ee
+      protocol: http
+      target: http://jitsi-web.app-matrix.svc:80
+
+tunnelRef:
+  kind: ClusterTunnel
+  name: cluster-tunnel-borooka
