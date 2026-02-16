@@ -4,5 +4,4 @@ namespace: app-whoami
 resources:
   - namespace.yaml
   - whoami.yaml
-  - middleware.yaml
   - ingressroute.yaml

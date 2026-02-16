@@ -16,7 +16,6 @@ resources:
   - ../base/ollama
   - ../base/warp-proxy
   - ../base/matrix
-  - ../base/authelia
   - ../base/whoami
 patches:
   - path: patches/photoprism.yaml
