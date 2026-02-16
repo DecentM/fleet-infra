@@ -1,139 +1,21 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-# Matrix Communication Stack: Synapse + Element Web + Jitsi Meet
-#
-# Prerequisites:
-# 1. CloudNativePG operator installed
-# 2. Longhorn storage class available
-# 3. cert-manager with custom-ca-cluster-issuer
-# 4. Traefik ingress controller
-#
-# Post-deployment steps:
-# 1. Generate Synapse signing key and create SealedSecret
-# 2. Generate Jitsi auth passwords and create SealedSecret
-# 3. Create first admin user via Synapse admin API
-
 resources:
-  # Namespace must be created first
   - namespace.yaml
 
-  # Sealed secrets
-  - sealed-synapse-secrets.yaml
-  - sealed-synapse-signing-key.yaml
-  - sealed-jitsi-secrets.yaml
+  - synapse
+  - synapse-admin
+  - jitsi
+  - element
+  - well-known
+  - livekit
+  - hookshot
+  - redis
+
   - sealed-turn-secrets.yaml
-  - sealed-hookshot-secrets.yaml
-  - sealed-livekit-secrets.yaml
+  - certificate.yaml
+  - tunnel.yaml
 
-  # Database and storage
-  - data/cnpg-cluster.yaml
-  - data/pvc-media.yaml
-  - data/hookshot-cryptostore-pvc.yaml
-
-  # Core components
-  - components/synapse.yaml
-  - components/element.yaml
-  - components/hookshot.yaml
-  - components/redis.yaml
-  - components/well-known.yaml
-
-  # Jitsi components (order matters: prosody first)
-  - components/jitsi/prosody.yaml
-  - components/jitsi/jicofo.yaml
-  - components/jitsi/jvb.yaml
-  - components/jitsi/web.yaml
-
-  # LiveKit components (Element Call)
-  - components/livekit.yaml
-  - components/lk-jwt-service.yaml
-  - components/livekit-proxy.yaml
-
-  # Admin UI
-  - components/synapse-admin.yaml
-
-  # Networking/Ingress
-  - networking/tunnel.yaml
-  - networking/hookshot-tunnel.yaml
-  - networking/certificate.yaml
-  - networking/synapse-admin-ingressroute.yaml
-
-# ConfigMap generation with automatic hash suffixing for rolling updates
-configMapGenerator:
-  - name: synapse-config
-    namespace: app-matrix
-    files:
-      - config/homeserver.yaml
-      - config/log.config
-
-  - name: element-config
-    namespace: app-matrix
-    files:
-      - config.json=config/element-config.json
-
-  - name: element-nginx-config
-    namespace: app-matrix
-    files:
-      - default.conf=config/element-nginx.conf
-
-  - name: jitsi-common-config
-    namespace: app-matrix
-    envs:
-      - config/jitsi-common.env
-
-  - name: jitsi-web-config
-    namespace: app-matrix
-    envs:
-      - config/jitsi-web.env
-
-  - name: jitsi-prosody-config
-    namespace: app-matrix
-    envs:
-      - config/jitsi-prosody.env
-
-  - name: jitsi-jicofo-config
-    namespace: app-matrix
-    envs:
-      - config/jitsi-jicofo.env
-
-  - name: jitsi-jvb-config
-    namespace: app-matrix
-    envs:
-      - config/jitsi-jvb.env
-
-  - name: hookshot-config
-    namespace: app-matrix
-    files:
-      - hookshot-config.yml=config/hookshot-config.yml
-      - hookshot-registration.yml=config/hookshot-registration.yml
-
-  - name: well-known-config
-    namespace: app-matrix
-    files:
-      - server=config/well-known-server.json
-      - client=config/well-known-client.json
-
-  - name: well-known-nginx
-    namespace: app-matrix
-    files:
-      - default.conf=config/well-known-nginx.conf
-
-  - name: livekit-config
-    namespace: app-matrix
-    files:
-      - config/livekit.yaml
-
-  - name: livekit-nginx
-    namespace: app-matrix
-    files:
-      - default.conf=config/livekit-nginx.conf
-
-  - name: synapse-admin-config
-    namespace: app-matrix
-    files:
-      - config/synapse-admin-nginx.conf
-      - config/synapse-admin-config.json
-
-# Common labels for all resources
 commonLabels:
   app.kubernetes.io/part-of: matrix-stack

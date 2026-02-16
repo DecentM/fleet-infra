@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - cnpg-cluster.yaml
+  - pvc-media.yaml
+  - sealed-synapse-secrets.yaml
+  - sealed-synapse-signing-key.yaml
+  - synapse.yaml
+
+configMapGenerator:
+  - name: synapse-config
+    namespace: app-matrix
+    files:
+      - config/homeserver.yaml
+      - config/log.config

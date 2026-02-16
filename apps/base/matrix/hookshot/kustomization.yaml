@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - sealed-hookshot-secrets.yaml
+  - hookshot-cryptostore-pvc.yaml
+  - hookshot.yaml
+  - hookshot-tunnel.yaml
+
+configMapGenerator:
+  - name: hookshot-config
+    namespace: app-matrix
+    files:
+      - hookshot-config.yml=config/hookshot-config.yml
+      - hookshot-registration.yml=config/hookshot-registration.yml

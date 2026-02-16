@@ -1,0 +1,34 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+   - sealed-jitsi-secrets.yaml
+   - jicofo.yaml
+   - jvb.yaml
+   - prosody.yaml
+   - web.yaml
+
+configMapGenerator:
+  - name: jitsi-common-config
+    namespace: app-matrix
+    envs:
+      - config/jitsi-common.env
+
+  - name: jitsi-web-config
+    namespace: app-matrix
+    envs:
+      - config/jitsi-web.env
+
+  - name: jitsi-prosody-config
+    namespace: app-matrix
+    envs:
+      - config/jitsi-prosody.env
+
+  - name: jitsi-jicofo-config
+    namespace: app-matrix
+    envs:
+      - config/jitsi-jicofo.env
+
+  - name: jitsi-jvb-config
+    namespace: app-matrix
+    envs:
+      - config/jitsi-jvb.env

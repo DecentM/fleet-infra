@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+   - well-known.yaml
+
+configMapGenerator:
+  - name: well-known-config
+    namespace: app-matrix
+    files:
+      - server=config/well-known-server.json
+      - client=config/well-known-client.json
+
+  - name: well-known-nginx
+    namespace: app-matrix
+    files:
+      - default.conf=config/well-known-nginx.conf
