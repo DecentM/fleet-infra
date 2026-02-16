@@ -130,21 +130,37 @@ notifier:
     disable_html_emails: false
 
 # OIDC Identity Provider configuration
-# Clients are loaded from environment or can be added to this section
-identity_providers:
-  oidc:
-    hmac_secret: ${AUTHELIA_IDENTITY_PROVIDERS_OIDC_HMAC_SECRET}
-    jwks:
-      - key: {{ secret "/config/secrets/oidc-issuer-private-key.pem" }}
-    cors:
-      endpoints:
-        - authorization
-        - token
-        - revocation
-        - introspection
-        - userinfo
-      allowed_origins_from_client_redirect_uris: true
-    # OIDC clients are configured here
-    # Add clients by editing this file or by using Kubernetes ConfigMaps
-    # See clients/ directory for examples
-    clients: []
+# Uncomment and configure when OIDC clients are needed.
+# See clients/ directory for templates and examples.
+#
+# To enable OIDC:
+# 1. Generate OIDC secrets (HMAC secret and JWKS private key)
+# 2. Create at least one OIDC client
+# 3. Uncomment the identity_providers section below
+#
+# identity_providers:
+#   oidc:
+#     hmac_secret: ${AUTHELIA_IDENTITY_PROVIDERS_OIDC_HMAC_SECRET}
+#     jwks:
+#       - key_file: /config/secrets/oidc-issuer-private-key.pem
+#     cors:
+#       endpoints:
+#         - authorization
+#         - token
+#         - revocation
+#         - introspection
+#         - userinfo
+#       allowed_origins_from_client_redirect_uris: true
+#     clients:
+#       - client_id: example-app
+#         client_name: Example Application
+#         client_secret: ${EXAMPLE_APP_CLIENT_SECRET}
+#         public: false
+#         authorization_policy: one_factor
+#         redirect_uris:
+#           - https://example.decentm.com/oauth2/callback
+#         scopes:
+#           - openid
+#           - profile
+#           - email
+#           - groups
