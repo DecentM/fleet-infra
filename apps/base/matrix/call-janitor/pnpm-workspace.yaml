@@ -1,2 +1,0 @@
-onlyBuiltDependencies:
-  - '@matrix-org/matrix-sdk-crypto-nodejs'

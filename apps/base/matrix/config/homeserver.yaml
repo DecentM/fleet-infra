@@ -77,7 +77,6 @@ log_config: "/config/log.config"
 # Application services (bridges)
 app_service_config_files:
   - /data/hookshot-registration.yml
-  - /config/call-janitor-registration.yaml
 
 # Experimental features for E2E encryption bridge support (MSC2409, MSC3202)
 # Required for Hookshot to work in encrypted rooms

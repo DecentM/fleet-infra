@@ -19,7 +19,6 @@ resources:
   - namespace.yaml
 
   # Sealed secrets
-  - sealed-call-janitor-secrets.yaml
   - sealed-synapse-secrets.yaml
   - sealed-synapse-signing-key.yaml
   - sealed-jitsi-secrets.yaml
@@ -33,8 +32,6 @@ resources:
   - data/hookshot-cryptostore-pvc.yaml
 
   # Core components
-  - components/call-janitor.yaml
-  - components/call-janitor-service.yaml
   - components/synapse.yaml
   - components/element.yaml
   - components/hookshot.yaml
@@ -109,11 +106,6 @@ configMapGenerator:
     files:
       - hookshot-config.yml=config/hookshot-config.yml
       - hookshot-registration.yml=config/hookshot-registration.yml
-
-  - name: call-janitor-config
-    namespace: app-matrix
-    files:
-      - call-janitor-registration.yaml=config/call-janitor-registration.yaml
 
   - name: well-known-config
     namespace: app-matrix
