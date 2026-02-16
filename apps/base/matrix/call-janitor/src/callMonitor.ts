@@ -8,18 +8,17 @@ import {
   AppConfig,
   RoomCallState,
   CallMemberEventContent,
-  CallMembership,
   KickResult,
 } from './types';
 
 /**
- * Matrix state event structure
+ * Matrix state event structure for m.call.member events
  */
-interface StateEvent {
+interface CallMemberStateEvent {
   type: string;
   state_key: string;
   sender: string;
-  content: unknown;
+  content: CallMemberEventContent;
 }
 
 /**
@@ -48,49 +47,61 @@ export class CallMonitor {
 
   /**
    * Processes an m.call.member state event
+   * Extracts user ID from state_key and determines join/leave from content
    */
   public async handleCallMemberEvent(
     roomId: string,
-    stateEvent: StateEvent
+    stateEvent: CallMemberStateEvent
   ): Promise<void> {
-    const senderId = stateEvent.sender;
+    // Extract user ID from state_key format: _@user:domain_DEVICEID_m.call
+    const userId = this.extractUserIdFromStateKey(stateEvent.state_key);
 
-    // Ignore our own events
-    if (senderId === this.botUserId) {
+    if (!userId) {
+      this.log(`Could not extract user ID from state_key: ${stateEvent.state_key}`, 'warn');
       return;
     }
 
-    this.log(`Processing m.call.member event in ${roomId} from ${senderId}`);
+    // Ignore our own events
+    if (userId === this.botUserId) {
+      return;
+    }
 
-    // Extract active participants from the room
-    const participants = await this.extractActiveParticipants(roomId);
+    // Determine if user is joining or leaving based on m.calls content
+    const isJoining = this.isUserJoiningCall(stateEvent.content);
 
-    this.log(`Room ${roomId} has ${participants.size} active participant(s): ${[...participants].join(', ')}`);
+    this.log(`Processing m.call.member event in ${roomId} for ${userId}: ${isJoining ? 'JOIN' : 'LEAVE'}`);
 
-    // Update or create room call state
+    // Get or create room call state
     let callState = this.activeCalls.get(roomId);
 
-    if (participants.size === 0) {
-      // No active participants, clean up state
+    if (!callState) {
+      callState = {
+        participants: new Set<string>(),
+        roomId,
+      };
+      this.activeCalls.set(roomId, callState);
+    }
+
+    // Update participant set based on join/leave
+    if (isJoining) {
+      callState.participants.add(userId);
+    } else {
+      callState.participants.delete(userId);
+    }
+
+    this.log(`Room ${roomId} has ${callState.participants.size} active participant(s): ${[...callState.participants].join(', ')}`);
+
+    // Clean up if no participants remain
+    if (callState.participants.size === 0) {
       this.clearTimer(roomId);
       this.activeCalls.delete(roomId);
       this.log(`Room ${roomId}: No participants, cleared state`);
       return;
     }
 
-    if (!callState) {
-      callState = {
-        participants,
-        roomId,
-      };
-      this.activeCalls.set(roomId, callState);
-    } else {
-      callState.participants = participants;
-    }
-
     // Check if user is alone
-    if (participants.size === 1) {
-      const loneUser = [...participants][0];
+    if (callState.participants.size === 1) {
+      const loneUser = [...callState.participants][0];
 
       if (!callState.aloneSince) {
         // User just became alone, start timer
@@ -104,7 +115,7 @@ export class CallMonitor {
         );
       }
     } else {
-      // Multiple participants or none, clear any existing timer
+      // Multiple participants, clear any existing timer
       if (callState.aloneSince) {
         this.log(`Room ${roomId}: User no longer alone, clearing timer`);
       }
@@ -114,55 +125,36 @@ export class CallMonitor {
   }
 
   /**
-   * Extracts currently active participants from room state
+   * Extracts the Matrix user ID from the state_key
+   * State key format: _@user:domain_DEVICEID_m.call
    */
-  private async extractActiveParticipants(roomId: string): Promise<Set<string>> {
-    const participants = new Set<string>();
-
-    try {
-      // Get all m.call.member state events for this room
-      const stateEvents = await this.client.getRoomState(roomId);
-      const now = Date.now();
-
-      for (const event of stateEvents) {
-        if (event.type !== 'm.call.member') continue;
-
-        const userId = event.state_key;
-        const content = event.content as CallMemberEventContent;
-
-        // Skip bot's own membership
-        if (userId === this.botUserId) continue;
-
-        // Check if user has active memberships
-        const memberships = content.memberships ||
-          (content.membership ? [content.membership] : []);
-
-        for (const membership of memberships) {
-          if (this.isMembershipActive(membership, now)) {
-            participants.add(userId);
-            break;
-          }
-        }
-      }
-    } catch (error) {
-      this.log(`Error extracting participants from ${roomId}: ${error}`, 'error');
-    }
-
-    return participants;
+  private extractUserIdFromStateKey(stateKey: string): string | null {
+    // Format: _@user:domain_DEVICEID_m.call
+    // We need to extract @user:domain between the first two underscores
+    const match = stateKey.match(/^_(@[^_]+:[^_]+)_/);
+    return match ? match[1] : null;
   }
 
   /**
-   * Checks if a call membership is currently active
+   * Determines if the user is joining a call based on event content
+   * Join: content["m.calls"] exists and has items
+   * Leave: content["m.calls"] is empty, missing, or content is {}
    */
-  private isMembershipActive(membership: CallMembership, now: number): boolean {
-    // If no expiry, check for other indicators
-    if (!membership.expires_ts) {
-      // Membership exists with foci = likely active
-      return Boolean(membership.foci && membership.foci.length > 0);
+  private isUserJoiningCall(content: CallMemberEventContent): boolean {
+    // Empty object means leaving
+    if (!content || Object.keys(content).length === 0) {
+      return false;
     }
 
-    // Check if expiry is in the future
-    return membership.expires_ts > now;
+    const calls = content["m.calls"];
+
+    // Missing or empty array means leaving
+    if (!calls || !Array.isArray(calls) || calls.length === 0) {
+      return false;
+    }
+
+    // Has calls = joining
+    return true;
   }
 
   /**
@@ -171,13 +163,12 @@ export class CallMonitor {
   private async handleAloneTimeout(roomId: string, userId: string): Promise<void> {
     this.log(`Room ${roomId}: Timeout triggered for user ${userId}`);
 
-    // Double-check state to prevent race conditions
-    const currentParticipants = await this.extractActiveParticipants(roomId);
+    // Verify state from our tracked participants
+    const callState = this.activeCalls.get(roomId);
 
-    if (currentParticipants.size !== 1 || !currentParticipants.has(userId)) {
-      this.log(`Room ${roomId}: State changed, aborting kick (current participants: ${currentParticipants.size})`);
+    if (!callState || callState.participants.size !== 1 || !callState.participants.has(userId)) {
+      this.log(`Room ${roomId}: State changed, aborting kick (current participants: ${callState?.participants.size ?? 0})`);
       this.clearTimer(roomId);
-      const callState = this.activeCalls.get(roomId);
       if (callState) {
         callState.aloneSince = undefined;
       }

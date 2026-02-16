@@ -21,40 +21,30 @@ export interface RoomCallState {
  * Based on MSC3401 native group calls
  */
 export interface CallMemberEventContent {
-  /** Array of active call memberships */
-  memberships?: CallMembership[];
-  /** Legacy: single membership (deprecated but may still appear) */
-  membership?: CallMembership;
+  /** Array of active calls the user is participating in */
+  "m.calls"?: CallInfo[];
 }
 
 /**
- * Individual call membership within m.call.member state
+ * Call information within m.call.member state
  */
-export interface CallMembership {
-  /** Call ID this membership is for */
-  call_id?: string;
-  /** Application ID (e.g., "m.call") */
-  application?: string;
+export interface CallInfo {
+  /** Call ID for this call */
+  "m.call_id": string;
+  /** Devices participating in this call */
+  "m.devices"?: CallDevice[];
+}
+
+/**
+ * Device information for a call participant
+ */
+export interface CallDevice {
   /** Device ID of the participant */
-  device_id?: string;
-  /** Scope of the call (room-wide, etc.) */
-  scope?: string;
-  /** Whether the membership is active */
-  expires_ts?: number;
-  /** Focus information for the call */
-  foci?: CallFocus[];
-}
-
-/**
- * Focus configuration for distributed calls (LiveKit SFU)
- */
-export interface CallFocus {
-  /** Type of focus (e.g., "livekit") */
-  type: string;
-  /** LiveKit room alias */
-  livekit_alias?: string;
-  /** LiveKit service URL */
-  livekit_service_url?: string;
+  device_id: string;
+  /** Session ID for this device's connection */
+  session_id: string;
+  /** Media feeds from this device */
+  feeds?: unknown[];
 }
 
 /**

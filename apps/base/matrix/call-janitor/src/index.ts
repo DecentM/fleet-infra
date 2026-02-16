@@ -172,20 +172,6 @@ const main = async (): Promise<void> => {
       return;
     }
 
-    // Ensure the bot is in the room before processing the event
-    try {
-      const joinedRooms = await appservice.botClient.getJoinedRooms();
-      if (!joinedRooms.includes(roomId)) {
-        log(`[Main] Bot not in room ${roomId}, joining...`);
-        await appservice.botClient.joinRoom(roomId);
-        log(`[Main] Successfully joined room ${roomId}`);
-      }
-    } catch (joinError) {
-      const message = joinError instanceof Error ? joinError.message : String(joinError);
-      log(`[Main] Warning: Failed to join room ${roomId}: ${message}`, 'warn');
-      // Continue anyway - the bot might already be in the room
-    }
-
     try {
       await callMonitor.handleCallMemberEvent(roomId, event);
     } catch (error) {

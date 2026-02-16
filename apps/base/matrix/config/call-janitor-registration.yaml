@@ -3,6 +3,7 @@ url: "http://call-janitor:8080"
 as_token: "${CALL_JANITOR_AS_TOKEN}"
 hs_token: "${CALL_JANITOR_HS_TOKEN}"
 sender_localpart: "call-janitor"
+de_facto_mxid_localpart: "call-janitor"
 rate_limited: false
 namespaces:
   users:
