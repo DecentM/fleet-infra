@@ -113,7 +113,7 @@ storage:
     database: authelia
     schema: public
     username: authelia
-    password: ${AUTHELIA_DATABASE_PASSWORD}
+    # password: Provided via AUTHELIA_STORAGE_POSTGRES_PASSWORD env var (auto-mapped by Authelia)
     timeout: 5s
 
 # SMTP notifications for password resets, etc.
@@ -138,8 +138,11 @@ identity_providers:
   oidc:
     hmac_secret: ${AUTHELIA_IDENTITY_PROVIDERS_OIDC_HMAC_SECRET}
     jwks:
-      - key_file: /config/secrets/oidc-issuer-private-key.pem
+      - key_id: default
         algorithm: RS256
+        use: sig
+        key: |
+          {{- fileContent "/config/secrets/oidc-issuer-private-key.pem" | nindent 10 }}
     cors:
       endpoints:
         - authorization
@@ -154,7 +157,7 @@ identity_providers:
       # See apps/base/jellyfin/SSO-SETUP.md for configuration instructions
       - client_id: jellyfin
         client_name: Jellyfin
-        client_secret: ${AUTHELIA_OIDC_CLIENT_JELLYFIN_SECRET}
+        client_secret: '$plaintext$${AUTHELIA_OIDC_CLIENT_JELLYFIN_SECRET}'
         public: false
         authorization_policy: one_factor
         token_endpoint_auth_method: client_secret_post

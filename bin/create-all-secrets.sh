@@ -65,7 +65,7 @@ all_keys_exist_in_secret() {
     local missing_key=false
     while IFS= read -r expected_key; do
         if ! echo "$actual_keys" | grep -q "^${expected_key}$"; then
-            warn "Secret $namespace/$name is missing key: $expected_key (will recreate)"
+            warn "Secret $namespace/$name is missing key: $expected_key"
             missing_key=true
         fi
     done <<< "$expected_keys"
@@ -140,7 +140,7 @@ EOF
     for filepath in "$tmpdir"/*; do
         [ -f "$filepath" ] || continue
         key=$(basename "$filepath")
-        
+
         if [ -s "$filepath" ]; then
             # File has content - use proper YAML multi-line string format
             printf "  %s: |-\n" "$key" >>"$output_yaml"
@@ -253,7 +253,7 @@ process_secret() {
 
     # Check if we should skip
     if should_skip_secret "$namespace" "$name" "$file" "$expected_keys_json"; then
-        info "Skipping $namespace/$name (all keys present)"
+        info "Skipping $namespace/$name"
         return 0
     fi
 

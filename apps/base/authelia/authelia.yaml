@@ -25,6 +25,10 @@ spec:
         app: authelia
         app.kubernetes.io/name: authelia
     spec:
+      # Disable Kubernetes service discovery env vars injection
+      # Prevents AUTHELIA_PORT, AUTHELIA_SERVICE_HOST, etc. from being
+      # misinterpreted as Authelia config keys (causes deprecation conflicts)
+      enableServiceLinks: false
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
@@ -83,7 +87,6 @@ spec:
         - name: authelia
           image: authelia/authelia:4.38.19
           imagePullPolicy: IfNotPresent
-          # Default config path is /config/configuration.yml - no args needed
           resources:
             requests:
               cpu: 100m
@@ -96,8 +99,12 @@ spec:
             runAsGroup: 1000
             allowPrivilegeEscalation: false
           env:
+            # Config filters via environment variable (safer than args)
+            - name: X_AUTHELIA_CONFIG_FILTERS
+              value: template
             # Database password from CNPG-generated secret
-            - name: AUTHELIA_DATABASE_PASSWORD
+            # Using official Authelia env var naming - auto-maps to storage.postgres.password
+            - name: AUTHELIA_STORAGE_POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: authelia-db-app
