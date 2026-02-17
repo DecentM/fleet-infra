@@ -1,0 +1,146 @@
+# LLDAP - Lightweight LDAP server for Authelia authentication backend
+# Documentation: https://github.com/lldap/lldap
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: lldap
+  namespace: app-authelia
+  labels:
+    app: lldap
+spec:
+  serviceName: lldap
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: lldap
+  template:
+    metadata:
+      labels:
+        app: lldap
+    spec:
+      containers:
+        - name: lldap
+          image: lldap/lldap:stable
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3890
+              name: ldap
+              protocol: TCP
+            - containerPort: 17170
+              name: http
+              protocol: TCP
+          env:
+            # Server configuration
+            - name: LLDAP_HTTP_URL
+              value: "https://lldap.cluster.arpa"
+            - name: LLDAP_LDAP_BASE_DN
+              value: "dc=cluster,dc=arpa"
+            - name: LLDAP_LDAP_USER_DN
+              value: "admin"
+            - name: LLDAP_LDAP_USER_EMAIL
+              value: "admin@cluster.arpa"
+            # Secrets from sealed secret
+            - name: LLDAP_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: lldap-secrets
+                  key: jwt-secret
+            - name: LLDAP_LDAP_USER_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: authelia-secrets
+                  key: LDAP_PASSWORD
+            - name: LLDAP_KEY_SEED
+              valueFrom:
+                secretKeyRef:
+                  name: lldap-secrets
+                  key: key-seed
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          readinessProbe:
+            tcpSocket:
+              port: ldap
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: ldap
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: longhorn-local
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lldap
+  namespace: app-authelia
+  labels:
+    app: lldap
+spec:
+  type: ClusterIP
+  ports:
+    - name: ldap
+      port: 3890
+      targetPort: ldap
+      protocol: TCP
+    - name: http
+      port: 17170
+      targetPort: http
+      protocol: TCP
+  selector:
+    app: lldap
+---
+# IngressRoute for LLDAP web UI (for administration)
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: lldap
+  namespace: app-authelia
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`lldap.cluster.arpa`)
+      kind: Rule
+      services:
+        - name: lldap
+          port: http
+  tls:
+    secretName: lldap-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: lldap-tls
+  namespace: app-authelia
+spec:
+  secretName: lldap-tls
+  duration: 672h # 28d
+  renewBefore: 168h # 7d
+  issuerRef:
+    name: custom-ca-cluster-issuer
+    kind: ClusterIssuer
+  commonName: "lldap.cluster.arpa"
+  dnsNames:
+    - "lldap.cluster.arpa"

@@ -13,6 +13,7 @@ spec:
       kind: Rule
       middlewares:
         - name: authelia-forwardauth
+          namespace: app-authelia
       services:
         - name: whoami
           port: http

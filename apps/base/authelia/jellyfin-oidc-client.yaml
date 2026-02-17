@@ -1,0 +1,79 @@
+# Jellyfin OIDC Configuration Guide
+# This ConfigMap provides documentation for configuring Jellyfin SSO plugin
+# with Authelia OIDC.
+#
+# Prerequisites:
+#   1. Install the Jellyfin SSO Plugin from the plugin catalog
+#   2. Ensure the OIDC client is configured in Authelia (see chart.yaml)
+#   3. Create user groups in LLDAP: jellyfin-admins, jellyfin-users
+#
+# Configuration Steps:
+#   1. Go to Jellyfin Dashboard → Plugins → SSO Authentication
+#   2. Add a new OIDC provider with the following settings:
+#
+# OIDC Provider Settings:
+#   - Provider Name: authelia
+#   - OID Endpoint: https://auth.cluster.arpa (or auth.decentm.com/auth.borooka.ee)
+#   - OpenID Connect Client ID: jellyfin
+#   - OpenID Connect Client Secret: <value from authelia-secrets OIDC_CLIENT_JELLYFIN_SECRET>
+#   - Enabled: true
+#
+# Scopes:
+#   - openid
+#   - profile
+#   - groups
+#   - email
+#
+# Role Configuration:
+#   - Role Claim: groups
+#   - Admin Role Value: jellyfin-admins
+#   - User Role Value: jellyfin-users
+#   - Enable Role-Based Access: true
+#
+# LLDAP Groups to Create:
+#   - jellyfin-admins: Members get admin access to Jellyfin
+#   - jellyfin-users: Members get standard user access to Jellyfin
+#   - authelia-users: Required for Authelia authentication (add all users)
+#
+# Additional Notes:
+#   - The redirect URI configured in Authelia is:
+#     https://jellyfin.cluster.arpa/sso/OID/redirect/authelia
+#   - Ensure this matches your Jellyfin installation URL
+#   - If using a different domain, update the redirect_uris in chart.yaml
+#
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jellyfin-oidc-config
+  namespace: app-authelia
+data:
+  README.md: |
+    # Jellyfin OIDC Integration with Authelia
+
+    ## Overview
+    This document describes how to configure Jellyfin to use Authelia as an
+    OIDC identity provider for Single Sign-On (SSO).
+
+    ## Authelia OIDC Endpoints
+    - Authorization: https://auth.cluster.arpa/api/oidc/authorization
+    - Token: https://auth.cluster.arpa/api/oidc/token
+    - Userinfo: https://auth.cluster.arpa/api/oidc/userinfo
+    - JWKS: https://auth.cluster.arpa/jwks.json
+    - Discovery: https://auth.cluster.arpa/.well-known/openid-configuration
+
+    ## Client Configuration
+    - Client ID: jellyfin
+    - Client Secret: Stored in authelia-secrets (OIDC_CLIENT_JELLYFIN_SECRET)
+    - Redirect URI: https://jellyfin.cluster.arpa/sso/OID/redirect/authelia
+
+    ## Required LLDAP Groups
+    1. authelia-users - Required for Authelia access
+    2. jellyfin-admins - Grants Jellyfin admin privileges
+    3. jellyfin-users - Grants Jellyfin user access
+
+    ## Troubleshooting
+    - Ensure the OIDC client secret in Jellyfin matches the unhashed value
+    - Verify the redirect URI matches exactly
+    - Check that users are members of authelia-users group
+    - Review Authelia logs for authentication errors

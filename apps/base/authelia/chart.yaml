@@ -1,0 +1,256 @@
+# Authelia Helm Chart Deployment
+# Documentation: https://www.authelia.com/integration/kubernetes/
+#
+# SCHEMA CHANGES for v0.10.49:
+# - Removed pod.enableServiceLinks (not in schema, uses default false)
+# - Removed configMap.notifier.smtp.enabledSecret (use password.secret_name/path)
+# - Restructured secret section: old keys (jwt, session, ldap, etc.) removed
+# - Secrets now referenced at each usage point with secret_name/path
+# - OIDC issuer key configured via identity_providers.oidc.jwks[]
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: authelia
+  namespace: app-authelia
+spec:
+  interval: 24h
+  url: https://charts.authelia.com
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: authelia
+  namespace: app-authelia
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: authelia
+      version: "0.10.49"
+      sourceRef:
+        kind: HelmRepository
+        name: authelia
+        namespace: app-authelia
+      interval: 24h
+
+  values:
+    # Pod configuration
+    # Note: enableServiceLinks removed - not in schema, defaults to false
+    pod:
+      kind: Deployment
+      replicas: 1
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+
+    # Service configuration
+    service:
+      type: ClusterIP
+      port: 9091
+
+    # Ingress disabled - using Traefik IngressRoute
+    ingress:
+      enabled: false
+
+    # Secrets configuration (v0.10.49 schema)
+    # Uses existingSecret as the "internal" secret mounted at /secrets/internal/
+    # Individual settings reference keys via secret_name: ~ (null = internal) and path: KEY_NAME
+    secret:
+      existingSecret: authelia-secrets
+      mountPath: /secrets
+
+    # Main Authelia configuration
+    configMap:
+      theme: dark
+
+      # Server endpoints configuration
+      server:
+        endpoints:
+          authz:
+            forward-auth:
+              implementation: ForwardAuth
+
+      # Logging
+      log:
+        level: info
+        format: text
+
+      # TOTP configuration
+      totp:
+        disable: false
+        issuer: authelia.cluster.arpa
+
+      # WebAuthn configuration
+      webauthn:
+        disable: false
+        display_name: Authelia
+
+      # Identity validation (JWT secret for password reset tokens)
+      identity_validation:
+        reset_password:
+          secret:
+            disabled: false
+            secret_name: ~  # null = use internal secret (existingSecret)
+            path: JWT_SECRET
+
+      # Authentication backend - LLDAP
+      authentication_backend:
+        password_reset:
+          disable: false
+        ldap:
+          enabled: true
+          implementation: custom
+          address: ldap://lldap.app-authelia.svc.cluster.local:3890
+          timeout: 5s
+          start_tls: false
+          base_dn: dc=cluster,dc=arpa
+          additional_users_dn: ou=people
+          users_filter: "(&(memberOf=cn=authelia-users,ou=groups,{base_dn})(|({username_attribute}={input})({mail_attribute}={input})))"
+          additional_groups_dn: ou=groups
+          groups_filter: "(member={dn})"
+          user: cn=admin,ou=people,dc=cluster,dc=arpa
+          attributes:
+            username: uid
+            display_name: displayName
+            mail: mail
+            group_name: cn
+            member_of: memberOf
+          # LDAP bind password - references key in existingSecret
+          password:
+            disabled: false
+            secret_name: ~  # null = use internal secret
+            path: LDAP_PASSWORD
+
+      # Access control rules
+      access_control:
+        default_policy: deny
+        rules:
+          # Allow access to Authelia itself
+          - domain:
+              - auth.cluster.arpa
+              - auth.decentm.com
+              - auth.borooka.ee
+            policy: bypass
+          # Default: require two-factor authentication
+          - domain:
+              - "*.cluster.arpa"
+              - "*.decentm.com"
+              - "*.borooka.ee"
+            policy: two_factor
+
+      # Session configuration
+      session:
+        name: authelia_session
+        same_site: lax
+        inactivity: 5m
+        expiration: 1h
+        remember_me: 1M
+        cookies:
+          - domain: cluster.arpa
+            authelia_url: https://auth.cluster.arpa
+            default_redirection_url: https://auth.cluster.arpa
+          - domain: decentm.com
+            authelia_url: https://auth.decentm.com
+            default_redirection_url: https://auth.decentm.com
+          - domain: borooka.ee
+            authelia_url: https://auth.borooka.ee
+            default_redirection_url: https://auth.borooka.ee
+        # Session encryption key - references key in existingSecret
+        encryption_key:
+          disabled: false
+          secret_name: ~  # null = use internal secret
+          path: SESSION_SECRET
+
+      # Regulation (brute force protection)
+      regulation:
+        max_retries: 3
+        find_time: 2m
+        ban_time: 5m
+
+      # Storage - PostgreSQL via CNPG
+      storage:
+        postgres:
+          enabled: true
+          address: tcp://authelia-db-rw.app-authelia.svc.cluster.local:5432
+          database: authelia
+          username: authelia
+          timeout: 5s
+        # Storage encryption key - references key in existingSecret
+        encryption_key:
+          disabled: false
+          secret_name: ~  # null = use internal secret
+          path: STORAGE_ENCRYPTION_KEY
+
+      # Notifier - SMTP
+      # Note: enabledSecret removed - use password.secret_name/path instead
+      notifier:
+        disable_startup_check: false
+        smtp:
+          enabled: true
+          address: submission://smtp.example.com:587
+          timeout: 5s
+          sender: "Authelia <authelia@decentm.com>"
+          subject: "[Authelia] {title}"
+          startup_check_address: test@authelia.com
+          disable_require_tls: false
+          disable_starttls: false
+          disable_html_emails: false
+          # SMTP password - references key in existingSecret
+          password:
+            disabled: false
+            secret_name: ~  # null = use internal secret
+            path: SMTP_PASSWORD
+
+      # Identity Providers - OIDC
+      identity_providers:
+        oidc:
+          enabled: true
+          # OIDC HMAC secret - references key in existingSecret
+          hmac_secret:
+            disabled: false
+            secret_name: ~  # null = use internal secret
+            path: IDENTITY_PROVIDERS_OIDC_HMAC_SECRET
+          # OIDC issuer private key via JWKS (v0.10.49 schema)
+          jwks:
+            - key_id: main
+              use: sig
+              algorithm: RS256
+              key:
+                # Absolute path to the key file in the mounted secret
+                path: /secrets/internal/IDENTITY_PROVIDERS_OIDC_ISSUER_PRIVATE_KEY
+          # OIDC clients
+          clients:
+            - client_id: jellyfin
+              client_name: Jellyfin
+              # client_secret should be pre-hashed with pbkdf2-sha512
+              # Generate with: authelia crypto hash generate pbkdf2 --password '<your-secret>'
+              client_secret: '$pbkdf2-sha512$310000$PLACEHOLDER$PLACEHOLDER'
+              public: false
+              authorization_policy: two_factor
+              require_pkce: true
+              pkce_challenge_method: S256
+              redirect_uris:
+                - https://jellyfin.cluster.arpa/sso/OID/redirect/authelia
+              scopes:
+                - openid
+                - profile
+                - groups
+                - email
+              response_types:
+                - code
+              grant_types:
+                - authorization_code
+              token_endpoint_auth_method: client_secret_post
+
+  # Values from external secrets
+  valuesFrom:
+    # PostgreSQL password from CNPG-generated secret
+    - kind: Secret
+      name: authelia-db-app
+      valuesKey: password
+      targetPath: configMap.storage.postgres.password
