@@ -34,6 +34,21 @@ spec:
         namespace: app-authelia
       interval: 24h
 
+  # Inject SMTP configuration from sealed secret
+  valuesFrom:
+    - kind: Secret
+      name: authelia-smtp-secrets
+      valuesKey: SMTP_ADDRESS
+      targetPath: configMap.notifier.smtp.address
+    - kind: Secret
+      name: authelia-smtp-secrets
+      valuesKey: SMTP_USERNAME
+      targetPath: configMap.notifier.smtp.username
+    - kind: Secret
+      name: authelia-smtp-secrets
+      valuesKey: SMTP_SENDER
+      targetPath: configMap.notifier.smtp.sender
+
   values:
     # Pod configuration
     # Note: enableServiceLinks removed - not in schema, defaults to false
@@ -69,6 +84,7 @@ spec:
       additionalSecrets:
         authelia-db-app: {}
         authelia-secrets: {}  # Mounts all keys at /secrets/authelia-secrets/
+        authelia-smtp-secrets: {}  # Mounts SMTP keys at /secrets/authelia-smtp-secrets/
 
     # Main Authelia configuration
     configMap:
@@ -200,22 +216,22 @@ spec:
 
       # Notifier - SMTP
       # Note: enabledSecret removed - use password.secret_name/path instead
+      # SMTP address, username, and sender are injected via valuesFrom from authelia-smtp-secrets
       notifier:
         disable_startup_check: false
         smtp:
           enabled: true
-          address: submission://smtp.example.com:587
+          # address, username, sender injected via valuesFrom
           timeout: 5s
-          sender: "Authelia <authelia@decentm.com>"
           subject: "[Authelia] {title}"
           startup_check_address: test@authelia.com
           disable_require_tls: false
           disable_starttls: false
           disable_html_emails: false
-          # SMTP password - references key in existingSecret
+          # SMTP password - references SMTP secrets via chart's native secret mounting
           password:
             disabled: false
-            secret_name: ~  # null = use internal secret
+            secret_name: authelia-smtp-secrets
             path: SMTP_PASSWORD
 
       # Identity Providers - OIDC
