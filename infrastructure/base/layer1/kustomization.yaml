@@ -4,5 +4,6 @@ resources:
   - tailscale
   - cloudflare
   - cert-manager
+  - trust-manager
   - kubevirt
   - cdi

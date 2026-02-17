@@ -10,6 +10,7 @@ resources:
   - tailscale
   - nvidia
   - cert-manager
+  - trust-manager
   - kubevirt
   - cdi
   - monitoring

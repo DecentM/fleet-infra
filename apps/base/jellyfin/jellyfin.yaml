@@ -55,6 +55,10 @@ spec:
               mountPath: /music
             - name: transcode
               mountPath: /config/cache/transcodes
+            - name: cluster-ca-bundle
+              mountPath: /etc/ssl/certs/ca-certificates.crt
+              subPath: ca-certificates.crt
+              readOnly: true
       volumes:
         - name: movies
           hostPath:
@@ -78,6 +82,9 @@ spec:
         - name: transcode
           emptyDir:
             sizeLimit: 5Gi
+        - name: cluster-ca-bundle
+          configMap:
+            name: cluster-ca-bundle
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

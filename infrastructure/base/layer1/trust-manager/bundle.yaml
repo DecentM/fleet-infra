@@ -1,0 +1,26 @@
+# This Bundle distributes the cluster CA certificates to namespaces that opt in.
+#
+# To receive the CA bundle ConfigMap in your namespace, add this label to
+# your namespace resource:
+#
+#   metadata:
+#     labels:
+#       trust.cert-manager.io/inject-bundle: "true"
+#
+# The ConfigMap will be named "cluster-ca-bundle" with key "ca-certificates.crt"
+apiVersion: trust.cert-manager.io/v1alpha1
+kind: Bundle
+metadata:
+  name: cluster-ca-bundle
+spec:
+  sources:
+    - secret:
+        name: ca-issuer
+        key: tls.crt
+    - useDefaultCAs: true
+  target:
+    configMap:
+      key: ca-certificates.crt
+    namespaceSelector:
+      matchLabels:
+        trust.cert-manager.io/inject-bundle: "true"
