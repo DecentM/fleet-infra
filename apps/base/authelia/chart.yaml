@@ -126,22 +126,26 @@ spec:
           disable: false
         ldap:
           enabled: true
-          implementation: custom
+          # LLDAP implementation - uses LLDAP-compatible defaults
+          implementation: lldap
           address: ldap://lldap.app-authelia.svc.cluster.local:3890
           timeout: 5s
           start_tls: false
           base_dn: dc=cluster,dc=arpa
           additional_users_dn: ou=people
-          users_filter: "(&(memberOf=cn=authelia-users,ou=groups,{base_dn})(|({username_attribute}={input})({mail_attribute}={input})))"
+          # Note: LLDAP does NOT support memberOf in search filters on user objects
+          # Group membership is checked via groups_filter which searches groups for member={dn}
+          users_filter: "(&(|({username_attribute}={input})({mail_attribute}={input}))(objectClass=person))"
           additional_groups_dn: ou=groups
           groups_filter: "(member={dn})"
-          user: cn=admin,ou=people,dc=cluster,dc=arpa
+          user: uid=admin,ou=people,dc=cluster,dc=arpa
           attributes:
             username: uid
             display_name: displayName
             mail: mail
             group_name: cn
-            member_of: memberOf
+            # LLDAP uses 'member' on groups, not 'memberOf' on users
+            # The groups_filter handles this correctly
           # LDAP bind password - references key in existingSecret
           password:
             disabled: false
