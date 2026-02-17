@@ -9,7 +9,9 @@ metadata:
   namespace: app-authelia
 spec:
   forwardAuth:
-    address: http://authelia.app-authelia.svc.cluster.local:9091/api/authz/forward-auth
+    # The authelia_url parameter tells Authelia where to redirect unauthenticated users for login
+    # Without this, users may be incorrectly redirected to the domain root instead of the auth subdomain
+    address: http://authelia.app-authelia.svc.cluster.local:9091/api/authz/forward-auth?authelia_url=https://auth.cluster.arpa
     trustForwardHeader: true
     authResponseHeaders:
       - Remote-User

@@ -2,19 +2,13 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: app-authelia
 resources:
-  # Core resources
   - namespace.yaml
   - cnpg.yaml
   - chart.yaml
   - sealed-secrets.yaml
   - sealed-smtp-secrets.yaml
-  # LLDAP authentication backend
-  - lldap/
-  # Traefik integration
+  - lldap
   - middleware.yaml
   - ingressroute.yaml
-  # Cloudflare tunnel bindings
   - tunnel-borooka.yaml
   - tunnel-decentm.yaml
-  # Documentation
-  - jellyfin-oidc-client.yaml
