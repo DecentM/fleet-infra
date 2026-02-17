@@ -4,8 +4,11 @@ metadata:
   name: hookshot-decentm
   namespace: app-matrix
 subjects:
-  - fqdn: hookshot.decentm.com
-    target: http://traefik.traefik-system.svc:80
+  - name: hookshot
+    spec:
+      fqdn: hookshot.decentm.com
+      protocol: http
+      target: http://traefik.traefik-system.svc:80
 tunnelRef:
   kind: ClusterTunnel
   name: cluster-tunnel-decentm

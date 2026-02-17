@@ -4,8 +4,11 @@ metadata:
   name: livekit-decentm
   namespace: app-matrix
 subjects:
-  - fqdn: livekit.decentm.com
-    target: http://traefik.traefik-system.svc:80
+  - name: livekit
+    spec:
+      fqdn: livekit.decentm.com
+      protocol: http
+      target: http://traefik.traefik-system.svc:80
 tunnelRef:
   kind: ClusterTunnel
   name: cluster-tunnel-decentm
