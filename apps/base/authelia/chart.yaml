@@ -63,6 +63,9 @@ spec:
     secret:
       existingSecret: authelia-secrets
       mountPath: /secrets
+      # Mount the CNPG-generated secret for PostgreSQL password
+      additionalSecrets:
+        authelia-db-app: {}
 
     # Main Authelia configuration
     configMap:
@@ -180,6 +183,12 @@ spec:
           database: authelia
           username: authelia
           timeout: 5s
+          # PostgreSQL password - references CNPG-generated secret directly
+          # The secret is mounted via secret.additionalSecrets configuration below
+          password:
+            disabled: false
+            secret_name: authelia-db-app
+            path: password
         # Storage encryption key - references key in existingSecret
         encryption_key:
           disabled: false
@@ -221,8 +230,8 @@ spec:
               use: sig
               algorithm: RS256
               key:
-                # Absolute path to the key file in the mounted secret
-                path: /secrets/internal/IDENTITY_PROVIDERS_OIDC_ISSUER_PRIVATE_KEY
+                secret_name: ~  # null = use internal secret (existingSecret)
+                path: IDENTITY_PROVIDERS_OIDC_ISSUER_PRIVATE_KEY
           # OIDC clients
           clients:
             - client_id: jellyfin
@@ -247,10 +256,3 @@ spec:
                 - authorization_code
               token_endpoint_auth_method: client_secret_post
 
-  # Values from external secrets
-  valuesFrom:
-    # PostgreSQL password from CNPG-generated secret
-    - kind: Secret
-      name: authelia-db-app
-      valuesKey: password
-      targetPath: configMap.storage.postgres.password
