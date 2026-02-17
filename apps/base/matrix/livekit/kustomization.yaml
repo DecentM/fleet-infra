@@ -5,6 +5,7 @@ resources:
   - livekit-proxy.yaml
   - lk-jwt-service.yaml
   - sealed-livekit-secrets.yaml
+  - ingressroute-public.yaml
   - tunnel.yaml
 
 configMapGenerator:

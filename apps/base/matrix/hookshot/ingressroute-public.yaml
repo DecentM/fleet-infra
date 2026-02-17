@@ -1,0 +1,14 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: hookshot-public
+  namespace: app-matrix
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`hookshot.decentm.com`)
+      kind: Rule
+      services:
+        - name: matrix-hookshot
+          port: 9000

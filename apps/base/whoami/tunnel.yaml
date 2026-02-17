@@ -1,10 +1,10 @@
 apiVersion: networking.cfargotunnel.com/v1alpha1
 kind: TunnelBinding
 metadata:
-  name: livekit-decentm
-  namespace: app-matrix
+  name: whoami-decentm
+  namespace: app-whoami
 subjects:
-  - fqdn: livekit.decentm.com
+  - fqdn: whoami.decentm.com
     target: http://traefik.traefik-system.svc:80
 tunnelRef:
   kind: ClusterTunnel

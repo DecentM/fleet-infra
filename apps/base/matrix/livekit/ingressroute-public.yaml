@@ -1,0 +1,14 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: livekit-public
+  namespace: app-matrix
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`livekit.decentm.com`)
+      kind: Rule
+      services:
+        - name: livekit
+          port: 7880

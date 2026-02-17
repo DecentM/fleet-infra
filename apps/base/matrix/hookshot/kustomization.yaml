@@ -4,7 +4,8 @@ resources:
   - sealed-hookshot-secrets.yaml
   - hookshot-cryptostore-pvc.yaml
   - hookshot.yaml
-  - hookshot-tunnel.yaml
+  - ingressroute-public.yaml
+  - tunnel.yaml
 
 configMapGenerator:
   - name: hookshot-config

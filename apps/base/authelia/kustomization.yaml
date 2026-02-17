@@ -11,4 +11,5 @@ resources:
   - middleware.yaml
   - ingressroute.yaml
   - tunnel-borooka.yaml
-  - tunnel-decentm.yaml
+  - ingressroute-public.yaml
+  - tunnel.yaml

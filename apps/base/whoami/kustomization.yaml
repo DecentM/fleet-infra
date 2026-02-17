@@ -5,3 +5,5 @@ resources:
   - namespace.yaml
   - whoami.yaml
   - ingressroute.yaml
+  - ingressroute-public.yaml
+  - tunnel.yaml
