@@ -261,7 +261,7 @@ spec:
               public: false
               client_secret:
                 path: /secrets/authelia-secrets/OIDC_CLIENT_JELLYFIN_SECRET
-              authorization_policy: two_factor
+              authorization_policy: one_factor
               require_pkce: true
               pkce_challenge_method: S256
               redirect_uris:
