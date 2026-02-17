@@ -266,6 +266,7 @@ spec:
               pkce_challenge_method: S256
               redirect_uris:
                 - https://jellyfin.cluster.arpa/sso/OID/redirect/authelia
+                - http://jellyfin.cluster.arpa/sso/OID/redirect/authelia
               scopes:
                 - openid
                 - profile
