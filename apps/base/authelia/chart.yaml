@@ -64,8 +64,11 @@ spec:
       existingSecret: authelia-secrets
       mountPath: /secrets
       # Mount the CNPG-generated secret for PostgreSQL password
+      # Also mount authelia-secrets again via additionalSecrets so ALL keys are available
+      # (the chart only mounts "known" keys from existingSecret at /secrets/internal/)
       additionalSecrets:
         authelia-db-app: {}
+        authelia-secrets: {}  # Mounts all keys at /secrets/authelia-secrets/
 
     # Main Authelia configuration
     configMap:
@@ -230,16 +233,14 @@ spec:
               use: sig
               algorithm: RS256
               key:
-                secret_name: ~  # null = use internal secret (existingSecret)
-                path: IDENTITY_PROVIDERS_OIDC_ISSUER_PRIVATE_KEY
+                path: /secrets/authelia-secrets/IDENTITY_PROVIDERS_OIDC_ISSUER_PRIVATE_KEY
           # OIDC clients
           clients:
             - client_id: jellyfin
               client_name: Jellyfin
-              # client_secret should be pre-hashed with pbkdf2-sha512
-              # Generate with: authelia crypto hash generate pbkdf2 --password '<your-secret>'
-              client_secret: '$pbkdf2-sha512$310000$PLACEHOLDER$PLACEHOLDER'
               public: false
+              client_secret:
+                path: /secrets/authelia-secrets/OIDC_CLIENT_JELLYFIN_SECRET
               authorization_policy: two_factor
               require_pkce: true
               pkce_challenge_method: S256
@@ -255,4 +256,3 @@ spec:
               grant_types:
                 - authorization_code
               token_endpoint_auth_method: client_secret_post
-
