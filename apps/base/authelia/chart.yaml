@@ -98,6 +98,21 @@ spec:
       webauthn:
         disable: false
         display_name: Authelia
+        enable_passkey_login: true
+        attestation_conveyance_preference: "direct"
+
+        selection_criteria:
+          discoverability: "preferred"  # Available but not required
+
+        filtering:
+          prohibit_backup_eligibility: true
+
+        metadata:
+          enabled: true
+          validate_trust_anchor: true
+          validate_entry: true
+          validate_status: true
+          validate_entry_permit_zero_aaguid: false
 
       identity_validation:
         reset_password:
