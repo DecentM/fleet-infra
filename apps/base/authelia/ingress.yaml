@@ -1,0 +1,92 @@
+apiVersion: networking.cfargotunnel.com/v1alpha1
+kind: TunnelBinding
+metadata:
+  name: auth-decentm
+  namespace: app-authelia
+subjects:
+  - name: authelia
+    spec:
+      fqdn: auth.decentm.com
+      protocol: http
+      target: http://traefik.traefik-system
+tunnelRef:
+  kind: ClusterTunnel
+  name: cluster-tunnel-decentm
+---
+apiVersion: networking.cfargotunnel.com/v1alpha1
+kind: TunnelBinding
+metadata:
+  name: auth-borooka
+  namespace: app-authelia
+subjects:
+  - name: authelia
+    spec:
+      fqdn: auth.borooka.ee
+      protocol: http
+      target: http://traefik.traefik-system.svc:80
+tunnelRef:
+  kind: ClusterTunnel
+  name: cluster-tunnel-borooka
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: authelia
+  namespace: app-authelia
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`auth.cluster.arpa`)
+      kind: Rule
+      services:
+        - name: authelia
+          port: 9091
+  tls:
+    secretName: authelia-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: authelia-tls
+  namespace: app-authelia
+spec:
+  secretName: authelia-tls
+  duration: 672h # 28d
+  renewBefore: 168h # 7d
+  issuerRef:
+    name: custom-ca-cluster-issuer
+    kind: ClusterIssuer
+  commonName: "auth.cluster.arpa"
+  dnsNames:
+    - "auth.cluster.arpa"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: authelia-public-com
+  namespace: app-authelia
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`auth.decentm.com`)
+      kind: Rule
+      services:
+        - name: authelia
+          port: 9091
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: authelia-public-ee
+  namespace: app-authelia
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`auth.borooka.ee`)
+      kind: Rule
+      services:
+        - name: authelia
+          port: 9091

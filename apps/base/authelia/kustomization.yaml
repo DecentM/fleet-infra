@@ -9,7 +9,14 @@ resources:
   - sealed-smtp-secrets.yaml
   - lldap
   - middleware.yaml
-  - ingressroute.yaml
-  - tunnel-borooka.yaml
-  - ingressroute-public.yaml
-  - tunnel.yaml
+  - ingress.yaml
+
+configMapGenerator:
+  - name: authelia-oidc-clients
+    options:
+      labels:
+        app.kubernetes.io/name: authelia
+        app.kubernetes.io/component: oidc-clients
+      disableNameSuffixHash: true
+    files:
+      - config/clients.yaml

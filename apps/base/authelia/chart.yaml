@@ -1,13 +1,3 @@
-# Authelia Helm Chart Deployment
-# Documentation: https://www.authelia.com/integration/kubernetes/
-#
-# SCHEMA CHANGES for v0.10.49:
-# - Removed pod.enableServiceLinks (not in schema, uses default false)
-# - Removed configMap.notifier.smtp.enabledSecret (use password.secret_name/path)
-# - Restructured secret section: old keys (jwt, session, ldap, etc.) removed
-# - Secrets now referenced at each usage point with secret_name/path
-# - OIDC issuer key configured via identity_providers.oidc.jwks[]
----
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
@@ -34,7 +24,6 @@ spec:
         namespace: app-authelia
       interval: 24h
 
-  # Inject SMTP configuration from sealed secret
   valuesFrom:
     - kind: Secret
       name: authelia-smtp-secrets
@@ -50,8 +39,6 @@ spec:
       targetPath: configMap.notifier.smtp.sender
 
   values:
-    # Pod configuration
-    # Note: enableServiceLinks removed - not in schema, defaults to false
     pod:
       kind: Deployment
       replicas: 1
@@ -62,57 +49,56 @@ spec:
         limits:
           cpu: 500m
           memory: 512Mi
+      extraVolumes:
+        - name: oidc-clients
+          configMap:
+            name: authelia-oidc-clients
+            namespace: app-authelia
+      extraVolumeMounts:
+        - name: oidc-clients
+          mountPath: /config.d
+          readOnly: true
 
-    # Service configuration
     service:
       type: ClusterIP
       port: 9091
 
-    # Ingress disabled - using Traefik IngressRoute
+    # We got our own Traefik one
     ingress:
       enabled: false
 
-    # Secrets configuration (v0.10.49 schema)
-    # Uses existingSecret as the "internal" secret mounted at /secrets/internal/
-    # Individual settings reference keys via secret_name: ~ (null = internal) and path: KEY_NAME
     secret:
       existingSecret: authelia-secrets
       mountPath: /secrets
-      # Mount the CNPG-generated secret for PostgreSQL password
-      # Also mount authelia-secrets again via additionalSecrets so ALL keys are available
-      # (the chart only mounts "known" keys from existingSecret at /secrets/internal/)
       additionalSecrets:
         authelia-db-app: {}
-        authelia-secrets: {}  # Mounts all keys at /secrets/authelia-secrets/
-        authelia-smtp-secrets: {}  # Mounts SMTP keys at /secrets/authelia-smtp-secrets/
+        authelia-secrets: {}  # /secrets/authelia-secrets/
+        authelia-smtp-secrets: {}  # /secrets/authelia-smtp-secrets/
 
-    # Main Authelia configuration
     configMap:
       theme: dark
 
-      # Server endpoints configuration
+      extraConfigs:
+        - /config.d/*.yaml
+
       server:
         endpoints:
           authz:
             forward-auth:
               implementation: ForwardAuth
 
-      # Logging
       log:
         level: info
         format: text
 
-      # TOTP configuration
       totp:
         disable: false
         issuer: authelia.cluster.arpa
 
-      # WebAuthn configuration
       webauthn:
         disable: false
         display_name: Authelia
 
-      # Identity validation (JWT secret for password reset tokens)
       identity_validation:
         reset_password:
           secret:
@@ -120,21 +106,17 @@ spec:
             secret_name: ~  # null = use internal secret (existingSecret)
             path: JWT_SECRET
 
-      # Authentication backend - LLDAP
       authentication_backend:
         password_reset:
           disable: false
         ldap:
           enabled: true
-          # LLDAP implementation - uses LLDAP-compatible defaults
           implementation: lldap
           address: ldap://lldap.app-authelia.svc.cluster.local:3890
           timeout: 5s
           start_tls: false
           base_dn: dc=cluster,dc=arpa
           additional_users_dn: ou=people
-          # Note: LLDAP does NOT support memberOf in search filters on user objects
-          # Group membership is checked via groups_filter which searches groups for member={dn}
           users_filter: "(&(|({username_attribute}={input})({mail_attribute}={input}))(objectClass=person))"
           additional_groups_dn: ou=groups
           groups_filter: "(member={dn})"
@@ -144,32 +126,26 @@ spec:
             display_name: displayName
             mail: mail
             group_name: cn
-            # LLDAP uses 'member' on groups, not 'memberOf' on users
-            # The groups_filter handles this correctly
-          # LDAP bind password - references key in existingSecret
+
           password:
             disabled: false
             secret_name: ~  # null = use internal secret
             path: LDAP_PASSWORD
 
-      # Access control rules
       access_control:
         default_policy: deny
         rules:
-          # Allow access to Authelia itself
           - domain:
               - auth.cluster.arpa
               - auth.decentm.com
               - auth.borooka.ee
             policy: bypass
-          # Default: require two-factor authentication
           - domain:
               - "*.cluster.arpa"
               - "*.decentm.com"
               - "*.borooka.ee"
             policy: two_factor
 
-      # Session configuration
       session:
         name: authelia_session
         same_site: lax
@@ -186,19 +162,16 @@ spec:
           - domain: borooka.ee
             authelia_url: https://auth.borooka.ee
             default_redirection_url: https://auth.borooka.ee
-        # Session encryption key - references key in existingSecret
         encryption_key:
           disabled: false
           secret_name: ~  # null = use internal secret
           path: SESSION_SECRET
 
-      # Regulation (brute force protection)
       regulation:
         max_retries: 3
         find_time: 2m
         ban_time: 5m
 
-      # Storage - PostgreSQL via CNPG
       storage:
         postgres:
           enabled: true
@@ -206,74 +179,40 @@ spec:
           database: authelia
           username: authelia
           timeout: 5s
-          # PostgreSQL password - references CNPG-generated secret directly
-          # The secret is mounted via secret.additionalSecrets configuration below
           password:
             disabled: false
             secret_name: authelia-db-app
             path: password
-        # Storage encryption key - references key in existingSecret
         encryption_key:
           disabled: false
           secret_name: ~  # null = use internal secret
           path: STORAGE_ENCRYPTION_KEY
 
-      # Notifier - SMTP
-      # Note: enabledSecret removed - use password.secret_name/path instead
-      # SMTP address, username, and sender are injected via valuesFrom from authelia-smtp-secrets
       notifier:
         disable_startup_check: false
         smtp:
           enabled: true
-          # address, username, sender injected via valuesFrom
           timeout: 5s
           subject: "[Authelia] {title}"
           startup_check_address: test@authelia.com
           disable_require_tls: false
           disable_starttls: false
           disable_html_emails: false
-          # SMTP password - references SMTP secrets via chart's native secret mounting
           password:
             disabled: false
             secret_name: authelia-smtp-secrets
             path: SMTP_PASSWORD
 
-      # Identity Providers - OIDC
       identity_providers:
         oidc:
           enabled: true
-          # OIDC HMAC secret - references key in existingSecret
           hmac_secret:
             disabled: false
             secret_name: ~  # null = use internal secret
             path: IDENTITY_PROVIDERS_OIDC_HMAC_SECRET
-          # OIDC issuer private key via JWKS (v0.10.49 schema)
           jwks:
             - key_id: main
               use: sig
               algorithm: RS256
               key:
                 path: /secrets/authelia-secrets/IDENTITY_PROVIDERS_OIDC_ISSUER_PRIVATE_KEY
-          # OIDC clients
-          clients:
-            - client_id: jellyfin
-              client_name: Jellyfin
-              public: false
-              client_secret:
-                path: /secrets/authelia-secrets/OIDC_CLIENT_JELLYFIN_SECRET
-              authorization_policy: one_factor
-              require_pkce: true
-              pkce_challenge_method: S256
-              redirect_uris:
-                - https://jellyfin.cluster.arpa/sso/OID/redirect/authelia
-                - http://jellyfin.cluster.arpa/sso/OID/redirect/authelia
-              scopes:
-                - openid
-                - profile
-                - groups
-                - email
-              response_types:
-                - code
-              grant_types:
-                - authorization_code
-              token_endpoint_auth_method: client_secret_post
