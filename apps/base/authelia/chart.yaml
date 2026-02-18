@@ -79,7 +79,7 @@ spec:
       theme: dark
 
       extraConfigs:
-        - /config.d/*.yaml
+        - /config.d/clients.yaml
 
       server:
         endpoints:
