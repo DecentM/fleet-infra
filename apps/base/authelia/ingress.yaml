@@ -8,7 +8,7 @@ subjects:
     spec:
       fqdn: auth.decentm.com
       protocol: http
-      target: http://traefik.traefik-system
+      target: http://traefik.traefik-system:8000
 tunnelRef:
   kind: ClusterTunnel
   name: cluster-tunnel-decentm
@@ -23,7 +23,7 @@ subjects:
     spec:
       fqdn: auth.borooka.ee
       protocol: http
-      target: http://traefik.traefik-system.svc:80
+      target: http://traefik.traefik-system:8000
 tunnelRef:
   kind: ClusterTunnel
   name: cluster-tunnel-borooka
@@ -68,7 +68,7 @@ metadata:
   namespace: app-authelia
 spec:
   entryPoints:
-    - web
+    - tunnel
   routes:
     - match: Host(`auth.decentm.com`)
       kind: Rule
@@ -83,7 +83,7 @@ metadata:
   namespace: app-authelia
 spec:
   entryPoints:
-    - web
+    - tunnel
   routes:
     - match: Host(`auth.borooka.ee`)
       kind: Rule
