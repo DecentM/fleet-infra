@@ -38,10 +38,15 @@ spec:
             - name: LLDAP_LDAP_BASE_DN
               value: "dc=cluster,dc=arpa"
             - name: LLDAP_LDAP_USER_DN
-              value: "admin"
+              valueFrom:
+                secretKeyRef:
+                  name: lldap-secrets
+                  key: admin-username
             - name: LLDAP_LDAP_USER_EMAIL
-              value: "admin@cluster.arpa"
-            # Secrets from sealed secret
+              valueFrom:
+                secretKeyRef:
+                  name: lldap-secrets
+                  key: admin-email
             - name: LLDAP_JWT_SECRET
               valueFrom:
                 secretKeyRef:
