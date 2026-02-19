@@ -29,8 +29,25 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
-      # Wait for database to be ready
+      # Wait for Synapse and database to be ready
       initContainers:
+        - name: wait-for-synapse
+          image: busybox:1.37.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              until wget -q --spider http://synapse.app-matrix.svc:8008/health; do
+                echo "Waiting for Synapse to be ready..."
+                sleep 5
+              done
+              echo "Synapse is ready"
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
         - name: wait-for-db
           image: busybox:1.37.0
           imagePullPolicy: IfNotPresent
