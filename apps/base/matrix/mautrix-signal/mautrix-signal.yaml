@@ -106,6 +106,8 @@ spec:
         - name: mautrix-signal
           image: dock.mau.dev/mautrix/signal:v0.2602.0
           imagePullPolicy: IfNotPresent
+          command:
+            - /usr/bin/mautrix-signal
           args:
             - --config
             - /config/config.yaml

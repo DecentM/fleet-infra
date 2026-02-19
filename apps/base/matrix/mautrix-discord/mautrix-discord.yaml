@@ -106,6 +106,8 @@ spec:
         - name: mautrix-discord
           image: dock.mau.dev/mautrix/discord:v0.7.6
           imagePullPolicy: IfNotPresent
+          command:
+            - /usr/bin/mautrix-discord
           args:
             - --config
             - /config/config.yaml
