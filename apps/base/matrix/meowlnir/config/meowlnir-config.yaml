@@ -10,6 +10,7 @@ homeserver:
 meowlnir:
   id: "@meowlnir:testing.borooka.ee"
   as_token: "${MEOWLNIR_AS_TOKEN}"
+  hs_token: "${MEOWLNIR_HS_TOKEN}"
   address: http://meowlnir.app-matrix.svc:29339
 
 # Database connection (using CNPG PostgreSQL)

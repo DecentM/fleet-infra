@@ -47,47 +47,6 @@ spec:
             runAsGroup: 991
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-        # Run badlist database migration (idempotent - safe to run every start)
-        # Creates the badlist schema and tables if they don't exist
-        - name: badlist-migration
-          image: postgres:16.12-alpine
-          imagePullPolicy: IfNotPresent
-          command:
-            - sh
-            - -c
-            - |
-              echo "Running badlist migration..."
-              PGPASSWORD="${DB_PASSWORD}" psql \
-                -h matrix-db-rw.app-matrix.svc \
-                -p 5432 \
-                -U "${DB_USER}" \
-                -d "${DB_NAME}" \
-                -f /migration/badlist-migration.sql
-              echo "Badlist migration completed"
-          env:
-            - name: DB_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: matrix-db-app
-                  key: dbname
-            - name: DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: matrix-db-app
-                  key: user
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: matrix-db-app
-                  key: password
-          volumeMounts:
-            - name: badlist-migration-sql
-              mountPath: /migration
-              readOnly: true
-          securityContext:
-            runAsUser: 991
-            runAsGroup: 991
-            allowPrivilegeEscalation: false
         # Process config templates with environment variable substitution
         - name: config-templating
           image: oaudry/envsubst:1.6
@@ -216,9 +175,6 @@ spec:
                 secretKeyRef:
                   name: mautrix-signal-secrets
                   key: hs-token
-            # Public base URL for badlist module
-            - name: SYNAPSE_PUBLIC_BASEURL
-              value: "https://matrix-testing.borooka.ee/"
           volumeMounts:
             - name: config-template
               mountPath: /config-template
@@ -386,9 +342,6 @@ spec:
             items:
               - key: signal-registration.yaml
                 path: signal-registration.yaml
-        - name: badlist-migration-sql
-          configMap:
-            name: synapse-badlist-migration
 ---
 apiVersion: v1
 kind: Service

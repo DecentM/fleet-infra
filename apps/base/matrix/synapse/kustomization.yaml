@@ -14,7 +14,3 @@ configMapGenerator:
     files:
       - config/homeserver.yaml
       - config/log.config
-  - name: synapse-badlist-migration
-    namespace: app-matrix
-    files:
-      - badlist-migration.sql
