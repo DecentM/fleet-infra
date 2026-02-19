@@ -203,7 +203,7 @@ spec:
             allowPrivilegeEscalation: false
       containers:
         - name: synapse
-          image: ghcr.io/decentm/synapse-antispam:latest
+          image: ghcr.io/decentm/synapse:sha-8f663a8
           imagePullPolicy: IfNotPresent
           resources:
             requests:
