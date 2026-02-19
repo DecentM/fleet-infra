@@ -1,0 +1,73 @@
+# Mautrix Discord Bridge Configuration
+# Documentation: https://docs.mau.fi/bridges/go/discord/
+
+# Homeserver connection
+homeserver:
+  address: http://synapse.app-matrix.svc:8008
+  domain: testing.borooka.ee
+
+# Appservice configuration
+appservice:
+  address: http://mautrix-discord.app-matrix.svc:29334
+  hostname: 0.0.0.0
+  port: 29334
+  id: discord
+  bot:
+    username: discordbot
+    displayname: Discord Bridge Bot
+    avatar: mxc://maunium.net/nIdEykemnwdisvHbpxflpDlC
+  as_token: "${DISCORD_AS_TOKEN}"
+  hs_token: "${DISCORD_HS_TOKEN}"
+
+# Database configuration (PostgreSQL via CNPG)
+database:
+  type: postgres
+  uri: "postgres://${DISCORD_DB_USER}:${DISCORD_DB_PASSWORD}@mautrix-discord-db-rw.app-matrix.svc:5432/${DISCORD_DB_NAME}?sslmode=disable"
+  max_open_conns: 20
+  max_idle_conns: 2
+
+# Bridge configuration
+bridge:
+  username_template: "discord_{{.}}"
+  displayname_template: "{{.DisplayName}} (Discord)"
+  channel_name_template: "#{{.Name}}"
+  guild_name_template: "{{.Name}}"
+  # Allow users from this homeserver to use the bridge
+  permissions:
+    "*": relay
+    "testing.borooka.ee": user
+    "@decentm:testing.borooka.ee": admin
+  # Double-puppeting (automatic when using same homeserver)
+  double_puppet_server_map:
+    testing.borooka.ee: http://synapse.app-matrix.svc:8008
+  login_shared_secret_map: {}
+  # Message handling
+  message_status_events: false
+  delivery_receipts: false
+  message_error_notices: true
+  portal_message_buffer: 128
+  # Encryption support
+  encryption:
+    allow: true
+    default: false
+    appservice: false
+    delete_keys:
+      delete_outbound_on_ack: false
+      dont_store_outbound: false
+      ratchet_on_decrypt: false
+      delete_fully_used_on_decrypt: false
+      delete_prev_on_new_session: false
+      delete_on_device_delete: false
+      periodically_delete_expired: false
+      delete_outdated_inbound: false
+    verification_levels:
+      receive: unverified
+      send: unverified
+      share: cross-signed-tofu
+
+# Logging
+logging:
+  min_level: info
+  writers:
+    - type: stdout
+      format: pretty-colored

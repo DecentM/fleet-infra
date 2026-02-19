@@ -1,0 +1,157 @@
+# Mautrix Signal - Signal bridge for Matrix
+# Documentation: https://docs.mau.fi/bridges/go/signal/
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mautrix-signal
+  namespace: app-matrix
+  labels:
+    app: mautrix-signal
+    app.kubernetes.io/name: mautrix-signal
+    app.kubernetes.io/component: bridge
+    app.kubernetes.io/part-of: matrix
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: mautrix-signal
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mautrix-signal
+        app.kubernetes.io/name: mautrix-signal
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      # Wait for database to be ready
+      initContainers:
+        - name: wait-for-db
+          image: busybox:1.37.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z mautrix-signal-db-rw.app-matrix.svc 5432; do
+                echo "Waiting for Mautrix Signal database..."
+                sleep 2
+              done
+              echo "Database is ready"
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+        # Process config templates with environment variable substitution
+        - name: config-templating
+          image: oaudry/envsubst:1.6
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              echo "Processing config templates with envsubst..."
+              for file in /config-template/*; do
+                filename=$(basename "$file")
+                echo "Processing $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
+              echo "Config templating complete"
+              ls -la /config-processed/
+          env:
+            # Signal bridge secrets
+            - name: SIGNAL_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mautrix-signal-secrets
+                  key: as-token
+            - name: SIGNAL_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mautrix-signal-secrets
+                  key: hs-token
+            # Database credentials from CNPG
+            - name: SIGNAL_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mautrix-signal-db-app
+                  key: user
+            - name: SIGNAL_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mautrix-signal-db-app
+                  key: password
+            - name: SIGNAL_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: mautrix-signal-db-app
+                  key: dbname
+          volumeMounts:
+            - name: config-template
+              mountPath: /config-template
+              readOnly: true
+            - name: config-processed
+              mountPath: /config-processed
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+      containers:
+        - name: mautrix-signal
+          image: dock.mau.dev/mautrix/signal:v0.2602.0
+          imagePullPolicy: IfNotPresent
+          args:
+            - --config
+            - /config/config.yaml
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+          ports:
+            - name: appservice
+              containerPort: 29328
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /_matrix/mau/ready
+              port: appservice
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /_matrix/mau/live
+              port: appservice
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            # Mount entire /config directory as writable for config upgrade temp files
+            - name: config-processed
+              mountPath: /config
+            # Writable data directory for state storage
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: config-template
+          configMap:
+            name: mautrix-signal-config
+        - name: config-processed
+          emptyDir: {}
+        - name: data
+          emptyDir: {}

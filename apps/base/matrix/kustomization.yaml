@@ -13,6 +13,8 @@ resources:
   - hookshot
   - meowlnir
   - redis
+  - mautrix-discord
+  - mautrix-signal
 
   - sealed-turn-secrets.yaml
 

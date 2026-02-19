@@ -78,6 +78,8 @@ log_config: "/config/log.config"
 app_service_config_files:
   - /data/hookshot-registration.yml
   - /data/meowlnir-registration.yml
+  - /data/discord-registration.yaml
+  - /data/signal-registration.yaml
 
 # Anti-spam modules configuration
 modules:

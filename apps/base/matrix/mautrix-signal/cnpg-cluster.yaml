@@ -1,0 +1,18 @@
+# CloudNativePG PostgreSQL cluster for Mautrix Signal
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: mautrix-signal-db
+  namespace: app-matrix
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.10
+  storage:
+    storageClass: longhorn-local
+    size: 2Gi
+  monitoring:
+    enablePodMonitor: true
+  bootstrap:
+    initdb:
+      database: mautrix_signal
+      owner: mautrix_signal

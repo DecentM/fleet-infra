@@ -113,6 +113,18 @@ spec:
                 echo "Processing meowlnir template: $filename..."
                 envsubst < "$file" > "/config-processed/$filename"
               done
+              # Process mautrix-discord registration template
+              for file in /discord-template/*; do
+                filename=$(basename "$file")
+                echo "Processing discord template: $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
+              # Process mautrix-signal registration template
+              for file in /signal-template/*; do
+                filename=$(basename "$file")
+                echo "Processing signal template: $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
               echo "Config templating complete"
               ls -la /config-processed/
           env:
@@ -182,6 +194,28 @@ spec:
                 secretKeyRef:
                   name: meowlnir-secrets
                   key: meowlnir_as_token
+            # Mautrix Discord tokens (for registration template)
+            - name: DISCORD_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mautrix-discord-secrets
+                  key: as-token
+            - name: DISCORD_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mautrix-discord-secrets
+                  key: hs-token
+            # Mautrix Signal tokens (for registration template)
+            - name: SIGNAL_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mautrix-signal-secrets
+                  key: as-token
+            - name: SIGNAL_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mautrix-signal-secrets
+                  key: hs-token
             # Public base URL for badlist module
             - name: SYNAPSE_PUBLIC_BASEURL
               value: "https://matrix-testing.borooka.ee/"
@@ -196,6 +230,12 @@ spec:
               readOnly: true
             - name: meowlnir-registration-template
               mountPath: /meowlnir-template
+              readOnly: true
+            - name: discord-registration-template
+              mountPath: /discord-template
+              readOnly: true
+            - name: signal-registration-template
+              mountPath: /signal-template
               readOnly: true
           securityContext:
             runAsUser: 991
@@ -298,6 +338,14 @@ spec:
               mountPath: /data/meowlnir-registration.yml
               subPath: meowlnir-registration.yml
               readOnly: true
+            - name: config-processed
+              mountPath: /data/discord-registration.yaml
+              subPath: discord-registration.yaml
+              readOnly: true
+            - name: config-processed
+              mountPath: /data/signal-registration.yaml
+              subPath: signal-registration.yaml
+              readOnly: true
       volumes:
         - name: config-template
           configMap:
@@ -326,6 +374,18 @@ spec:
             items:
               - key: meowlnir-registration.yml
                 path: meowlnir-registration.yml
+        - name: discord-registration-template
+          configMap:
+            name: mautrix-discord-config
+            items:
+              - key: discord-registration.yaml
+                path: discord-registration.yaml
+        - name: signal-registration-template
+          configMap:
+            name: mautrix-signal-config
+            items:
+              - key: signal-registration.yaml
+                path: signal-registration.yaml
         - name: badlist-migration-sql
           configMap:
             name: synapse-badlist-migration

@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - cnpg-cluster.yaml
+  - sealed-mautrix-discord-secrets.yaml
+  - mautrix-discord.yaml
+  - service.yaml
+
+configMapGenerator:
+  - name: mautrix-discord-config
+    namespace: app-matrix
+    files:
+      - config.yaml=config/config.yaml
+      - discord-registration.yaml=config/registration.yaml
