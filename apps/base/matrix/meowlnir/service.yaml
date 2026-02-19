@@ -1,0 +1,26 @@
+# Meowlnir ClusterIP Service
+# Exposes antispam and management APIs
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: meowlnir
+  namespace: app-matrix
+  labels:
+    app: meowlnir
+    app.kubernetes.io/name: meowlnir
+    app.kubernetes.io/component: moderation
+    app.kubernetes.io/part-of: matrix
+spec:
+  type: ClusterIP
+  ports:
+    - name: antispam
+      port: 29339
+      targetPort: antispam
+      protocol: TCP
+    - name: management
+      port: 29340
+      targetPort: management
+      protocol: TCP
+  selector:
+    app: meowlnir

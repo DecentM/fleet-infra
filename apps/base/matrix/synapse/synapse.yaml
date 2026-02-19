@@ -66,6 +66,12 @@ spec:
                 echo "Processing hookshot template: $filename..."
                 envsubst < "$file" > "/config-processed/$filename"
               done
+              # Process meowlnir registration template
+              for file in /meowlnir-template/*; do
+                filename=$(basename "$file")
+                echo "Processing meowlnir template: $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
               echo "Config templating complete"
               ls -la /config-processed/
           env:
@@ -119,6 +125,25 @@ spec:
                 secretKeyRef:
                   name: hookshot-secrets
                   key: hs-token
+            # Meowlnir tokens (for registration template and antispam)
+            - name: MEOWLNIR_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: meowlnir-secrets
+                  key: meowlnir_as_token
+            - name: MEOWLNIR_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: meowlnir-secrets
+                  key: meowlnir_hs_token
+            - name: MEOWLNIR_ANTISPAM_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: meowlnir-secrets
+                  key: meowlnir_as_token
+            # Public base URL for badlist module
+            - name: SYNAPSE_PUBLIC_BASEURL
+              value: "https://matrix-testing.borooka.ee/"
           volumeMounts:
             - name: config-template
               mountPath: /config-template
@@ -128,13 +153,16 @@ spec:
             - name: hookshot-registration-template
               mountPath: /hookshot-template
               readOnly: true
+            - name: meowlnir-registration-template
+              mountPath: /meowlnir-template
+              readOnly: true
           securityContext:
             runAsUser: 991
             runAsGroup: 991
             allowPrivilegeEscalation: false
       containers:
         - name: synapse
-          image: matrixdotorg/synapse:v1.147.1
+          image: ghcr.io/decentm/synapse-antispam:latest
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -225,6 +253,10 @@ spec:
               mountPath: /data/hookshot-registration.yml
               subPath: hookshot-registration.yml
               readOnly: true
+            - name: config-processed
+              mountPath: /data/meowlnir-registration.yml
+              subPath: meowlnir-registration.yml
+              readOnly: true
       volumes:
         - name: config-template
           configMap:
@@ -247,6 +279,12 @@ spec:
             items:
               - key: hookshot-registration.yml
                 path: hookshot-registration.yml
+        - name: meowlnir-registration-template
+          configMap:
+            name: meowlnir-config
+            items:
+              - key: meowlnir-registration.yml
+                path: meowlnir-registration.yml
 ---
 apiVersion: v1
 kind: Service

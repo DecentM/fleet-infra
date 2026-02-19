@@ -1,0 +1,45 @@
+# Meowlnir Configuration
+# Documentation: https://docs.mau.fi/meowlnir/
+
+# Homeserver connection details
+homeserver:
+  address: http://synapse.app-matrix.svc:8008
+  domain: testing.borooka.ee
+
+# Meowlnir bot identity
+meowlnir:
+  id: "@meowlnir:testing.borooka.ee"
+  as_token: "${MEOWLNIR_AS_TOKEN}"
+  address: http://meowlnir.app-matrix.svc:29339
+
+# Database connection (using CNPG PostgreSQL)
+database:
+  type: postgres
+  uri: "postgres://${MEOWLNIR_DB_USER}:${MEOWLNIR_DB_PASSWORD}@meowlnir-db-rw.app-matrix.svc:5432/${MEOWLNIR_DB_NAME}?sslmode=disable"
+
+# Optional: Read-only connection to Synapse database for better performance
+# Allows faster room member lookups without hitting the Synapse API
+synapse_db:
+  type: postgres
+  uri: "postgres://${SYNAPSE_DB_USER}:${SYNAPSE_DB_PASSWORD}@matrix-db-ro.app-matrix.svc:5432/${SYNAPSE_DB_NAME}?sslmode=disable"
+
+# Antispam module configuration
+antispam:
+  # HTTP listener for Synapse's synapse-http-antispam module
+  listen: 0.0.0.0:29339
+
+# Management API (optional, requires secret for authentication)
+management:
+  listen: 0.0.0.0:29340
+  secret: "${MEOWLNIR_MANAGEMENT_SECRET}"
+
+# Logging
+logging:
+  min_level: info
+  writers:
+    - type: stdout
+      format: pretty-colored
+
+# Policy lists to subscribe to (can be managed at runtime)
+# This is a starting point, more can be added via management API
+policy_lists: []

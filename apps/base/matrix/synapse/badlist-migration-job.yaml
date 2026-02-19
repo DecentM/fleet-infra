@@ -1,0 +1,94 @@
+# Database migration job for synapse-spamcheck-badlist tables
+# Creates the badlist schema and tables in the Synapse database
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: synapse-badlist-migration
+  namespace: app-matrix
+  labels:
+    app: synapse-badlist-migration
+    app.kubernetes.io/name: synapse-badlist-migration
+    app.kubernetes.io/component: migration
+    app.kubernetes.io/part-of: matrix
+  annotations:
+    # This job can be re-run safely (idempotent)
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  ttlSecondsAfterFinished: 3600
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: synapse-badlist-migration
+    spec:
+      restartPolicy: OnFailure
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      initContainers:
+        - name: wait-for-db
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z matrix-db-rw.app-matrix.svc 5432; do
+                echo "Waiting for database..."
+                sleep 2
+              done
+              echo "Database is ready"
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+      containers:
+        - name: migration
+          image: postgres:16-alpine
+          command:
+            - sh
+            - -c
+            - |
+              echo "Running badlist migration..."
+              PGPASSWORD="${DB_PASSWORD}" psql \
+                -h "${DB_HOST}" \
+                -p "${DB_PORT}" \
+                -U "${DB_USER}" \
+                -d "${DB_NAME}" \
+                -f /migration/badlist-migration.sql
+              echo "Migration completed successfully"
+          env:
+            - name: DB_HOST
+              value: matrix-db-rw.app-matrix.svc
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: matrix-db-app
+                  key: dbname
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: matrix-db-app
+                  key: user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: matrix-db-app
+                  key: password
+          volumeMounts:
+            - name: migration-sql
+              mountPath: /migration
+              readOnly: true
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+      volumes:
+        - name: migration-sql
+          configMap:
+            name: synapse-badlist-migration

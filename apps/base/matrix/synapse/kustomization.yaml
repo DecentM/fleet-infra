@@ -7,6 +7,7 @@ resources:
   - sealed-synapse-signing-key.yaml
   - synapse.yaml
   - tunnel.yaml
+  - badlist-migration-job.yaml
 
 configMapGenerator:
   - name: synapse-config
@@ -14,3 +15,7 @@ configMapGenerator:
     files:
       - config/homeserver.yaml
       - config/log.config
+  - name: synapse-badlist-migration
+    namespace: app-matrix
+    files:
+      - badlist-migration.sql

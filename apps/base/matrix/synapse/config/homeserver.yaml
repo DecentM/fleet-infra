@@ -77,6 +77,28 @@ log_config: "/config/log.config"
 # Application services (bridges)
 app_service_config_files:
   - /data/hookshot-registration.yml
+  - /data/meowlnir-registration.yml
+
+# Anti-spam modules configuration
+modules:
+  # Meowlnir HTTP-based spam checking
+  - module: synapse_http_antispam.HTTPAntispam
+    config:
+      base_url: http://meowlnir.app-matrix.svc:29339
+      authorization: ${MEOWLNIR_ANTISPAM_TOKEN}
+      enabled_callbacks:
+        - user_may_invite
+        - user_may_join_room
+        - check_event_for_spam
+      fail_open:
+        check_event_for_spam: true
+  # Database-backed URL/hash blocklist (IWF lists)
+  - module: "synapse_spamcheck_badlist.BadListFilter"
+    config:
+      base_url: "${SYNAPSE_PUBLIC_BASEURL}"
+      links_table: "badlist.iwf_links"
+      md5_table: "badlist.iwf_md5"
+      pull_from_db_every_sec: 600
 
 # Experimental features for E2E encryption bridge support (MSC2409, MSC3202)
 # Required for Hookshot to work in encrypted rooms

@@ -11,6 +11,7 @@ resources:
   - well-known
   - livekit
   - hookshot
+  - meowlnir
   - redis
 
   - sealed-turn-secrets.yaml

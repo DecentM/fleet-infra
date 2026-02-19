@@ -1,0 +1,180 @@
+# Meowlnir - Matrix moderation bot
+# Documentation: https://docs.mau.fi/meowlnir/
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: meowlnir
+  namespace: app-matrix
+  labels:
+    app: meowlnir
+    app.kubernetes.io/name: meowlnir
+    app.kubernetes.io/component: moderation
+    app.kubernetes.io/part-of: matrix
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: meowlnir
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: meowlnir
+        job: meowlnir
+        app.kubernetes.io/name: meowlnir
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      # Wait for database to be ready
+      initContainers:
+        - name: wait-for-db
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z meowlnir-db-rw.app-matrix.svc 5432; do
+                echo "Waiting for Meowlnir database..."
+                sleep 2
+              done
+              echo "Database is ready"
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+        # Process config templates with environment variable substitution
+        - name: config-templating
+          image: oaudry/envsubst:1.6
+          command:
+            - sh
+            - -c
+            - |
+              echo "Processing config templates with envsubst..."
+              for file in /config-template/*; do
+                filename=$(basename "$file")
+                echo "Processing $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
+              echo "Config templating complete"
+              ls -la /config-processed/
+          env:
+            # Meowlnir secrets
+            - name: MEOWLNIR_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: meowlnir-secrets
+                  key: meowlnir_as_token
+            - name: MEOWLNIR_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: meowlnir-secrets
+                  key: meowlnir_hs_token
+            - name: MEOWLNIR_MANAGEMENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: meowlnir-secrets
+                  key: meowlnir_management_secret
+            # Meowlnir database credentials
+            - name: MEOWLNIR_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: meowlnir-db-app
+                  key: user
+            - name: MEOWLNIR_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: meowlnir-db-app
+                  key: password
+            - name: MEOWLNIR_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: meowlnir-db-app
+                  key: dbname
+            # Synapse database credentials (read-only for performance)
+            - name: SYNAPSE_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: matrix-db-app
+                  key: user
+            - name: SYNAPSE_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: matrix-db-app
+                  key: password
+            - name: SYNAPSE_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: matrix-db-app
+                  key: dbname
+          volumeMounts:
+            - name: config-template
+              mountPath: /config-template
+              readOnly: true
+            - name: config-processed
+              mountPath: /config-processed
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+      containers:
+        - name: meowlnir
+          image: dock.mau.dev/maunium/meowlnir:latest
+          imagePullPolicy: Always
+          args:
+            - --config
+            - /config/meowlnir-config.yaml
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+          ports:
+            - name: antispam
+              containerPort: 29339
+              protocol: TCP
+            - name: management
+              containerPort: 29340
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: antispam
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: antispam
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: config-processed
+              mountPath: /config/meowlnir-config.yaml
+              subPath: meowlnir-config.yaml
+              readOnly: true
+            - name: config-processed
+              mountPath: /config/meowlnir-registration.yml
+              subPath: meowlnir-registration.yml
+              readOnly: true
+      volumes:
+        - name: config-template
+          configMap:
+            name: meowlnir-config
+        - name: config-processed
+          emptyDir: {}
