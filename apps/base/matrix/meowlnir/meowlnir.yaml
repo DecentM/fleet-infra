@@ -82,6 +82,12 @@ spec:
                 secretKeyRef:
                   name: meowlnir-secrets
                   key: meowlnir_management_secret
+            # Antispam API secret (must match Synapse HTTPAntispam authorization)
+            - name: MEOWLNIR_ANTISPAM_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: meowlnir-secrets
+                  key: meowlnir_as_token
             # Meowlnir database credentials
             - name: MEOWLNIR_DB_USER
               valueFrom:

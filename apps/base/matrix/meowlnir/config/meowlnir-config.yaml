@@ -27,6 +27,9 @@ synapse_db:
 antispam:
   # HTTP listener for Synapse's synapse-http-antispam module
   listen: 0.0.0.0:29339
+  # Secret for authenticating requests from Synapse's HTTPAntispam module
+  # Must match the 'authorization' value in Synapse's HTTPAntispam config
+  secret: "${MEOWLNIR_ANTISPAM_TOKEN}"
 
 # Management API (optional, requires secret for authentication)
 management:
