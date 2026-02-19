@@ -8,5 +8,4 @@ configMapGenerator:
   - name: synapse-admin-config
     namespace: app-matrix
     files:
-      - config/synapse-admin-nginx.conf
       - config/synapse-admin-config.json

@@ -1,5 +1,5 @@
 # Synapse Admin UI
-# Documentation: https://github.com/Awesome-Technologies/synapse-admin
+# Documentation: https://github.com/etkecc/synapse-admin
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -33,7 +33,7 @@ spec:
         fsGroup: 101
       containers:
         - name: synapse-admin
-          image: awesometechnologies/synapse-admin:latest
+          image: ghcr.io/etkecc/synapse-admin:v0.11.1-etke53
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -68,30 +68,11 @@ spec:
             timeoutSeconds: 3
             failureThreshold: 3
           volumeMounts:
-            # Nginx needs write access to these directories
-            - name: nginx-cache
-              mountPath: /var/cache/nginx
-            - name: nginx-run
-              mountPath: /var/run
-            - name: tmp
-              mountPath: /tmp
-            - name: nginx-config
-              mountPath: /etc/nginx/conf.d/default.conf
-              subPath: synapse-admin-nginx.conf
             - name: synapse-admin-config
-              mountPath: /app/config.json
+              mountPath: /var/public/config.json
               subPath: synapse-admin-config.json
               readOnly: true
       volumes:
-        - name: nginx-cache
-          emptyDir: {}
-        - name: nginx-run
-          emptyDir: {}
-        - name: tmp
-          emptyDir: {}
-        - name: nginx-config
-          configMap:
-            name: synapse-admin-config
         - name: synapse-admin-config
           configMap:
             name: synapse-admin-config
