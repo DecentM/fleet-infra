@@ -7,7 +7,6 @@ resources:
   - sealed-synapse-signing-key.yaml
   - synapse.yaml
   - tunnel.yaml
-  - badlist-migration-job.yaml
 
 configMapGenerator:
   - name: synapse-config

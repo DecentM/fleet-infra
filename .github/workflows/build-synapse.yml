@@ -1,4 +1,4 @@
-name: Build Synapse Antispam
+name: Build Synapse
 
 on:
   push:
@@ -12,7 +12,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/synapse-antispam
+  IMAGE_NAME: ${{ github.repository_owner }}/synapse
 
 jobs:
   build:
@@ -42,14 +42,16 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=branch
+            type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
+            type=sha
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          context: containers/synapse-antispam
+          context: containers/synapse
           platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}

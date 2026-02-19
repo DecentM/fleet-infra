@@ -1,6 +1,3 @@
--- Badlist schema and tables for synapse-spamcheck-badlist module
--- This migration is idempotent (safe to run multiple times)
-
 -- Create schema for badlist tables
 CREATE SCHEMA IF NOT EXISTS badlist;
 
