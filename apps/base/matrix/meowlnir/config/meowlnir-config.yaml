@@ -21,7 +21,7 @@ database:
 # Allows faster room member lookups without hitting the Synapse API
 synapse_db:
   type: postgres
-  uri: "postgres://${SYNAPSE_DB_USER}:${SYNAPSE_DB_PASSWORD}@matrix-db-ro.app-matrix.svc:5432/${SYNAPSE_DB_NAME}?sslmode=disable"
+  uri: "postgres://${SYNAPSE_DB_USER}:${SYNAPSE_DB_PASSWORD}@matrix-db-rw.app-matrix.svc:5432/${SYNAPSE_DB_NAME}?sslmode=disable"
 
 # Antispam module configuration
 antispam:

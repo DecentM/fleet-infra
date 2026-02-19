@@ -153,7 +153,7 @@ spec:
               protocol: TCP
           readinessProbe:
             httpGet:
-              path: /health
+              path: /_matrix/mau/ready
               port: antispam
             initialDelaySeconds: 5
             periodSeconds: 10
@@ -161,24 +161,25 @@ spec:
             failureThreshold: 3
           livenessProbe:
             httpGet:
-              path: /health
+              path: /_matrix/mau/live
               port: antispam
             initialDelaySeconds: 10
             periodSeconds: 30
             timeoutSeconds: 5
             failureThreshold: 3
           volumeMounts:
+            # Mount entire /config directory as writable so Meowlnir can write
+            # config upgrade temp files (mautrix config auto-upgrade feature)
             - name: config-processed
-              mountPath: /config/meowlnir-config.yaml
-              subPath: meowlnir-config.yaml
-              readOnly: true
-            - name: config-processed
-              mountPath: /config/meowlnir-registration.yml
-              subPath: meowlnir-registration.yml
-              readOnly: true
+              mountPath: /config
+            # Writable data directory for state storage
+            - name: data
+              mountPath: /data
       volumes:
         - name: config-template
           configMap:
             name: meowlnir-config
         - name: config-processed
+          emptyDir: {}
+        - name: data
           emptyDir: {}

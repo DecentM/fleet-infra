@@ -84,7 +84,7 @@ modules:
   # Meowlnir HTTP-based spam checking
   - module: synapse_http_antispam.HTTPAntispam
     config:
-      base_url: http://meowlnir.app-matrix.svc:29339
+      base_url: http://meowlnir.app-matrix.svc:29339/_meowlnir/antispam
       authorization: ${MEOWLNIR_ANTISPAM_TOKEN}
       enabled_callbacks:
         - user_may_invite
