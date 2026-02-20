@@ -4,9 +4,7 @@
 #
 # Documentation: https://docs.mau.fi/maubot/
 
-database:
-  type: sqlite
-  uri: sqlite:/data/maubot.db
+database: postgresql://maubot:${MAUBOT_DB_PASSWORD}@maubot-db-rw.app-matrix.svc:5432/maubot?sslmode=disable
 
 crypto_database: default
 
@@ -17,8 +15,9 @@ plugin_directories:
   trash: /data/trash
 
 plugin_databases:
-  sqlite: /data/dbs
-  postgres: null
+  postgres: postgresql://maubot:${MAUBOT_DB_PASSWORD}@maubot-db-rw.app-matrix.svc:5432/maubot?sslmode=disable
+  postgres_max_conns_per_plugin: 3
+  postgres_opts: {}
 
 server:
   hostname: 0.0.0.0

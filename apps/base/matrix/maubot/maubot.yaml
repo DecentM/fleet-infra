@@ -33,6 +33,24 @@ spec:
       securityContext:
         fsGroup: 1337
       initContainers:
+        # Wait for database to be ready
+        - name: wait-for-db
+          image: busybox:1.37.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z maubot-db-rw.app-matrix.svc 5432; do
+                echo "Waiting for Maubot database..."
+                sleep 2
+              done
+              echo "Database is ready"
+          securityContext:
+            runAsUser: 1337
+            runAsGroup: 1337
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
         # Seed config: copy and process template only if config doesn't exist
         # This allows the container to manage the config after initial setup
         - name: seed-config
@@ -77,6 +95,11 @@ spec:
                 secretKeyRef:
                   name: maubot-secrets
                   key: MAUBOT_ADMIN_PASSWORD
+            - name: MAUBOT_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: maubot-db-app
+                  key: password
           volumeMounts:
             - name: config-seed
               mountPath: /seed
