@@ -3,9 +3,9 @@
 
 # Bridge connection settings
 bridge:
-  domain: testing.borooka.ee
+  domain: borooka.ee
   url: http://synapse.app-matrix.svc:8008
-  mediaUrl: https://matrix-testing.borooka.ee
+  mediaUrl: https://matrix.borooka.ee
   port: 9993
   bindAddress: 0.0.0.0
 
@@ -37,7 +37,7 @@ listeners:
 generic:
   enabled: true
   outbound: false
-  urlPrefix: https://hookshot-testing.borooka.ee/webhook
+  urlPrefix: https://hookshot.borooka.ee/webhook
   userIdPrefix: _webhooks_
   allowJsTransformationFunctions: false
   waitForComplete: false
@@ -45,13 +45,13 @@ generic:
 # Widget configuration
 widgets:
   addToAdminRooms: true
-  publicUrl: https://hookshot-testing.borooka.ee/widgets
+  publicUrl: https://hookshot.borooka.ee/widgets
   branding:
     widgetTitle: Hookshot Configuration
 
 # Permissions - who can configure the bridge
 permissions:
-  - actor: testing.borooka.ee
+  - actor: borooka.ee
     services:
       - service: "*"
         level: admin

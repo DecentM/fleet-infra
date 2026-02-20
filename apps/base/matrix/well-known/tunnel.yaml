@@ -4,11 +4,11 @@ metadata:
   name: well-known-tunnel
   namespace: app-matrix
 subjects:
-  # Well-Known Federation Delegation (must be first for testing.borooka.ee)
+  # Well-Known Federation Delegation (must be first for borooka.ee)
   # Serves /.well-known/matrix/server and /.well-known/matrix/client
   - name: well-known
     spec:
-      fqdn: testing.borooka.ee
+      fqdn: borooka.ee
       protocol: http
       target: http://well-known.app-matrix.svc:80
 

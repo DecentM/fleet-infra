@@ -303,8 +303,8 @@ spec:
             - name: data
               mountPath: /data
             - name: signing-key
-              mountPath: /data/testing.borooka.ee.signing.key
-              subPath: testing.borooka.ee.signing.key
+              mountPath: /data/borooka.ee.signing.key
+              subPath: borooka.ee.signing.key
               readOnly: true
             - name: config-processed
               mountPath: /data/hookshot-registration.yml
@@ -341,7 +341,7 @@ spec:
             secretName: synapse-signing-key
             items:
               - key: signing.key
-                path: testing.borooka.ee.signing.key
+                path: borooka.ee.signing.key
         - name: hookshot-registration-template
           configMap:
             name: hookshot-config

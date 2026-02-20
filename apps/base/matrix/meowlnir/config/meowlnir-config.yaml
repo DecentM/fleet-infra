@@ -4,11 +4,11 @@
 # Homeserver connection details
 homeserver:
   address: http://synapse.app-matrix.svc:8008
-  domain: testing.borooka.ee
+  domain: borooka.ee
 
 # Meowlnir bot identity
 meowlnir:
-  id: "@meowlnir:testing.borooka.ee"
+  id: "@meowlnir:borooka.ee"
   as_token: "${MEOWLNIR_AS_TOKEN}"
   hs_token: "${MEOWLNIR_HS_TOKEN}"
   address: http://meowlnir.app-matrix.svc:29339

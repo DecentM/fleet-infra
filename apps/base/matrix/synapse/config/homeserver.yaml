@@ -1,6 +1,6 @@
 # Server identification
-server_name: "testing.borooka.ee"
-public_baseurl: "https://matrix-testing.borooka.ee/"
+server_name: "borooka.ee"
+public_baseurl: "https://matrix.borooka.ee/"
 pid_file: /data/homeserver.pid
 
 # Database configuration - uses CNPG secret for credentials
@@ -42,7 +42,7 @@ url_preview_ip_range_blacklist:
   - 'fe80::/64'
 
 # Signing key - must be generated before first run
-signing_key_path: /data/testing.borooka.ee.signing.key
+signing_key_path: /data/borooka.ee.signing.key
 
 # Registration settings
 enable_registration: false
@@ -86,7 +86,7 @@ app_service_config_files:
 modules:
   - module: synapse_http_antispam.HTTPAntispam
     config:
-      base_url: http://meowlnir.app-matrix.svc:29339/_meowlnir/antispam/!meowlnir_management:testing.borooka.ee
+      base_url: http://meowlnir.app-matrix.svc:29339/_meowlnir/antispam/!meowlnir_management:borooka.ee
       authorization: ${MEOWLNIR_ANTISPAM_TOKEN}
       enabled_callbacks:
         - user_may_invite
@@ -107,9 +107,9 @@ experimental_features:
 
 # Auto-join rooms for new users (Discord-like onboarding)
 auto_join_rooms:
-  - "#welcome:testing.borooka.ee"
-  - "#general:testing.borooka.ee"
-  - "#announcements:testing.borooka.ee"
+  - "#welcome:borooka.ee"
+  - "#general:borooka.ee"
+  - "#announcements:borooka.ee"
 autocreate_auto_join_rooms: true
 autocreate_auto_join_rooms_federated: true
 autocreate_auto_join_room_preset: public_chat

@@ -50,7 +50,7 @@ spec:
             allowPrivilegeEscalation: false
           env:
             - name: LIVEKIT_URL
-              value: "wss://livekit-testing.borooka.ee/livekit/sfu"
+              value: "wss://livekit.borooka.ee/livekit/sfu"
             - name: LIVEKIT_KEY
               valueFrom:
                 secretKeyRef:
@@ -62,7 +62,7 @@ spec:
                   name: livekit-secrets
                   key: api-secret
             - name: LIVEKIT_FULL_ACCESS_HOMESERVERS
-              value: "testing.borooka.ee"
+              value: "borooka.ee"
           ports:
             - name: http
               containerPort: 8080

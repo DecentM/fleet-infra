@@ -1,11 +1,11 @@
 {
   "brand": "Brooke's Testing Instance",
   "default_theme": "dark",
-  "default_server_name": "testing.borooka.ee",
+  "default_server_name": "borooka.ee",
   "default_server_config": {
     "m.homeserver": {
-      "server_name": "testing.borooka.ee",
-      "base_url": "https://matrix-testing.borooka.ee"
+      "server_name": "borooka.ee",
+      "base_url": "https://matrix.borooka.ee"
     }
   },
   "disable_guests": true,
@@ -22,17 +22,17 @@
   },
   "element_call": {
     "use_exclusively": true,
-    "url": "https://element-call-testing.borooka.ee"
+    "url": "https://element-call.borooka.ee"
   },
   "jitsi": {
-    "preferred_domain": "meet-testing.borooka.ee",
+    "preferred_domain": "meet.borooka.ee",
     "skip_built_in_welcome_screen": true
   },
   "setting_defaults": {
     "use_system_theme": true,
     "MessageComposerInput.insertTrailingColon": true,
     "room_directory_servers": [
-      "testing.borooka.ee"
+      "borooka.ee"
     ],
     "MessageComposerInput.autoReplaceEmoji": true,
     "autoplayGifs": true,
@@ -64,6 +64,6 @@
     "userTimezonePublish": false
   },
   "room_directory": {
-    "servers": ["testing.borooka.ee"]
+    "servers": ["borooka.ee"]
   }
 }

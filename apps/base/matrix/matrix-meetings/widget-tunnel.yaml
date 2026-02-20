@@ -8,7 +8,7 @@ metadata:
 subjects:
   - name: matrix-meetings-widget
     spec:
-      fqdn: meetings-testing.borooka.ee
+      fqdn: meetings.borooka.ee
       protocol: http
       target: http://matrix-meetings-widget.app-matrix.svc:8080
 

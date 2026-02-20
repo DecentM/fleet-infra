@@ -7,7 +7,7 @@ subjects:
   # Element Web
   - name: element
     spec:
-      fqdn: element-testing.borooka.ee
+      fqdn: element.borooka.ee
       protocol: http
       target: http://element.app-matrix.svc:8000
 

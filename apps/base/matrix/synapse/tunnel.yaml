@@ -7,7 +7,7 @@ subjects:
   # Matrix Synapse
   - name: synapse
     spec:
-      fqdn: matrix-testing.borooka.ee
+      fqdn: matrix.borooka.ee
       protocol: http
       target: http://synapse.app-matrix.svc:8008
 

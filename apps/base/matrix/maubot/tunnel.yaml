@@ -11,7 +11,7 @@ metadata:
 subjects:
   - name: maubot
     spec:
-      fqdn: maubot-testing.borooka.ee
+      fqdn: maubot.borooka.ee
       protocol: http
       target: http://maubot.app-matrix.svc:29316
 
