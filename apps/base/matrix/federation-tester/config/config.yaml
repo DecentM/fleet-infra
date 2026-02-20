@@ -1,0 +1,22 @@
+database_url: "postgres://${FEDTEST_DB_USER}:${FEDTEST_DB_PASSWORD}@federation-tester-db-rw.app-matrix.svc:5432/${FEDTEST_DB_NAME}?sslmode=disable"
+
+smtp:
+  server: "localhost"
+  port: 25
+  username: "unused"
+  password: "unused"
+  from: "noreply@localhost"
+
+frontend_url: "https://${FEDTEST_DOMAIN}"
+
+magic_token_secret: "static-unused-secret-for-validation-only"
+
+oauth2:
+  enabled: false
+
+# We pretty much just want this for scraping
+statistics:
+  enabled: true
+  prometheus_enabled: true
+  anonymization_salt: "${FEDTEST_STATS_SALT}"
+  raw_retention_days: 30

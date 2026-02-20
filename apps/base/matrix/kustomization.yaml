@@ -17,6 +17,7 @@ resources:
   - mautrix-signal
   - maubot
   - matrix-meetings
+  - federation-tester
 
   - sealed-turn-secrets.yaml
 
