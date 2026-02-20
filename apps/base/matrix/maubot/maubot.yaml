@@ -51,6 +51,11 @@ spec:
               fi
               # Ensure required directories exist
               mkdir -p /data/plugins /data/trash /data/dbs
+              # Fix override_resource_path if it's set to false (needed for web UI)
+              if grep -q 'override_resource_path: false' /data/config.yaml 2>/dev/null; then
+                echo "Fixing override_resource_path in config..."
+                sed -i 's|override_resource_path: false|override_resource_path: /opt/maubot/frontend|g' /data/config.yaml
+              fi
               echo "Directories ready"
               ls -la /data/
           envFrom:
@@ -86,6 +91,14 @@ spec:
         - name: maubot
           image: dock.mau.dev/maubot/maubot:v0.6.0
           imagePullPolicy: IfNotPresent
+          # Bypass the default entrypoint which requires root for chown/su-exec
+          # The init container already handles config seeding and directory creation
+          command:
+            - python3
+            - -m
+            - maubot
+            - -c
+            - /data/config.yaml
           resources:
             requests:
               cpu: 100m

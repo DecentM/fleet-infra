@@ -26,7 +26,7 @@ server:
   public_url: https://${MAUBOT_DOMAIN}
   ui_base_path: /_matrix/maubot
   plugin_base_path: /_matrix/maubot/plugin/
-  override_resource_path: false
+  override_resource_path: /opt/maubot/frontend
   unshared_secret: ${MAUBOT_UNSHARED_SECRET}
 
 homeservers:
