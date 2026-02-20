@@ -8,6 +8,7 @@ resources:
   - widget-tunnel.yaml
   - bot-deployment.yaml
   - bot-service.yaml
+  - bot-pvc.yaml
 
 configMapGenerator:
   - name: matrix-meetings-widget-env
