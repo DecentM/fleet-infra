@@ -74,6 +74,7 @@ spec:
         authelia-db-app: {}
         authelia-secrets: {}  # /secrets/authelia-secrets/
         authelia-smtp-secrets: {}  # /secrets/authelia-smtp-secrets/
+        lldap-authelia-bind: {}  # /secrets/lldap-authelia-bind/
 
     configMap:
       theme: dark
@@ -135,7 +136,7 @@ spec:
           users_filter: "(&(|({username_attribute}={input})({mail_attribute}={input}))(objectClass=person))"
           additional_groups_dn: ou=groups
           groups_filter: "(member={dn})"
-          user: uid=admin,ou=people,dc=cluster,dc=arpa
+          user: uid=authelia,ou=people,dc=cluster,dc=arpa
           attributes:
             username: uid
             display_name: displayName
@@ -144,8 +145,8 @@ spec:
 
           password:
             disabled: false
-            secret_name: ~  # null = use internal secret
-            path: LDAP_PASSWORD
+            secret_name: lldap-authelia-bind
+            path: password
 
       access_control:
         default_policy: deny

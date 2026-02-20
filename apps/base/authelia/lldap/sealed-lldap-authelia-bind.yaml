@@ -1,0 +1,14 @@
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: lldap-authelia-bind
+  namespace: app-authelia
+spec:
+  encryptedData:
+    password: AgAfqvstdjUE9mQoVuD1lVk3p2AumT4gxk67yppvuNr5q1diOuDN6atilB+N1aIeXXjlIDLSAWDp9oIWCZ6pEVJ3TrhKvLEn8l7F1/eeyxvW8dhInmkSBo0ToGCRm7aJzgz+bHocc2WmSr+scmeHfymBzLwFc5lysS3CsBdgkVxCCWQrmHuaxcJTebgXwUy8MKUcbFzV+VPx93JJ/HvSGRGY6Rkl8rhW+3fSgGwEN7/T5S/T93U6jtwVc2vLqQcj/K39lZ425Wz+9djgStoP/IxUoE1wUMm4Mfo59lPeuW9f+obJbiV/zPHShxLFBp4IDSeh1gterTzyQ0BqlShoOUHjvxPddZW+1N0a3sT0vTgCnON1bQaFS7VuF7aewr9vXGsaK3TSGhhET2gA5vANj2mOpbKU73cRPssJJ2M5tzdvTdVLEzUW2zFYie0Pji8b7kgamZoj2NtTpPdwq4fSpf/ppP4nJq/+pGQzXsO0oUji5cSYBsrPz06FZmT3KW4r1J1QbNGWXw+LePa+y9HmSyRJrbHmE8XM4vgJagJXCBWl9opRslYvWk9t+vNuRMir0xriYSKBUDElxug5tIpTL/iw7uJsJumU8vbPEdkjTYusRuI2GSJDsKuL1hn4Rjybfx1k2QSXbpqVZcEwl0qD/+7hhFzz+i33HJL8zRPtNsZpTcGx99hx4GB1ekIWb0e5kYViFlfKpiCOpbqqTH5Qn4Y+2ouyF6VTSbZo4TLdVwyKuGHzOpBYetEUTAs9FEWMkwFR4O6LGo+hIYuX/6piYicF
+  template:
+    metadata:
+      name: lldap-authelia-bind
+      namespace: app-authelia
+    type: Opaque

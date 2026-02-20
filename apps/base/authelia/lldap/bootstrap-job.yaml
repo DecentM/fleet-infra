@@ -1,0 +1,56 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: lldap-bootstrap
+  namespace: app-authelia
+  annotations:
+    kustomize.toolkit.fluxcd.io/reconcile: "always"
+spec:
+  ttlSecondsAfterFinished: 300
+  backoffLimit: 6
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: bootstrap
+          image: lldap/lldap:stable
+          command: ["/app/bootstrap.sh"]
+
+          env:
+            - name: LLDAP_URL
+              value: "http://lldap:17170"
+
+            - name: LLDAP_ADMIN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: lldap-secrets
+                  key: admin-username
+            - name: LLDAP_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: authelia-secrets
+                  key: LDAP_PASSWORD
+
+            - name: DO_CLEANUP
+              value: "false"
+            - name: DO_CLEANUP_GROUP_MEMBERSHIP
+              value: "true"
+
+          volumeMounts:
+            - name: user-configs
+              mountPath: /bootstrap/user-configs
+              readOnly: true
+            - name: authelia-password
+              mountPath: /secrets
+              readOnly: true
+
+      volumes:
+        - name: user-configs
+          configMap:
+            name: lldap-bootstrap-user-configs
+        - name: authelia-password
+          secret:
+            secretName: lldap-authelia-bind
+            items:
+              - key: password
+                path: authelia-bind-password

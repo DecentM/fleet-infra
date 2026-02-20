@@ -4,3 +4,10 @@ namespace: app-authelia
 resources:
   - lldap.yaml
   - sealed-lldap-secrets.yaml
+  - sealed-lldap-authelia-bind.yaml
+  - bootstrap-job.yaml
+
+configMapGenerator:
+  - name: lldap-bootstrap-user-configs
+    files:
+      - bootstrap-users/authelia-service-account.json
