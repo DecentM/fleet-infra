@@ -106,7 +106,7 @@ spec:
           discoverability: "preferred"  # Available but not required
 
         filtering:
-          prohibit_backup_eligibility: true
+          prohibit_backup_eligibility: false
 
         metadata:
           enabled: true
