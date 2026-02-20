@@ -84,6 +84,12 @@ spec:
                 echo "Processing signal template: $filename..."
                 envsubst < "$file" > "/config-processed/$filename"
               done
+              # Process matrix-meetings registration template
+              for file in /meetings-template/*; do
+                filename=$(basename "$file")
+                echo "Processing meetings template: $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
               echo "Config templating complete"
               ls -la /config-processed/
           env:
@@ -175,6 +181,17 @@ spec:
                 secretKeyRef:
                   name: mautrix-signal-secrets
                   key: hs-token
+            # Matrix Meetings tokens (for registration template)
+            - name: MEETINGS_BOT_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: matrix-meetings-secrets
+                  key: as-token
+            - name: MEETINGS_BOT_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: matrix-meetings-secrets
+                  key: hs-token
           volumeMounts:
             - name: config-template
               mountPath: /config-template
@@ -192,6 +209,9 @@ spec:
               readOnly: true
             - name: signal-registration-template
               mountPath: /signal-template
+              readOnly: true
+            - name: meetings-registration-template
+              mountPath: /meetings-template
               readOnly: true
           securityContext:
             runAsUser: 991
@@ -302,6 +322,10 @@ spec:
               mountPath: /data/signal-registration.yaml
               subPath: signal-registration.yaml
               readOnly: true
+            - name: config-processed
+              mountPath: /data/meetings-registration.yaml
+              subPath: meetings-registration.yaml
+              readOnly: true
       volumes:
         - name: config-template
           configMap:
@@ -342,6 +366,12 @@ spec:
             items:
               - key: signal-registration.yaml
                 path: signal-registration.yaml
+        - name: meetings-registration-template
+          configMap:
+            name: matrix-meetings-config
+            items:
+              - key: meetings-registration.yaml
+                path: meetings-registration.yaml
 ---
 apiVersion: v1
 kind: Service

@@ -1,0 +1,17 @@
+# matrix-meetings Widget Cloudflare Tunnel binding
+# Exposes meetings widget UI via Cloudflare Tunnel
+apiVersion: networking.cfargotunnel.com/v1alpha1
+kind: TunnelBinding
+metadata:
+  name: matrix-meetings-widget-tunnel
+  namespace: app-matrix
+subjects:
+  - name: matrix-meetings-widget
+    spec:
+      fqdn: meetings-testing.borooka.ee
+      protocol: http
+      target: http://matrix-meetings-widget.app-matrix.svc:8080
+
+tunnelRef:
+  kind: ClusterTunnel
+  name: cluster-tunnel-borooka

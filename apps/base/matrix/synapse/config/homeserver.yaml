@@ -80,6 +80,7 @@ app_service_config_files:
   - /data/meowlnir-registration.yml
   - /data/discord-registration.yaml
   - /data/signal-registration.yaml
+  - /data/meetings-registration.yaml
 
 # Anti-spam modules configuration
 modules:
@@ -129,3 +130,16 @@ default_power_level_content_override:
     redact: 50
     kick: 50
     ban: 50
+
+# User directory configuration
+# Required for matrix-meetings bot to find users
+user_directory:
+  search_all_users: true
+
+# Room prejoin state events
+# Required for matrix-meetings widget to work properly
+room_prejoin_state:
+  additional_event_types:
+    - m.space.parent
+    - net.nordeck.meetings.metadata
+    - m.room.power_levels

@@ -16,6 +16,7 @@ resources:
   - mautrix-discord
   - mautrix-signal
   - maubot
+  - matrix-meetings
 
   - sealed-turn-secrets.yaml
 
