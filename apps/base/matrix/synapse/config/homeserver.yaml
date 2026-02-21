@@ -59,6 +59,7 @@ oidc_providers:
     issuer: "https://auth.borooka.ee"
     client_id: "matrix"
     client_secret: "${OIDC_CLIENT_MATRIX_SECRET}"
+    client_auth_method: client_secret_basic
     scopes:
       - openid
       - profile
