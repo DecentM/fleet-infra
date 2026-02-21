@@ -4,7 +4,7 @@ identity_providers:
       - client_id: jellyfin
         client_name: Jellyfin
         public: false
-        client_secret: '{{ secret "/secrets/authelia-client-jellyfin/client-secret" }}'
+        client_secret: {{ secret "/secrets/authelia-client-jellyfin/client-secret" | msquote }}
         authorization_policy: one_factor
         require_pkce: true
         pkce_challenge_method: S256
@@ -21,10 +21,11 @@ identity_providers:
         grant_types:
           - authorization_code
         token_endpoint_auth_method: client_secret_post
+
       - client_id: matrix
         client_name: Matrix
         public: false
-        client_secret: '{{ secret "/secrets/authelia-client-matrix/client-secret" }}'
+        client_secret: {{ secret "/secrets/authelia-client-matrix/client-secret" | msquote }}
         authorization_policy: two_factor
         require_pkce: true
         pkce_challenge_method: S256

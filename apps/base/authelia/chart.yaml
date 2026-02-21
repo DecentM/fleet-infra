@@ -49,6 +49,9 @@ spec:
         limits:
           cpu: 500m
           memory: 512Mi
+      env:
+        - name: X_AUTHELIA_CONFIG_FILTERS
+          value: "template"
       extraVolumes:
         - name: oidc-clients
           configMap:
