@@ -77,6 +77,33 @@ all_keys_exist_in_secret() {
     return 0
 }
 
+# Get an existing secret value from the cluster
+# Returns empty string if secret/key doesn't exist or on any error
+get_existing_secret_value() {
+    local namespace=$1
+    local secret_name=$2
+    local key_name=$3
+
+    if secret_exists_in_cluster "$namespace" "$secret_name"; then
+        kubectl -n "$namespace" get secret "$secret_name" -o jsonpath="{.data.$key_name}" 2>/dev/null | base64 -d 2>/dev/null || true
+    fi
+}
+
+# Mask a sensitive value for display
+# Shows first 3 and last 3 characters for values > 6 chars
+mask_value() {
+    local value=$1
+    local length=${#value}
+
+    if [[ $length -le 6 ]]; then
+        echo "*****"
+    else
+        local first="${value:0:3}"
+        local last="${value: -3}"
+        echo "***${first}...${last}***"
+    fi
+}
+
 # Determine if a secret should be skipped
 # Returns 0 (true) to skip, 1 (false) to process
 should_skip_secret() {
@@ -209,24 +236,59 @@ is_multiline_value() {
 }
 
 # Prompt user for a value
+# Arguments: name, instruction, multiline, default_value
 prompt_value() {
     local name=$1
     local instruction=$2
     local multiline=$3
+    local default_value=${4:-}
     local value=""
 
     if [[ -n "$instruction" ]]; then
         echo -e "${YELLOW}$instruction${NC}" >&2
     fi
 
+    # Build the prompt with default value hint if available
+    local prompt_text="Enter value for $name"
+    local has_default=false
+    if [[ -n "$default_value" ]]; then
+        has_default=true
+        if is_sensitive_value "$name" "$instruction"; then
+            local masked
+            masked=$(mask_value "$default_value")
+            prompt_text="$prompt_text [current: $masked]"
+        else
+            prompt_text="$prompt_text [current: $default_value]"
+        fi
+    fi
+
     if is_multiline_value "$name" "$multiline"; then
-        echo -e "${BLUE}(Enter multiline value, press Ctrl+D when done)${NC}" >&2
+        if [[ "$has_default" == "true" ]]; then
+            echo -e "${BLUE}(Enter multiline value, press Ctrl+D when done, or Ctrl+D immediately to keep current)${NC}" >&2
+        else
+            echo -e "${BLUE}(Enter multiline value, press Ctrl+D when done)${NC}" >&2
+        fi
         value=$(cat)
+        # If input is empty and we have a default, use the default
+        if [[ -z "$value" ]] && [[ "$has_default" == "true" ]]; then
+            value="$default_value"
+            info "Keeping existing value" >&2
+        fi
     elif is_sensitive_value "$name" "$instruction"; then
-        read -rs -p "Enter value for $name: " value
+        read -rs -p "$prompt_text: " value
         echo >&2
+        # If input is empty and we have a default, use the default
+        if [[ -z "$value" ]] && [[ "$has_default" == "true" ]]; then
+            value="$default_value"
+            info "Keeping existing value" >&2
+        fi
     else
-        read -r -p "Enter value for $name: " value
+        read -r -p "$prompt_text: " value
+        # If input is empty and we have a default, use the default
+        if [[ -z "$value" ]] && [[ "$has_default" == "true" ]]; then
+            value="$default_value"
+            info "Keeping existing value" >&2
+        fi
     fi
 
     echo "$value"
@@ -290,6 +352,10 @@ process_secret() {
 
         local value=""
 
+        # Check for existing value in the cluster
+        local existing_value=""
+        existing_value=$(get_existing_secret_value "$namespace" "$name" "$value_name")
+
         if [[ -n "$derive_from" ]] && [[ -n "$generate" ]]; then
             # Derive from another value - look it up in the tmpdir
             if [[ -f "$tmpdir/$derive_from" ]]; then
@@ -313,11 +379,11 @@ process_secret() {
             info "Generating $value_name..."
             if ! value=$(eval "$generate" 2>&1); then
                 warn "Generation failed for $value_name, falling back to prompt"
-                value=$(prompt_value "$value_name" "$instruction" "$multiline")
+                value=$(prompt_value "$value_name" "$instruction" "$multiline" "$existing_value")
             fi
         else
-            # Prompt user
-            value=$(prompt_value "$value_name" "$instruction" "$multiline")
+            # Prompt user (with existing value as default if available)
+            value=$(prompt_value "$value_name" "$instruction" "$multiline" "$existing_value")
         fi
 
         if [[ "$type" == "tls" ]]; then

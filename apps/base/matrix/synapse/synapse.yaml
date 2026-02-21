@@ -276,6 +276,11 @@ spec:
                 secretKeyRef:
                   name: turn-secrets
                   key: turn-password
+            - name: OIDC_CLIENT_MATRIX_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: synapse-secrets
+                  key: OIDC_CLIENT_MATRIX_SECRET
           ports:
             - name: http
               containerPort: 8008

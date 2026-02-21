@@ -4,7 +4,7 @@ identity_providers:
       - client_id: jellyfin
         client_name: Jellyfin
         public: false
-        client_secret: '{{ secret "/secrets/authelia-secrets/OIDC_CLIENT_JELLYFIN_SECRET" }}'
+        client_secret: '{{ secret "/secrets/authelia-client-jellyfin/client-secret" }}'
         authorization_policy: one_factor
         require_pkce: true
         pkce_challenge_method: S256
@@ -15,6 +15,25 @@ identity_providers:
           - openid
           - profile
           - groups
+          - email
+        response_types:
+          - code
+        grant_types:
+          - authorization_code
+        token_endpoint_auth_method: client_secret_post
+
+      - client_id: matrix
+        client_name: Matrix
+        public: false
+        client_secret: '{{ secret "/secrets/authelia-client-matrix/client-secret" }}'
+        authorization_policy: two_factor
+        require_pkce: true
+        pkce_challenge_method: S256
+        redirect_uris:
+          - https://matrix.borooka.ee/_synapse/client/oidc/callback
+        scopes:
+          - openid
+          - profile
           - email
         response_types:
           - code

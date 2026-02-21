@@ -48,6 +48,27 @@ signing_key_path: /data/borooka.ee.signing.key
 enable_registration: false
 registration_shared_secret: "${SYNAPSE_REGISTRATION_SHARED_SECRET}"
 
+# Password authentication disabled - SSO only
+password_config:
+  enabled: false
+
+# OIDC authentication via Authelia
+oidc_providers:
+  - idp_id: authelia
+    idp_name: "Authelia SSO"
+    issuer: "https://auth.borooka.ee"
+    client_id: "matrix"
+    client_secret: "${OIDC_CLIENT_MATRIX_SECRET}"
+    scopes:
+      - openid
+      - profile
+      - email
+    user_mapping_provider:
+      config:
+        localpart_template: "{{ user.preferred_username }}"
+        display_name_template: "{{ user.name }}"
+        email_template: "{{ user.email }}"
+
 # Security secrets
 macaroon_secret_key: "${SYNAPSE_MACAROON_SECRET_KEY}"
 form_secret: "${SYNAPSE_FORM_SECRET}"
