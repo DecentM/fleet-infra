@@ -192,6 +192,11 @@ spec:
                 secretKeyRef:
                   name: matrix-meetings-secrets
                   key: hs-token
+            - name: OIDC_CLIENT_MATRIX_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: synapse-secrets
+                  key: OIDC_CLIENT_MATRIX_SECRET
           volumeMounts:
             - name: config-template
               mountPath: /config-template
