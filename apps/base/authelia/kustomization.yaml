@@ -19,6 +19,8 @@ configMapGenerator:
       labels:
         app.kubernetes.io/name: authelia
         app.kubernetes.io/component: oidc-clients
-      disableNameSuffixHash: true
     files:
       - config/clients.yaml
+
+configurations:
+  - kustomizeconfig/helmrelease-configmap-name.yaml
