@@ -14,7 +14,7 @@ database:
     host: matrix-db-rw.app-matrix.svc
     port: 5432
     cp_min: 5
-    cp_max: 10
+    cp_max: 30
 
 # HTTP listener configuration
 listeners:
@@ -85,6 +85,17 @@ form_secret: "${SYNAPSE_FORM_SECRET}"
 # Trusted key servers for federation
 trusted_key_servers:
   - server_name: "matrix.org"
+
+# Federation domain blacklist - refuse to federate with these servers
+federation_domain_blacklist:
+  - plsdontputmeon.ignorelist.com
+
+# Cache configuration for improved performance
+caches:
+  global_factor: 0.33
+  per_cache_factors:
+    get_users_in_room: 2.0
+    get_room_state: 2.0
 
 # Enable metrics for Prometheus scraping
 enable_metrics: true
