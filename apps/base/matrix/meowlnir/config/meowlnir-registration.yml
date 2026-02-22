@@ -10,7 +10,7 @@ rate_limited: false
 namespaces:
   users:
     # Meowlnir bot user
-    - regex: "^@meowlnir:testing\\.borooka\\.ee$"
+    - regex: "^@meowlnir:borooka\\.ee$"
       exclusive: true
   rooms: []
   aliases: []
