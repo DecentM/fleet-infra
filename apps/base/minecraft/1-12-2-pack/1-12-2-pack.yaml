@@ -6,12 +6,12 @@ metadata:
   namespace: app-minecraft
 
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: 1-12-2-pack
   strategy:
     type: Recreate
+  replicas: 0
   template:
     metadata:
       labels:
