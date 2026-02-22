@@ -9,13 +9,13 @@ rate_limited: false
 
 namespaces:
   users:
-    - regex: "^@discord_.*:testing\\.borooka\\.ee$"
+    - regex: "^@discord_.*:borooka\\.ee$"
       exclusive: true
-    - regex: "^@discordbot:testing\\.borooka\\.ee$"
+    - regex: "^@discordbot:borooka\\.ee$"
       exclusive: true
   rooms: []
   aliases:
-    - regex: "^#discord_.*:testing\\.borooka\\.ee$"
+    - regex: "^#discord_.*:borooka\\.ee$"
       exclusive: true
 
 # End-to-end encryption support flags

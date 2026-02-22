@@ -9,13 +9,13 @@ rate_limited: false
 
 namespaces:
   users:
-    - regex: "^@signal_.*:testing\\.borooka\\.ee$"
+    - regex: "^@signal_.*:borooka\\.ee$"
       exclusive: true
-    - regex: "^@signalbot:testing\\.borooka\\.ee$"
+    - regex: "^@signalbot:borooka\\.ee$"
       exclusive: true
   rooms: []
   aliases:
-    - regex: "^#signal_.*:testing\\.borooka\\.ee$"
+    - regex: "^#signal_.*:borooka\\.ee$"
       exclusive: true
 
 # End-to-end encryption support flags
