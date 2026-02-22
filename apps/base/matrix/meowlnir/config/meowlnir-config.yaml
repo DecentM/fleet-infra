@@ -6,12 +6,21 @@ homeserver:
   address: http://synapse.app-matrix.svc:8008
   domain: borooka.ee
 
-# Meowlnir bot identity
+# Meowlnir appservice identity and HTTP server
 meowlnir:
-  id: "@meowlnir:borooka.ee"
+  # Appservice ID - MUST match registration.yml id field exactly
+  id: meowlnir
   as_token: "${MEOWLNIR_AS_TOKEN}"
   hs_token: "${MEOWLNIR_HS_TOKEN}"
+  # URL the homeserver uses to reach Meowlnir
   address: http://meowlnir.app-matrix.svc:29339
+  # Bind settings
+  hostname: 0.0.0.0
+  port: 29339
+  # Management API secret
+  management_secret: "${MEOWLNIR_MANAGEMENT_SECRET}"
+  # Data API secret (for /_meowlnir/data/* endpoints)
+  data_secret: "${MEOWLNIR_DATA_SECRET}"
 
 # Database connection (using CNPG PostgreSQL)
 database:
@@ -26,16 +35,18 @@ synapse_db:
 
 # Antispam module configuration
 antispam:
-  # HTTP listener for Synapse's synapse-http-antispam module
-  listen: 0.0.0.0:29339
   # Secret for authenticating requests from Synapse's HTTPAntispam module
   # Must match the 'authorization' value in Synapse's HTTPAntispam config
   secret: "${MEOWLNIR_ANTISPAM_TOKEN}"
 
-# Management API (optional, requires secret for authentication)
-management:
-  listen: 0.0.0.0:29340
-  secret: "${MEOWLNIR_MANAGEMENT_SECRET}"
+# Encryption configuration
+encryption:
+  enable: true
+  pickle_key: "${MEOWLNIR_PICKLE_KEY}"
+
+# Bot provisioning (optional, not actively used)
+meowlnir4all:
+  admin_room: null
 
 # Logging
 logging:
@@ -43,7 +54,3 @@ logging:
   writers:
     - type: stdout
       format: pretty-colored
-
-# Policy lists to subscribe to (can be managed at runtime)
-# This is a starting point, more can be added via management API
-policy_lists: []

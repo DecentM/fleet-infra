@@ -82,6 +82,16 @@ spec:
                 secretKeyRef:
                   name: meowlnir-secrets
                   key: meowlnir_management_secret
+            - name: MEOWLNIR_DATA_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: meowlnir-secrets
+                  key: meowlnir_data_secret
+            - name: MEOWLNIR_PICKLE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: meowlnir-secrets
+                  key: meowlnir_pickle_key
             # Antispam API secret (must match Synapse HTTPAntispam authorization)
             - name: MEOWLNIR_ANTISPAM_TOKEN
               valueFrom:
