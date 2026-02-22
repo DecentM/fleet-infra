@@ -116,7 +116,7 @@ app_service_config_files:
 modules:
   - module: synapse_http_antispam.HTTPAntispam
     config:
-      base_url: http://meowlnir.app-matrix.svc:29339/_meowlnir/antispam/!meowlnir_management:borooka.ee
+      base_url: http://meowlnir.app-matrix.svc:29339/_meowlnir/antispam/!IVNcQHAxUUwAFjlpvf:borooka.ee
       authorization: ${MEOWLNIR_ANTISPAM_TOKEN}
       enabled_callbacks:
         - user_may_invite
