@@ -20,6 +20,8 @@ spec:
       labels:
         app: lldap
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       containers:
         - name: lldap
           image: lldap/lldap:stable

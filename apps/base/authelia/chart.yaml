@@ -42,6 +42,9 @@ spec:
     pod:
       kind: Deployment
       replicas: 1
+      selectors:
+        nodeSelector:
+          kubernetes.io/hostname: cadance
       resources:
         requests:
           cpu: 50m

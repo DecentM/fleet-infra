@@ -68,6 +68,9 @@ spec:
   values:
     name: invidious
 
+    nodeSelector:
+      kubernetes.io/hostname: cadance
+
     image:
       repository: quay.io/invidious/invidious
       tag: "2025.08.12-1ae0f45"

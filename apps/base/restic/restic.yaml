@@ -16,6 +16,8 @@ spec:
           labels:
             app: restic-backup
         spec:
+          nodeSelector:
+            kubernetes.io/hostname: cadance
           securityContext:
             runAsUser: 0
             runAsGroup: 0

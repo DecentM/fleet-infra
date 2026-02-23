@@ -17,6 +17,8 @@ spec:
       labels:
         app: 1-12-2-pack
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       containers:
         - name: server
           image: ghcr.io/decentm/minecraft-servers:1-12-2-pack

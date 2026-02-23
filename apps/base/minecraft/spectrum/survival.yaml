@@ -121,15 +121,8 @@ spec:
           hostPath:
             path: /mnt/spike/storage/k8s/namespaces/app-spectrum/world
             type: Directory
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: home.arpa/zfs-pool
-                    operator: In
-                    values:
-                      - "true"
+      nodeSelector:
+        kubernetes.io/hostname: cadance
 ---
 apiVersion: v1
 kind: Service
