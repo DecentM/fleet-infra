@@ -29,8 +29,6 @@ spec:
         job: matrix-meetings-bot
         app.kubernetes.io/name: matrix-meetings-bot
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: cadance
       securityContext:
         fsGroup: 1000
         runAsUser: 1000

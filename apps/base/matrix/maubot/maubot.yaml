@@ -23,8 +23,6 @@ spec:
         job: maubot
         app.kubernetes.io/name: maubot
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: cadance
       securityContext:
         fsGroup: 1337
       initContainers:

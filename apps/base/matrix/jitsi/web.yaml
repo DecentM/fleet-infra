@@ -27,8 +27,6 @@ spec:
         app: jitsi-web
         app.kubernetes.io/name: jitsi-web
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: cadance
       containers:
         - name: web
           image: jitsi/web:stable-10741

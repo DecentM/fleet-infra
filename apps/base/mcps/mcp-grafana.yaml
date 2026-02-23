@@ -19,8 +19,6 @@ spec:
       labels:
         app: mcp-grafana
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: cadance
       containers:
         - name: mcp-grafana
           image: mcp/grafana:latest
