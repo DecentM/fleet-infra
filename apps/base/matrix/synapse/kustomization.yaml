@@ -2,15 +2,76 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - cnpg-cluster.yaml
-  - pvc-media.yaml
   - sealed-synapse-secrets.yaml
   - sealed-synapse-signing-key.yaml
+  - sealed-s3-secrets.yaml
   - synapse.yaml
   - tunnel.yaml
 
+  - redis.yaml
+  - nginx-proxy.yaml
+
+  - workers/federation-sender.yaml
+  - workers/federation-reader.yaml
+  - workers/event-persister.yaml
+  - workers/client-reader.yaml
+
 configMapGenerator:
+  # Main Synapse configuration
   - name: synapse-config
     namespace: app-matrix
     files:
       - config/homeserver.yaml
       - config/log.config
+
+  # Worker configurations
+  - name: synapse-federation-sender-config
+    namespace: app-matrix
+    files:
+      - worker.yaml=workers/configs/federation-sender.yaml
+    options:
+      labels:
+        app.kubernetes.io/name: synapse
+        app.kubernetes.io/component: worker
+        app.kubernetes.io/part-of: matrix
+
+  - name: synapse-federation-reader-config
+    namespace: app-matrix
+    files:
+      - worker.yaml=workers/configs/federation-reader.yaml
+    options:
+      labels:
+        app.kubernetes.io/name: synapse
+        app.kubernetes.io/component: worker
+        app.kubernetes.io/part-of: matrix
+
+  - name: synapse-event-persister-config
+    namespace: app-matrix
+    files:
+      - worker.yaml=workers/configs/event-persister.yaml
+    options:
+      labels:
+        app.kubernetes.io/name: synapse
+        app.kubernetes.io/component: worker
+        app.kubernetes.io/part-of: matrix
+
+  - name: synapse-client-reader-config
+    namespace: app-matrix
+    files:
+      - worker.yaml=workers/configs/client-reader.yaml
+    options:
+      labels:
+        app.kubernetes.io/name: synapse
+        app.kubernetes.io/component: worker
+        app.kubernetes.io/part-of: matrix
+
+  # Nginx proxy configuration
+  - name: synapse-nginx-config
+    namespace: app-matrix
+    files:
+      - nginx.conf=config/nginx.conf
+    options:
+      labels:
+        app.kubernetes.io/name: synapse-nginx
+        app.kubernetes.io/component: proxy
+        app.kubernetes.io/part-of: matrix

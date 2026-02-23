@@ -1,0 +1,96 @@
+# Redis for Synapse worker coordination
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: synapse-redis
+  namespace: app-matrix
+  labels:
+    app: synapse-redis
+    app.kubernetes.io/name: synapse-redis
+    app.kubernetes.io/component: redis
+    app.kubernetes.io/part-of: matrix
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: synapse-redis
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: synapse-redis
+        app.kubernetes.io/name: synapse-redis
+    spec:
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          emptyDir: {}
+---
+# ClusterIP Service for general access
+apiVersion: v1
+kind: Service
+metadata:
+  name: synapse-redis
+  namespace: app-matrix
+  labels:
+    app: synapse-redis
+    app.kubernetes.io/name: synapse-redis
+    app.kubernetes.io/component: redis
+    app.kubernetes.io/part-of: matrix
+spec:
+  type: ClusterIP
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: redis
+      protocol: TCP
+  selector:
+    app: synapse-redis
+

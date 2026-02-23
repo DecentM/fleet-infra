@@ -4,19 +4,12 @@ metadata:
   name: synapse-tunnel
   namespace: app-matrix
 subjects:
-  # Matrix Synapse
+  # Matrix Synapse (via nginx proxy for worker routing)
   - name: synapse
     spec:
       fqdn: matrix.borooka.ee
       protocol: http
-      target: http://synapse.app-matrix.svc:8008
-      originRequest:
-        connectTimeout: 30s
-        noHappyEyeballs: false
-        tcpKeepAlive: 30s
-        keepAliveTimeout: 90s
-        httpHostHeader: matrix.borooka.ee
-        noTLSVerify: false
+      target: http://synapse-nginx-proxy.app-matrix.svc:8008
 
 tunnelRef:
   kind: ClusterTunnel

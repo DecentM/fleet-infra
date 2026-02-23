@@ -1,0 +1,21 @@
+worker_app: synapse.app.generic_worker
+worker_name: ${SYNAPSE_WORKER_NAME}
+
+# Worker listeners
+worker_listeners:
+  # HTTP listener for client endpoints
+  - type: http
+    port: 8083
+    bind_addresses: ['0.0.0.0']
+    x_forwarded: true
+    resources:
+      - names: [client]
+        compress: false
+  # Replication listener for inter-worker communication
+  - type: http
+    port: 9093
+    bind_addresses: ['0.0.0.0']
+    resources:
+      - names: [replication]
+
+# Client reader handles sync and other read-heavy client requests

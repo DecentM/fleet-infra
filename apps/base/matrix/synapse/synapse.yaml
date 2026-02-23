@@ -18,7 +18,7 @@ spec:
     matchLabels:
       app: synapse
   strategy:
-    type: Recreate  # Single replica with PVC requires Recreate
+    type: Recreate  # Single replica for simplicity
   template:
     metadata:
       labels:
@@ -31,7 +31,7 @@ spec:
         runAsUser: 991
         runAsGroup: 991
         fsGroup: 991
-      # Wait for database to be ready
+      # Wait for database and Redis to be ready
       initContainers:
         - name: wait-for-db
           image: busybox:1.36
@@ -44,6 +44,22 @@ spec:
                 sleep 2
               done
               echo "Database is ready"
+          securityContext:
+            runAsUser: 991
+            runAsGroup: 991
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+        - name: wait-for-redis
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z synapse-redis.app-matrix.svc 6379; do
+                echo "Waiting for Redis..."
+                sleep 2
+              done
+              echo "Redis is ready"
           securityContext:
             runAsUser: 991
             runAsGroup: 991
@@ -199,6 +215,37 @@ spec:
                 secretKeyRef:
                   name: synapse-secrets
                   key: OIDC_CLIENT_MATRIX_SECRET
+            - name: SYNAPSE_WORKER_REPLICATION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: synapse-secrets
+                  key: worker-replication-secret
+            # S3/B2 storage credentials
+            - name: SYNAPSE_S3_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: synapse-s3-secrets
+                  key: bucket-name
+            - name: SYNAPSE_S3_ENDPOINT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: synapse-s3-secrets
+                  key: endpoint-url
+            - name: SYNAPSE_S3_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: synapse-s3-secrets
+                  key: region
+            - name: SYNAPSE_S3_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: synapse-s3-secrets
+                  key: access-key-id
+            - name: SYNAPSE_S3_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: synapse-s3-secrets
+                  key: secret-access-key
           volumeMounts:
             - name: config-template
               mountPath: /config-template
@@ -230,11 +277,11 @@ spec:
           imagePullPolicy: IfNotPresent
           resources:
             requests:
-              cpu: 1000m
-              memory: 4Gi
+              cpu: "1"
+              memory: 2Gi
             limits:
-              cpu: "4"
-              memory: 8Gi
+              cpu: "2"
+              memory: 4Gi
           securityContext:
             runAsUser: 991
             runAsGroup: 991
@@ -292,6 +339,9 @@ spec:
             - name: http
               containerPort: 8008
               protocol: TCP
+            - name: replication
+              containerPort: 9093
+              protocol: TCP
           readinessProbe:
             httpGet:
               path: /health
@@ -318,35 +368,16 @@ spec:
               mountPath: /data/borooka.ee.signing.key
               subPath: borooka.ee.signing.key
               readOnly: true
-            - name: config-processed
-              mountPath: /data/hookshot-registration.yml
-              subPath: hookshot-registration.yml
-              readOnly: true
-            - name: config-processed
-              mountPath: /data/meowlnir-registration.yml
-              subPath: meowlnir-registration.yml
-              readOnly: true
-            - name: config-processed
-              mountPath: /data/discord-registration.yaml
-              subPath: discord-registration.yaml
-              readOnly: true
-            - name: config-processed
-              mountPath: /data/signal-registration.yaml
-              subPath: signal-registration.yaml
-              readOnly: true
-            - name: config-processed
-              mountPath: /data/meetings-registration.yaml
-              subPath: meetings-registration.yaml
-              readOnly: true
       volumes:
         - name: config-template
           configMap:
             name: synapse-config
         - name: config-processed
           emptyDir: {}
+        # Ephemeral storage for temp files - all media stored in B2
         - name: data
-          persistentVolumeClaim:
-            claimName: synapse-media
+          emptyDir:
+            sizeLimit: 5Gi
         # Generate using: docker run --rm -v /tmp:/data matrixdotorg/synapse:v1.147.1 generate
         - name: signing-key
           secret:
@@ -407,6 +438,31 @@ spec:
     - name: http
       port: 8008
       targetPort: http
+      protocol: TCP
+    - name: replication
+      port: 9093
+      targetPort: replication
+      protocol: TCP
+  selector:
+    app: synapse
+---
+# Replication service for worker communication (used in instance_map)
+apiVersion: v1
+kind: Service
+metadata:
+  name: synapse-main-repl
+  namespace: app-matrix
+  labels:
+    app: synapse
+    app.kubernetes.io/name: synapse
+    app.kubernetes.io/component: homeserver
+    app.kubernetes.io/part-of: matrix
+spec:
+  type: ClusterIP
+  ports:
+    - name: replication
+      port: 9093
+      targetPort: replication
       protocol: TCP
   selector:
     app: synapse

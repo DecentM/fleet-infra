@@ -1,0 +1,14 @@
+worker_app: synapse.app.generic_worker
+worker_name: ${SYNAPSE_WORKER_NAME}
+
+# Worker listeners
+worker_listeners:
+  # Replication listener for inter-worker communication
+  - type: http
+    port: 9093
+    bind_addresses: ['0.0.0.0']
+    resources:
+      - names: [replication]
+
+# Federation sender specific settings
+# This worker type sends federation traffic to other homeservers

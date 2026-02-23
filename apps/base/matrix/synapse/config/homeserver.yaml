@@ -6,9 +6,58 @@ pid_file: /data/homeserver.pid
 presence:
   enabled: false
 
-# Optimize single-process performance
-worker_replication_secret: "not_using_workers_yet"
+# Worker coordination secret
+worker_replication_secret: "${SYNAPSE_WORKER_REPLICATION_SECRET}"
 run_background_tasks_on: main
+
+# Redis for worker coordination
+redis:
+  enabled: true
+  host: synapse-redis.app-matrix.svc
+  port: 6379
+
+# Instance map for worker discovery
+# Workers connect to each other via replication port 9093
+instance_map:
+  main:
+    host: synapse-main-repl.app-matrix.svc
+    port: 9093
+  federation_sender1:
+    host: synapse-federation-sender-0.synapse-federation-sender-headless.app-matrix.svc
+    port: 9093
+  federation_sender2:
+    host: synapse-federation-sender-1.synapse-federation-sender-headless.app-matrix.svc
+    port: 9093
+  federation_reader1:
+    host: synapse-federation-reader-0.synapse-federation-reader-headless.app-matrix.svc
+    port: 9093
+  federation_reader2:
+    host: synapse-federation-reader-1.synapse-federation-reader-headless.app-matrix.svc
+    port: 9093
+  event_persister1:
+    host: synapse-event-persister-0.synapse-event-persister-headless.app-matrix.svc
+    port: 9093
+  client_reader1:
+    host: synapse-client-reader-0.synapse-client-reader-headless.app-matrix.svc
+    port: 9093
+
+# Stream writers - which workers handle which streams
+stream_writers:
+  events:
+    - event_persister1
+  typing:
+    - main
+  to_device:
+    - main
+  presence:
+    - main
+  receipts:
+    - main
+
+# Federation senders configuration
+federation_sender_instances:
+  - federation_sender1
+  - federation_sender2
 
 database:
   name: psycopg2
@@ -25,6 +74,7 @@ database:
     keepalives_count: 3
 
 listeners:
+  # Main HTTP listener for client and federation traffic
   - port: 8008
     tls: false
     type: http
@@ -33,8 +83,33 @@ listeners:
     resources:
       - names: [client, federation, metrics]
         compress: false
+  # Replication listener for worker communication
+  - port: 9093
+    tls: false
+    type: http
+    bind_addresses: ['0.0.0.0']
+    resources:
+      - names: [replication]
 
+# Media storage path (used as temporary/cache even with S3)
 media_store_path: /data/media_store
+
+# Backblaze B2 S3 storage provider for media
+# New uploads go directly to B2, existing local files served as fallback
+media_storage_providers:
+  - module: s3_storage_provider.S3StorageProviderBackend
+    store_local: true      # Store user uploads to B2
+    store_remote: true     # Store remote media/previews to B2
+    store_synchronous: true  # Upload immediately (vs background job)
+    config:
+      bucket: "${SYNAPSE_S3_BUCKET}"
+      endpoint_url: "${SYNAPSE_S3_ENDPOINT_URL}"
+      region_name: "${SYNAPSE_S3_REGION}"
+      access_key_id: "${SYNAPSE_S3_ACCESS_KEY_ID}"
+      secret_access_key: "${SYNAPSE_S3_SECRET_ACCESS_KEY}"
+      prefix: "synapse-media/"  # Organize within bucket
+      storage_class: "STANDARD"
+
 max_upload_size: 25M
 max_image_pixels: 32M
 url_preview_enabled: true
@@ -123,11 +198,11 @@ turn_allow_guests: true
 log_config: "/config/log.config"
 
 app_service_config_files:
-  - /data/hookshot-registration.yml
-  - /data/meowlnir-registration.yml
-  - /data/discord-registration.yaml
-  - /data/signal-registration.yaml
-  - /data/meetings-registration.yaml
+  - /config/hookshot-registration.yml
+  - /config/meowlnir-registration.yml
+  - /config/discord-registration.yaml
+  - /config/signal-registration.yaml
+  - /config/meetings-registration.yaml
 
 modules:
   - module: synapse_http_antispam.HTTPAntispam

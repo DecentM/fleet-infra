@@ -1,0 +1,101 @@
+# Nginx Reverse Proxy for Synapse Worker Routing
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: synapse-nginx-proxy
+  namespace: app-matrix
+  labels:
+    app: synapse-nginx
+    app.kubernetes.io/name: synapse-nginx
+    app.kubernetes.io/component: proxy
+    app.kubernetes.io/part-of: matrix
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: synapse-nginx
+  template:
+    metadata:
+      labels:
+        app: synapse-nginx
+        app.kubernetes.io/name: synapse-nginx
+    spec:
+      securityContext:
+        runAsUser: 101
+        runAsGroup: 101
+        fsGroup: 101
+      containers:
+        - name: nginx
+          image: nginx:alpine
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          securityContext:
+            runAsUser: 101
+            runAsGroup: 101
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          ports:
+            - name: http
+              containerPort: 8008
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /nginx-health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /nginx-health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+            - name: cache
+              mountPath: /var/cache/nginx
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: synapse-nginx-config
+        - name: tmp
+          emptyDir: {}
+        - name: cache
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: synapse-nginx-proxy
+  namespace: app-matrix
+  labels:
+    app: synapse-nginx
+    app.kubernetes.io/name: synapse-nginx
+    app.kubernetes.io/component: proxy
+    app.kubernetes.io/part-of: matrix
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8008
+      targetPort: http
+      protocol: TCP
+  selector:
+    app: synapse-nginx
