@@ -167,7 +167,7 @@ spec:
               # Extract ordinal from pod name (e.g., synapse-client-reader-0 → 0)
               ORDINAL=$(echo "$POD_NAME" | grep -oE '[0-9]+$')
               WORKER_NUM=$((ORDINAL + 1))
-              
+
               # Set worker name based on type
               echo "worker_name: ${WORKER_TYPE}${WORKER_NUM}" > /worker-config/worker.yaml
               cat /worker-config/worker.yaml
@@ -187,7 +187,7 @@ spec:
             allowPrivilegeEscalation: false
       containers:
         - name: synapse-worker
-          image: ghcr.io/decentm/synapse:sha-8f663a8
+          image: ghcr.io/decentm/synapse:sha-defa7cb
           imagePullPolicy: IfNotPresent
           args:
             - run
