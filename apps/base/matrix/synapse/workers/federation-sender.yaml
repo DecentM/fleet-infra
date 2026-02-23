@@ -248,6 +248,8 @@ spec:
             - name: config-processed
               mountPath: /config
               readOnly: true
+            - name: data
+              mountPath: /data
             - name: signing-key
               mountPath: /data/borooka.ee.signing.key
               subPath: borooka.ee.signing.key
@@ -263,6 +265,10 @@ spec:
           emptyDir: {}
         - name: worker-config
           emptyDir: {}
+        # Minimal data volume for media_store directory creation
+        - name: data
+          emptyDir:
+            sizeLimit: 1Gi
         - name: signing-key
           secret:
             secretName: synapse-signing-key

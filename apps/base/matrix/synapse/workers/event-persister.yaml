@@ -56,15 +56,26 @@ spec:
             - sh
             - -c
             - |
-              echo "Processing config templates with envsubst..."
-              # Process main homeserver config
-              for file in /config-template/*; do
-                filename=$(basename "$file")
-                echo "Processing $filename..."
-                envsubst < "$file" > "/config-processed/$filename"
+              #!/bin/sh
+              set -e
+
+              echo "Processing homeserver.yaml..."
+              envsubst < /config-template/homeserver.yaml > /config-processed/homeserver.yaml
+
+              echo "Processing log.config..."
+              envsubst < /config-template/log.config > /config-processed/log.config
+
+              # Process worker-specific config
+              for file in /worker-config-template/*; do
+                if [ -f "$file" ]; then
+                  filename=$(basename "$file")
+                  echo "Processing worker config: $filename..."
+                  envsubst < "$file" > "/config-processed/$filename"
+                fi
               done
+
               echo "Config templating complete"
-              ls -la /config-processed/
+              ls -lh /config-processed/
           env:
             - name: SYNAPSE_DATABASE_DBNAME
               valueFrom:
@@ -151,6 +162,9 @@ spec:
             - name: config-template
               mountPath: /config-template
               readOnly: true
+            - name: worker-config-template
+              mountPath: /worker-config-template
+              readOnly: true
             - name: config-processed
               mountPath: /config-processed
           securityContext:
@@ -229,6 +243,8 @@ spec:
             - name: config-processed
               mountPath: /config
               readOnly: true
+            - name: data
+              mountPath: /data
             - name: signing-key
               mountPath: /data/borooka.ee.signing.key
               subPath: borooka.ee.signing.key
@@ -244,6 +260,10 @@ spec:
           emptyDir: {}
         - name: worker-config
           emptyDir: {}
+        # Local media cache - temporary storage only, media persisted to B2
+        - name: data
+          emptyDir:
+            sizeLimit: 1Gi
         - name: signing-key
           secret:
             secretName: synapse-signing-key
