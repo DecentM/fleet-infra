@@ -18,6 +18,8 @@ spec:
       labels:
         app: photoprism
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
