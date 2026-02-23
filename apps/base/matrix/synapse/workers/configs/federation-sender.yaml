@@ -12,3 +12,9 @@ worker_listeners:
 
 # Federation sender specific settings
 # This worker type sends federation traffic to other homeservers
+
+# Workers don't need appservices - only main process handles them
+app_service_config_files: []
+
+# Disable modules that require main-process-only resources
+modules: []

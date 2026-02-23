@@ -19,3 +19,9 @@ worker_listeners:
       - names: [replication]
 
 # Federation reader handles incoming federation requests
+
+# Workers don't need appservices - only main process handles them
+app_service_config_files: []
+
+# Disable modules that require main-process-only resources
+modules: []

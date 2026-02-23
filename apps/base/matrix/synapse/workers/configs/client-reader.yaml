@@ -19,3 +19,9 @@ worker_listeners:
       - names: [replication]
 
 # Client reader handles sync and other read-heavy client requests
+
+# Workers don't need appservices - only main process handles them
+app_service_config_files: []
+
+# Disable modules that require main-process-only resources
+modules: []
