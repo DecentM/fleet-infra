@@ -17,6 +17,8 @@ spec:
         prometheus.io/scrape: "true"
         prometheus.io/port: "8080"
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       containers:
         - name: mc-monitor
           image: itzg/mc-monitor:0.16.0

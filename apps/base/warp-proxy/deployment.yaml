@@ -16,6 +16,8 @@ spec:
       labels:
         app: warp-proxy
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       containers:
         - name: warp
           image: docker.io/caomingjun/warp:2025.10.186.0-2.12.0

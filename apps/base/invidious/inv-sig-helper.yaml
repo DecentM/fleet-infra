@@ -14,6 +14,8 @@ spec:
       labels:
         app: inv-sig-helper
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       containers:
         - name: inv-sig-helper
           image: quay.io/invidious/inv-sig-helper:latest
