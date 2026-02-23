@@ -20,6 +20,8 @@ spec:
       labels:
         app: jellyfin
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       containers:
         - name: jellyfin
           image: lscr.io/linuxserver/jellyfin:10.11.5ubu2404-ls15

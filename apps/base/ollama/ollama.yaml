@@ -20,6 +20,8 @@ spec:
       labels:
         app: ollama
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       containers:
         - name: ollama
           image: ollama/ollama:0.14.3

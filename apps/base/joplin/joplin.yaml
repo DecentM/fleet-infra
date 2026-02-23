@@ -20,6 +20,8 @@ spec:
       labels:
         app: joplin
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       containers:
         - name: joplin
           image: joplin/server:3.5.2
