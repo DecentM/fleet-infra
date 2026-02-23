@@ -20,6 +20,8 @@ spec:
       labels:
         app: paperless-ngx
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       securityContext:
         fsGroup: 1000
       containers:

@@ -16,6 +16,8 @@ spec:
       labels:
         app: paperless-ngx-redis
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       containers:
         - name: redis
           image: docker.io/library/redis:7
