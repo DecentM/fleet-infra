@@ -1,10 +1,7 @@
-# Server identification
 server_name: "borooka.ee"
 public_baseurl: "https://matrix.borooka.ee/"
 pid_file: /data/homeserver.pid
 
-# Database configuration - uses CNPG secret for credentials
-# The actual connection details are injected via environment variables
 database:
   name: psycopg2
   args:
@@ -16,7 +13,6 @@ database:
     cp_min: 5
     cp_max: 30
 
-# HTTP listener configuration
 listeners:
   - port: 8008
     tls: false
@@ -27,7 +23,6 @@ listeners:
       - names: [client, federation, metrics]
         compress: false
 
-# Media storage configuration
 media_store_path: /data/media_store
 max_upload_size: 25M
 max_image_pixels: 32M
@@ -41,18 +36,14 @@ url_preview_ip_range_blacklist:
   - '169.254.0.0/16'
   - 'fe80::/64'
 
-# Signing key - must be generated before first run
 signing_key_path: /data/borooka.ee.signing.key
 
-# Registration settings
 enable_registration: false
 registration_shared_secret: "${SYNAPSE_REGISTRATION_SHARED_SECRET}"
 
-# Password authentication disabled - SSO only
 password_config:
   enabled: false
 
-# OIDC authentication via Authelia
 oidc_providers:
   - idp_id: authelia
     idp_name: "Authelia"
@@ -78,32 +69,37 @@ oidc_providers:
         value: 'matrix-users'
     user_profile_method: 'userinfo_endpoint'
 
-# Security secrets
 macaroon_secret_key: "${SYNAPSE_MACAROON_SECRET_KEY}"
 form_secret: "${SYNAPSE_FORM_SECRET}"
 
-# Trusted key servers for federation
 trusted_key_servers:
   - server_name: "matrix.org"
 
-# Federation domain blacklist - refuse to federate with these servers
 federation_domain_blacklist:
   - plsdontputmeon.ignorelist.com
 
-# Cache configuration for improved performance
+federation_rr_transactions_per_room_per_second: 50
+
+rc_federation:
+  window_size: 1000
+  sleep_limit: 10
+  sleep_delay: 500
+  reject_limit: 50
+  concurrent: 3
+
+federation_client_minimum_retryinterval: 5m
+federation_max_short_retryinterval: 1h
+federation_max_long_retryinterval: 6h
+
 caches:
-  global_factor: 0.33
+  global_factor: 0.5
   per_cache_factors:
     get_users_in_room: 2.0
     get_room_state: 2.0
 
-# Enable metrics for Prometheus scraping
 enable_metrics: true
-
-# Report anonymous statistics to help improve Synapse
 report_stats: false
 
-# TURN server configuration for VoIP
 turn_uris:
   - "turn:eu.relay.metered.ca:80"
   - "turn:eu.relay.metered.ca:80?transport=tcp"
@@ -112,10 +108,8 @@ turn_username: "${SYNAPSE_TURN_USERNAME}"
 turn_password: "${SYNAPSE_TURN_PASSWORD}"
 turn_allow_guests: true
 
-# Logging configuration
 log_config: "/config/log.config"
 
-# Application services (bridges)
 app_service_config_files:
   - /data/hookshot-registration.yml
   - /data/meowlnir-registration.yml
@@ -123,7 +117,6 @@ app_service_config_files:
   - /data/signal-registration.yaml
   - /data/meetings-registration.yaml
 
-# Anti-spam modules configuration
 modules:
   - module: synapse_http_antispam.HTTPAntispam
     config:
@@ -136,32 +129,20 @@ modules:
         user_may_invite: true
         user_may_join_room: true
 
-# Experimental features for E2E encryption bridge support (MSC2409, MSC3202)
-# Required for Hookshot to work in encrypted rooms
 experimental_features:
   msc3202_device_masquerading: true
   msc3202_transaction_extensions: true
   msc2409_to_device_messages_enabled: true
-  # MatrixRTC / Element Call support (MSC4140, MSC3266)
+
+  # Element Call support
   msc4140_enabled: true  # Delayed events for proper call signalling
   msc3266_enabled: true  # Room summaries
 
-# Auto-join rooms for new users (Discord-like onboarding)
-auto_join_rooms:
-  - "#welcome:borooka.ee"
-  - "#general:borooka.ee"
-  - "#announcements:borooka.ee"
-autocreate_auto_join_rooms: true
-autocreate_auto_join_rooms_federated: true
-autocreate_auto_join_room_preset: public_chat
-auto_join_mxid_localpart: system
-
-# Server notices for admin announcements
 server_notices:
   system_mxid_localpart: notices
   system_mxid_display_name: "System Announcements"
   room_name: "Announcements"
-  room_topic: "Updates from the admins"
+  room_topic: "Updates from instance admins"
   auto_join: true
 
 # Default power levels for public_chat preset (moderation controls)
@@ -172,12 +153,10 @@ default_power_level_content_override:
     kick: 50
     ban: 50
 
-# User directory configuration
-# Required for matrix-meetings bot to find users
+# Required for matrix-meetings to find users
 user_directory:
   search_all_users: true
 
-# Room prejoin state events
 # Required for matrix-meetings widget to work properly
 room_prejoin_state:
   additional_event_types:
