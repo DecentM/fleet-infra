@@ -230,11 +230,11 @@ spec:
           imagePullPolicy: IfNotPresent
           resources:
             requests:
-              cpu: 500m
-              memory: 1Gi
-            limits:
-              cpu: "2"
+              cpu: 1000m
               memory: 4Gi
+            limits:
+              cpu: "4"
+              memory: 8Gi
           securityContext:
             runAsUser: 991
             runAsGroup: 991
