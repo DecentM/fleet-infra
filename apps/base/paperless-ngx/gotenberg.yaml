@@ -18,8 +18,6 @@ spec:
       labels:
         app: paperless-ngx-gotenberg
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: cadance
       containers:
         - name: gotenberg
           image: gotenberg/gotenberg:8.21

@@ -27,8 +27,6 @@ spec:
         app: synapse-admin
         app.kubernetes.io/name: synapse-admin
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: cadance
       securityContext:
         runAsUser: 101
         runAsGroup: 101
