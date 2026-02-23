@@ -18,6 +18,8 @@ spec:
       labels:
         app: qbittorrent
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       hostNetwork: true
       securityContext:
         runAsUser: 0
