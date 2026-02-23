@@ -18,6 +18,8 @@ spec:
       labels:
         app: federation-tester
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000

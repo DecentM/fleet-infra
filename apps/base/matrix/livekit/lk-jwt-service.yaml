@@ -29,6 +29,8 @@ spec:
         app: lk-jwt-service
         app.kubernetes.io/name: lk-jwt-service
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000

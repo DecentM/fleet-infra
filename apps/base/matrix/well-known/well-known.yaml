@@ -32,6 +32,8 @@ spec:
         app: well-known
         app.kubernetes.io/name: well-known
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       securityContext:
         runAsUser: 101
         runAsGroup: 101

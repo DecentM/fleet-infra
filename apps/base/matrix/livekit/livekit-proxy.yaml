@@ -32,6 +32,8 @@ spec:
         app: livekit-proxy
         app.kubernetes.io/name: livekit-proxy
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       securityContext:
         runAsUser: 101
         runAsGroup: 101

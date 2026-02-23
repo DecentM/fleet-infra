@@ -25,6 +25,8 @@ spec:
         app: mautrix-signal
         app.kubernetes.io/name: mautrix-signal
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000

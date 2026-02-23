@@ -25,6 +25,8 @@ spec:
         app: jitsi-prosody
         app.kubernetes.io/name: prosody
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       containers:
         - name: prosody
           image: jitsi/prosody:stable-10741

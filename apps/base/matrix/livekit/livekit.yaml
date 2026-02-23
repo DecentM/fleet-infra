@@ -25,6 +25,8 @@ spec:
         app: livekit
         app.kubernetes.io/name: livekit
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000

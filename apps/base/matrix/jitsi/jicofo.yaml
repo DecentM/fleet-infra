@@ -25,6 +25,8 @@ spec:
         app: jitsi-jicofo
         app.kubernetes.io/name: jicofo
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       # Wait for Prosody to be ready
       initContainers:
         - name: wait-for-prosody

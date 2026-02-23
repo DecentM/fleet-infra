@@ -25,6 +25,8 @@ spec:
         job: matrix-meetings-widget
         app.kubernetes.io/name: matrix-meetings-widget
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       securityContext:
         fsGroup: 101
       containers:

@@ -26,6 +26,8 @@ spec:
         app: jitsi-jvb
         app.kubernetes.io/name: jvb
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       # Use host network for direct UDP access on port 10000
       # Required for WebRTC media traffic to work efficiently
       hostNetwork: true

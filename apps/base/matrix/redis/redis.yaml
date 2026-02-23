@@ -25,6 +25,8 @@ spec:
         app: hookshot-redis
         app.kubernetes.io/name: hookshot-redis
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       securityContext:
         runAsUser: 999
         runAsGroup: 999

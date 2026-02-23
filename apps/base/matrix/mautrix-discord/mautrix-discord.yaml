@@ -25,6 +25,8 @@ spec:
         app: mautrix-discord
         app.kubernetes.io/name: mautrix-discord
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000

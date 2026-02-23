@@ -25,6 +25,8 @@ spec:
         app: synapse
         app.kubernetes.io/name: synapse
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       securityContext:
         runAsUser: 991
         runAsGroup: 991

@@ -27,6 +27,8 @@ spec:
         app: element
         app.kubernetes.io/name: element
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
