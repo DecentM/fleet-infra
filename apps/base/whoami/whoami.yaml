@@ -22,7 +22,7 @@ spec:
         task: whoami
     spec:
       nodeSelector:
-        kubernetes.io/hostname: cadance
+        kubernetes.io/hostname: tallinn-0
       containers:
         - name: whoami
           image: traefik/whoami@sha256:4f90b33ddca9c4d4f06527070d6e503b16d71016edea036842be2a84e60c91cb
