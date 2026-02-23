@@ -2,6 +2,14 @@ server_name: "borooka.ee"
 public_baseurl: "https://matrix.borooka.ee/"
 pid_file: /data/homeserver.pid
 
+# Disable presence - major CPU/DB consumer (was consuming 1,145s of DB time)
+presence:
+  enabled: false
+
+# Optimize single-process performance
+worker_replication_secret: "not_using_workers_yet"
+run_background_tasks_on: main
+
 database:
   name: psycopg2
   args:
@@ -12,6 +20,9 @@ database:
     port: 5432
     cp_min: 5
     cp_max: 30
+    keepalives_idle: 10
+    keepalives_interval: 10
+    keepalives_count: 3
 
 listeners:
   - port: 8008
@@ -92,9 +103,10 @@ federation_max_short_retryinterval: 1h
 federation_max_long_retryinterval: 6h
 
 caches:
-  global_factor: 0.5
+  global_factor: 2.0  # Increased from 0.5 (8Gi memory available)
   per_cache_factors:
-    get_users_in_room: 2.0
+    get_users_in_room: 5.0
+    get_state_events: 5.0
     get_room_state: 2.0
 
 enable_metrics: true

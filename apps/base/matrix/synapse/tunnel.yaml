@@ -10,6 +10,13 @@ subjects:
       fqdn: matrix.borooka.ee
       protocol: http
       target: http://synapse.app-matrix.svc:8008
+      originRequest:
+        connectTimeout: 30s
+        noHappyEyeballs: false
+        tcpKeepAlive: 30s
+        keepAliveTimeout: 90s
+        httpHostHeader: matrix.borooka.ee
+        noTLSVerify: false
 
 tunnelRef:
   kind: ClusterTunnel
