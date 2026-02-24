@@ -17,6 +17,8 @@ resources:
   - workers/event-persister.yaml
   - workers/client-reader.yaml
   - workers/background-tasks.yaml
+  - workers/appservice-sender.yaml
+  - workers/appservice-sender-service.yaml
 
 configMapGenerator:
   # Main Synapse configuration
@@ -71,6 +73,16 @@ configMapGenerator:
     namespace: app-matrix
     files:
       - worker.yaml=workers/configs/background-tasks.yaml
+    options:
+      labels:
+        app.kubernetes.io/name: synapse
+        app.kubernetes.io/component: worker
+        app.kubernetes.io/part-of: matrix
+
+  - name: synapse-appservice-sender-config
+    namespace: app-matrix
+    files:
+      - worker.yaml=workers/configs/appservice-sender.yaml
     options:
       labels:
         app.kubernetes.io/name: synapse

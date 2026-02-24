@@ -45,6 +45,9 @@ instance_map:
   background_tasks1:
     host: synapse-background-tasks.app-matrix.svc
     port: 9093
+  appservice_sender1:
+    host: synapse-appservice-sender.app-matrix.svc
+    port: 9093
 
 # Stream writers - which workers handle which streams
 # NOTE: stream_writers must use "master" which is Synapse's internal instance name
@@ -66,10 +69,9 @@ federation_sender_instances:
   - federation_sender1
 
 # Appservice notification assignment
-# Assign appservice notifications to the event persister worker
-# This worker handles event persistence, so it makes sense to notify appservices
-# from here since events are committed by this worker.
-notify_appservices_from_worker: event_persister1
+# Assign appservice notifications to a dedicated appservice sender worker
+# This worker handles sending transactions to application services (bridges, bots)
+notify_appservices_from_worker: appservice_sender1
 
 database:
   name: psycopg2

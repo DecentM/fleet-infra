@@ -1,15 +1,15 @@
-# Event Persister Worker Deployment
-# Handles writing events to the database
+# Appservice Sender Worker Deployment
+# Handles sending transactions to application services (bridges, bots)
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: synapse-event-persister
+  name: synapse-appservice-sender
   namespace: app-matrix
   labels:
-    app: synapse-event-persister
+    app: synapse-appservice-sender
     app.kubernetes.io/name: synapse
-    app.kubernetes.io/component: event-persister
+    app.kubernetes.io/component: appservice-sender
     app.kubernetes.io/part-of: matrix
 spec:
   replicas: 1
@@ -21,13 +21,13 @@ spec:
       maxSurge: 1
   selector:
     matchLabels:
-      app: synapse-event-persister
+      app: synapse-appservice-sender
   template:
     metadata:
       labels:
-        app: synapse-event-persister
+        app: synapse-appservice-sender
         app.kubernetes.io/name: synapse
-        app.kubernetes.io/component: event-persister
+        app.kubernetes.io/component: appservice-sender
     spec:
       nodeSelector:
         kubernetes.io/hostname: cadance
@@ -60,24 +60,56 @@ spec:
             - sh
             - -c
             - |
-              echo "Processing config templates with envsubst..."
-              # Process main homeserver config
-              for file in /config-template/*; do
-                filename=$(basename "$file")
-                echo "Processing $filename..."
-                envsubst < "$file" > "/config-processed/$filename"
-              done
+              #!/bin/sh
+              set -e
+
+              echo "Processing homeserver.yaml..."
+              envsubst < /config-template/homeserver.yaml > /config-processed/homeserver.yaml
+
+              echo "Processing log.config..."
+              envsubst < /config-template/log.config > /config-processed/log.config
+
               # Process worker-specific config
               for file in /worker-config-template/*; do
+                if [ -f "$file" ]; then
+                  filename=$(basename "$file")
+                  echo "Processing worker config: $filename..."
+                  envsubst < "$file" > "/config-processed/$filename"
+                fi
+              done
+
+              # Process appservice registration templates
+              for file in /hookshot-template/*; do
                 filename=$(basename "$file")
-                echo "Processing worker config: $filename..."
+                echo "Processing hookshot template: $filename..."
                 envsubst < "$file" > "/config-processed/$filename"
               done
+              for file in /meowlnir-template/*; do
+                filename=$(basename "$file")
+                echo "Processing meowlnir template: $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
+              for file in /discord-template/*; do
+                filename=$(basename "$file")
+                echo "Processing discord template: $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
+              for file in /signal-template/*; do
+                filename=$(basename "$file")
+                echo "Processing signal template: $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
+              for file in /meetings-template/*; do
+                filename=$(basename "$file")
+                echo "Processing meetings template: $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
+
               echo "Config templating complete"
-              ls -la /config-processed/
+              ls -lh /config-processed/
           env:
             - name: SYNAPSE_WORKER_NAME
-              value: "event_persister1"
+              value: "appservice_sender1"
             - name: SYNAPSE_DATABASE_DBNAME
               valueFrom:
                 secretKeyRef:
@@ -133,6 +165,57 @@ spec:
                 secretKeyRef:
                   name: meowlnir-secrets
                   key: meowlnir_as_token
+            # Appservice tokens for registration templates
+            - name: HOOKSHOT_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hookshot-secrets
+                  key: as-token
+            - name: HOOKSHOT_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hookshot-secrets
+                  key: hs-token
+            - name: MEOWLNIR_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: meowlnir-secrets
+                  key: meowlnir_as_token
+            - name: MEOWLNIR_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: meowlnir-secrets
+                  key: meowlnir_hs_token
+            - name: DISCORD_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mautrix-discord-secrets
+                  key: as-token
+            - name: DISCORD_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mautrix-discord-secrets
+                  key: hs-token
+            - name: SIGNAL_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mautrix-signal-secrets
+                  key: as-token
+            - name: SIGNAL_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mautrix-signal-secrets
+                  key: hs-token
+            - name: MEETINGS_BOT_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: matrix-meetings-secrets
+                  key: as-token
+            - name: MEETINGS_BOT_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: matrix-meetings-secrets
+                  key: hs-token
             # S3/B2 storage credentials
             - name: SYNAPSE_S3_BUCKET
               valueFrom:
@@ -168,6 +251,22 @@ spec:
               readOnly: true
             - name: config-processed
               mountPath: /config-processed
+            # Appservice registration templates
+            - name: hookshot-registration-template
+              mountPath: /hookshot-template
+              readOnly: true
+            - name: meowlnir-registration-template
+              mountPath: /meowlnir-template
+              readOnly: true
+            - name: discord-registration-template
+              mountPath: /discord-template
+              readOnly: true
+            - name: signal-registration-template
+              mountPath: /signal-template
+              readOnly: true
+            - name: meetings-registration-template
+              mountPath: /meetings-template
+              readOnly: true
           securityContext:
             runAsUser: 991
             runAsGroup: 991
@@ -182,18 +281,18 @@ spec:
             - --config-path=/config/worker.yaml
           resources:
             requests:
-              cpu: 400m
-              memory: 1Gi
+              cpu: 200m
+              memory: 256Mi
             limits:
-              cpu: 1500m
-              memory: 2Gi
+              cpu: 500m
+              memory: 512Mi
           securityContext:
             runAsUser: 991
             runAsGroup: 991
             allowPrivilegeEscalation: false
           env:
             - name: SYNAPSE_WORKER_NAME
-              value: "event_persister1"
+              value: "appservice_sender1"
             - name: SYNAPSE_WORKER
               value: "synapse.app.generic_worker"
           ports:
@@ -203,17 +302,23 @@ spec:
             - name: replication
               containerPort: 9093
               protocol: TCP
-          # Event persister has replication listener, use tcpSocket probe
+          # Use HTTP health endpoint on http port
           livenessProbe:
-            tcpSocket:
-              port: replication
+            httpGet:
+              path: /health
+              port: http
             initialDelaySeconds: 60
             periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
           readinessProbe:
-            tcpSocket:
-              port: replication
+            httpGet:
+              path: /health
+              port: http
             initialDelaySeconds: 10
             periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
           volumeMounts:
             - name: config-processed
               mountPath: /config
@@ -230,41 +335,47 @@ spec:
             name: synapse-config
         - name: worker-config-template
           configMap:
-            name: synapse-event-persister-config
+            name: synapse-appservice-sender-config
         - name: config-processed
           emptyDir: {}
-        # Local media cache - temporary storage only, media persisted to B2
+        # Temporary storage for media_store directory
         - name: data
           emptyDir:
-            sizeLimit: 1Gi
+            sizeLimit: 2Gi
         - name: signing-key
           secret:
             secretName: synapse-signing-key
             items:
               - key: signing.key
                 path: borooka.ee.signing.key
----
-# ClusterIP Service for replication
-apiVersion: v1
-kind: Service
-metadata:
-  name: synapse-event-persister
-  namespace: app-matrix
-  labels:
-    app: synapse-event-persister
-    app.kubernetes.io/name: synapse
-    app.kubernetes.io/component: event-persister
-    app.kubernetes.io/part-of: matrix
-spec:
-  type: ClusterIP
-  ports:
-    - name: http
-      port: 8083
-      targetPort: http
-      protocol: TCP
-    - name: replication
-      port: 9093
-      targetPort: replication
-      protocol: TCP
-  selector:
-    app: synapse-event-persister
+        # Appservice registration templates
+        - name: hookshot-registration-template
+          configMap:
+            name: hookshot-config
+            items:
+              - key: hookshot-registration.yml
+                path: hookshot-registration.yml
+        - name: meowlnir-registration-template
+          configMap:
+            name: meowlnir-config
+            items:
+              - key: meowlnir-registration.yml
+                path: meowlnir-registration.yml
+        - name: discord-registration-template
+          configMap:
+            name: mautrix-discord-config
+            items:
+              - key: discord-registration.yaml
+                path: discord-registration.yaml
+        - name: signal-registration-template
+          configMap:
+            name: mautrix-signal-config
+            items:
+              - key: signal-registration.yaml
+                path: signal-registration.yaml
+        - name: meetings-registration-template
+          configMap:
+            name: matrix-meetings-config
+            items:
+              - key: meetings-registration.yaml
+                path: meetings-registration.yaml

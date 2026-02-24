@@ -1,0 +1,33 @@
+worker_app: synapse.app.generic_worker
+worker_name: appservice_sender1
+
+# Worker listeners
+worker_listeners:
+  # HTTP listener for health checks
+  - type: http
+    port: 8083
+    bind_addresses: ['0.0.0.0']
+    resources:
+      - names: [health]
+        compress: false
+  # Replication listener for inter-worker communication
+  - type: http
+    port: 9093
+    bind_addresses: ['0.0.0.0']
+    resources:
+      - names: [replication]
+
+# Appservice sender specific settings
+# This worker handles sending transactions to application services
+# Configured via notify_appservices_from_worker: appservice_sender1 in homeserver.yaml
+
+# Appservice registration files - processed by envsubst in init container
+app_service_config_files:
+  - /config/hookshot-registration.yml
+  - /config/meowlnir-registration.yml
+  - /config/discord-registration.yaml
+  - /config/signal-registration.yaml
+  - /config/meetings-registration.yaml
+
+# Disable modules that require main-process-only resources
+modules: []
