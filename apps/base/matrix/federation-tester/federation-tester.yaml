@@ -47,6 +47,54 @@ spec:
             runAsGroup: 1000
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
+        # WORKAROUND: Upstream bug in rust-federation-tester migrations
+        # Migration m20250710 creates idx_email_server_name_unique and alert_email_key constraint,
+        # but m20250922 tries to create a composite constraint that conflicts with these.
+        # This init container drops the conflicting objects so m20250922 can create the correct
+        # composite constraint. Safe to run on first deploy (IF EXISTS handles missing objects).
+        # Track upstream: https://github.com/MTRNord/rust-federation-tester
+        - name: fix-migrations
+          image: postgres:16-alpine
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              until pg_isready -h federation-tester-db-rw.app-matrix.svc -p 5432 -U "$FEDTEST_DB_USER"; do
+                echo "Waiting for database to be ready..."
+                sleep 2
+              done
+              echo "Database is ready, fixing migration conflicts..."
+              PGPASSWORD="$FEDTEST_DB_PASSWORD" psql -h federation-tester-db-rw.app-matrix.svc -p 5432 -U "$FEDTEST_DB_USER" -d "$FEDTEST_DB_NAME" <<'EOF'
+              -- Drop the conflicting index created by m20250710 migration
+              DROP INDEX IF EXISTS idx_email_server_name_unique;
+
+              -- Drop the old email uniqueness constraint (name may vary)
+              -- This allows m20250922 migration to create the correct composite constraint
+              ALTER TABLE IF EXISTS alert DROP CONSTRAINT IF EXISTS alert_email_key;
+              EOF
+              echo "Migration fix complete"
+          env:
+            - name: FEDTEST_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: federation-tester-db-app
+                  key: username
+            - name: FEDTEST_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: federation-tester-db-app
+                  key: password
+            - name: FEDTEST_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: federation-tester-db-app
+                  key: dbname
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
         - name: config-templating
           image: oaudry/envsubst:1.6
           imagePullPolicy: IfNotPresent
@@ -94,7 +142,7 @@ spec:
             allowPrivilegeEscalation: false
       containers:
         - name: federation-tester
-          image: ghcr.io/mtrnord/rust-federation-tester:0.3.2
+          image: ghcr.io/mtrnord/rust-federation-tester:0.3.4
           imagePullPolicy: IfNotPresent
           workingDir: /app
           env:
