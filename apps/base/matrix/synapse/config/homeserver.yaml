@@ -1,5 +1,6 @@
 server_name: "borooka.ee"
 public_baseurl: "https://matrix.borooka.ee/"
+worker_name: "${SYNAPSE_WORKER_NAME}"
 pid_file: /data/homeserver.pid
 
 # Disable presence - major CPU/DB consumer (was consuming 1,145s of DB time)
@@ -18,6 +19,8 @@ redis:
 
 # Instance map for worker discovery
 # Workers connect to each other via replication port 9093
+# NOTE: The key "main" is used for routing to the main process.
+# The stream_writers use "master" which is Synapse's internal instance name.
 instance_map:
   main:
     host: synapse-main-repl.app-matrix.svc
@@ -39,17 +42,19 @@ instance_map:
     port: 9093
 
 # Stream writers - which workers handle which streams
+# NOTE: stream_writers must use "master" which is Synapse's internal instance name
+# for the main process, not the instance_map key.
 stream_writers:
   events:
     - event_persister1
   typing:
-    - main
+    - master
   to_device:
-    - main
+    - master
   presence:
-    - main
+    - master
   receipts:
-    - main
+    - master
 
 # Federation senders configuration
 federation_sender_instances:

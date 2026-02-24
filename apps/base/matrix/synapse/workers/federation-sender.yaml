@@ -76,6 +76,8 @@ spec:
               echo "Config templating complete"
               ls -la /config-processed/
           env:
+            - name: SYNAPSE_WORKER_NAME
+              value: "federation_sender1"
             - name: SYNAPSE_DATABASE_DBNAME
               valueFrom:
                 secretKeyRef:
@@ -190,6 +192,8 @@ spec:
             runAsGroup: 991
             allowPrivilegeEscalation: false
           env:
+            - name: SYNAPSE_WORKER_NAME
+              value: "federation_sender1"
             - name: SYNAPSE_WORKER
               value: "synapse.app.generic_worker"
           ports:

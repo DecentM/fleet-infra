@@ -111,6 +111,7 @@ spec:
               echo "Config templating complete"
               ls -la /config-processed/
           env:
+            # SYNAPSE_WORKER_NAME is unset for the main process - Synapse uses "master" internally
             - name: SYNAPSE_DATABASE_DBNAME
               valueFrom:
                 secretKeyRef:
@@ -287,6 +288,7 @@ spec:
             runAsGroup: 991
             allowPrivilegeEscalation: false
           env:
+            # SYNAPSE_WORKER_NAME is unset for the main process - Synapse uses "master" internally
             - name: SYNAPSE_CONFIG_PATH
               value: /config/homeserver.yaml
             - name: SYNAPSE_DATABASE_DBNAME
