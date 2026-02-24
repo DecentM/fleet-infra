@@ -65,6 +65,12 @@ stream_writers:
 federation_sender_instances:
   - federation_sender1
 
+# Appservice notification assignment
+# Assign appservice notifications to the event persister worker
+# This worker handles event persistence, so it makes sense to notify appservices
+# from here since events are committed by this worker.
+notify_appservices_from_worker: event_persister1
+
 database:
   name: psycopg2
   args:

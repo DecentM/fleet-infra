@@ -19,9 +19,16 @@ worker_listeners:
       - names: [replication]
 
 # Event persister handles writing events to the database
+# It also handles appservice notifications (notify_appservices_from_worker: event_persister1)
 
-# Workers don't need appservices - only main process handles them
-app_service_config_files: []
+# Appservice registration files - processed by envsubst in init container
+# These are inherited from main config but we need explicit paths for the worker
+app_service_config_files:
+  - /config/hookshot-registration.yml
+  - /config/meowlnir-registration.yml
+  - /config/discord-registration.yaml
+  - /config/signal-registration.yaml
+  - /config/meetings-registration.yaml
 
 # Disable modules that require main-process-only resources
 modules: []
