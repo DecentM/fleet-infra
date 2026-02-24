@@ -200,23 +200,23 @@ spec:
             - name: replication
               containerPort: 9093
               protocol: TCP
-          # Background tasks worker has no HTTP listeners, use exec probe
+          # Use HTTP health endpoint on replication port
           livenessProbe:
-            exec:
-              command:
-                - pgrep
-                - -f
-                - "synapse.app.generic_worker"
+            httpGet:
+              path: /health
+              port: replication
             initialDelaySeconds: 60
             periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
           readinessProbe:
-            exec:
-              command:
-                - pgrep
-                - -f
-                - "synapse.app.generic_worker"
+            httpGet:
+              path: /health
+              port: replication
             initialDelaySeconds: 10
             periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
           volumeMounts:
             - name: config-processed
               mountPath: /config
