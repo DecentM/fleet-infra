@@ -1,8 +1,8 @@
-# Federation Reader Worker StatefulSet
+# Federation Reader Worker Deployment
 # Handles incoming federation requests from other homeservers
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: synapse-federation-reader
   namespace: app-matrix
@@ -12,9 +12,13 @@ metadata:
     app.kubernetes.io/component: federation-reader
     app.kubernetes.io/part-of: matrix
 spec:
-  serviceName: synapse-federation-reader-headless
   replicas: 1
   revisionHistoryLimit: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   selector:
     matchLabels:
       app: synapse-federation-reader
@@ -171,34 +175,6 @@ spec:
             runAsUser: 991
             runAsGroup: 991
             allowPrivilegeEscalation: false
-        # Set worker name using POD_NAME environment variable
-        - name: set-worker-name
-          image: busybox:1.36
-          command:
-            - sh
-            - -c
-            - |
-              # Extract ordinal from pod name (e.g., synapse-federation-reader-0 → 0)
-              ORDINAL=$(echo "$POD_NAME" | grep -oE '[0-9]+$')
-              WORKER_NUM=$((ORDINAL + 1))
-
-              # Set worker name based on type
-              echo "worker_name: ${WORKER_TYPE}${WORKER_NUM}" > /worker-config/worker.yaml
-              cat /worker-config/worker.yaml
-          env:
-            - name: POD_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
-            - name: WORKER_TYPE
-              value: "federation_reader"
-          volumeMounts:
-            - name: worker-config
-              mountPath: /worker-config
-          securityContext:
-            runAsUser: 991
-            runAsGroup: 991
-            allowPrivilegeEscalation: false
       containers:
         - name: synapse-worker
           image: ghcr.io/decentm/synapse:sha-defa7cb
@@ -263,8 +239,6 @@ spec:
             name: synapse-federation-reader-config
         - name: config-processed
           emptyDir: {}
-        - name: worker-config
-          emptyDir: {}
         # Local media cache - temporary storage only, media persisted to B2
         - name: data
           emptyDir:
@@ -276,33 +250,7 @@ spec:
               - key: signing.key
                 path: borooka.ee.signing.key
 ---
-# Headless Service for StatefulSet DNS resolution (used by instance_map)
-apiVersion: v1
-kind: Service
-metadata:
-  name: synapse-federation-reader-headless
-  namespace: app-matrix
-  labels:
-    app: synapse-federation-reader
-    app.kubernetes.io/name: synapse
-    app.kubernetes.io/component: federation-reader
-    app.kubernetes.io/part-of: matrix
-spec:
-  type: ClusterIP
-  clusterIP: None
-  ports:
-    - name: http
-      port: 8083
-      targetPort: http
-      protocol: TCP
-    - name: replication
-      port: 9093
-      targetPort: replication
-      protocol: TCP
-  selector:
-    app: synapse-federation-reader
----
-# Regular ClusterIP service for load balancing (nginx routes to this)
+# ClusterIP service for load balancing (nginx routes to this)
 apiVersion: v1
 kind: Service
 metadata:

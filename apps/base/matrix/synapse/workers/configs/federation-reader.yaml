@@ -1,5 +1,5 @@
 worker_app: synapse.app.generic_worker
-worker_name: ${SYNAPSE_WORKER_NAME}
+worker_name: federation_reader1
 
 # Worker listeners
 worker_listeners:

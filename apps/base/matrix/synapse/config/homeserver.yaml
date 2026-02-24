@@ -23,22 +23,16 @@ instance_map:
     host: synapse-main-repl.app-matrix.svc
     port: 9093
   federation_sender1:
-    host: synapse-federation-sender-0.synapse-federation-sender-headless.app-matrix.svc
-    port: 9093
-  federation_sender2:
-    host: synapse-federation-sender-1.synapse-federation-sender-headless.app-matrix.svc
+    host: synapse-federation-sender.app-matrix.svc
     port: 9093
   federation_reader1:
-    host: synapse-federation-reader-0.synapse-federation-reader-headless.app-matrix.svc
-    port: 9093
-  federation_reader2:
-    host: synapse-federation-reader-1.synapse-federation-reader-headless.app-matrix.svc
+    host: synapse-federation-reader.app-matrix.svc
     port: 9093
   event_persister1:
-    host: synapse-event-persister-0.synapse-event-persister-headless.app-matrix.svc
+    host: synapse-event-persister.app-matrix.svc
     port: 9093
   client_reader1:
-    host: synapse-client-reader-0.synapse-client-reader-headless.app-matrix.svc
+    host: synapse-client-reader.app-matrix.svc
     port: 9093
 
 # Stream writers - which workers handle which streams
@@ -57,7 +51,6 @@ stream_writers:
 # Federation senders configuration
 federation_sender_instances:
   - federation_sender1
-  - federation_sender2
 
 database:
   name: psycopg2
