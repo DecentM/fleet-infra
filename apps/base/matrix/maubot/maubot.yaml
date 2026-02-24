@@ -50,13 +50,9 @@ spec:
             - sh
             - -c
             - |
-              if [ -f /data/config.yaml ]; then
-                echo "Config already exists, skipping seed..."
-              else
-                echo "Seeding initial config with envsubst..."
-                envsubst < /seed/config.yaml > /data/config.yaml
-                echo "Config seeded successfully"
-              fi
+              echo "Regenerating config from template..."
+              envsubst < /seed/config.yaml > /data/config.yaml
+              echo "Config regenerated successfully"
               # Ensure required directories exist
               mkdir -p /data/plugins /data/trash /data/dbs
               # Fix override_resource_path if it's set to false (needed for web UI)
