@@ -30,7 +30,7 @@ server:
 
 homeservers:
   ${MATRIX_DOMAIN}:
-    url: http://synapse.app-matrix.svc:8008
+    url: http://synapse-nginx-proxy.app-matrix.svc:8008
     secret: null
 
 admins:

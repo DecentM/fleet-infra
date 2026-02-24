@@ -3,7 +3,7 @@
 
 # Homeserver connection
 homeserver:
-  address: http://synapse.app-matrix.svc:8008
+  address: http://synapse-nginx-proxy.app-matrix.svc:8008
   domain: borooka.ee
 
 # Appservice configuration
@@ -38,7 +38,7 @@ bridge:
     "@decentm:borooka.ee": admin
   # Double-puppeting (automatic when using same homeserver)
   double_puppet_server_map:
-    borooka.ee: http://synapse.app-matrix.svc:8008
+    borooka.ee: http://synapse-nginx-proxy.app-matrix.svc:8008
   login_shared_secret_map: {}
   # Message handling
   message_status_events: false

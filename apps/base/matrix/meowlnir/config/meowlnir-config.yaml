@@ -3,7 +3,7 @@
 
 # Homeserver connection details
 homeserver:
-  address: http://synapse.app-matrix.svc:8008
+  address: http://synapse-nginx-proxy.app-matrix.svc:8008
   domain: borooka.ee
 
 # Meowlnir appservice identity and HTTP server
