@@ -1,15 +1,15 @@
-# Client Reader Worker Deployment
-# Handles sync and other read-heavy client requests
+# Background Tasks Worker Deployment
+# Handles background tasks like purging old data, cleaning up caches, etc.
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: synapse-client-reader
+  name: synapse-background-tasks
   namespace: app-matrix
   labels:
-    app: synapse-client-reader
+    app: synapse-background-tasks
     app.kubernetes.io/name: synapse
-    app.kubernetes.io/component: client-reader
+    app.kubernetes.io/component: background-tasks
     app.kubernetes.io/part-of: matrix
 spec:
   replicas: 1
@@ -21,13 +21,13 @@ spec:
       maxSurge: 1
   selector:
     matchLabels:
-      app: synapse-client-reader
+      app: synapse-background-tasks
   template:
     metadata:
       labels:
-        app: synapse-client-reader
+        app: synapse-background-tasks
         app.kubernetes.io/name: synapse
-        app.kubernetes.io/component: client-reader
+        app.kubernetes.io/component: background-tasks
     spec:
       nodeSelector:
         kubernetes.io/hostname: cadance
@@ -60,26 +60,21 @@ spec:
             - sh
             - -c
             - |
-              #!/bin/sh
-              set -e
-
-              echo "Processing homeserver.yaml..."
-              envsubst < /config-template/homeserver.yaml > /config-processed/homeserver.yaml
-
-              echo "Processing log.config..."
-              envsubst < /config-template/log.config > /config-processed/log.config
-
+              echo "Processing config templates with envsubst..."
+              # Process main homeserver config
+              for file in /config-template/*; do
+                filename=$(basename "$file")
+                echo "Processing $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
               # Process worker-specific config
               for file in /worker-config-template/*; do
-                if [ -f "$file" ]; then
-                  filename=$(basename "$file")
-                  echo "Processing worker config: $filename..."
-                  envsubst < "$file" > "/config-processed/$filename"
-                fi
+                filename=$(basename "$file")
+                echo "Processing worker config: $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
               done
-
               echo "Config templating complete"
-              ls -lh /config-processed/
+              ls -la /config-processed/
           env:
             - name: SYNAPSE_DATABASE_DBNAME
               valueFrom:
@@ -185,11 +180,11 @@ spec:
             - --config-path=/config/worker.yaml
           resources:
             requests:
-              cpu: 300m
-              memory: 512Mi
+              cpu: 50m
+              memory: 256Mi
             limits:
-              cpu: "1"
-              memory: 1Gi
+              cpu: 500m
+              memory: 512Mi
           securityContext:
             runAsUser: 991
             runAsGroup: 991
@@ -198,28 +193,26 @@ spec:
             - name: SYNAPSE_WORKER
               value: "synapse.app.generic_worker"
           ports:
-            - name: http
-              containerPort: 8083
-              protocol: TCP
             - name: replication
               containerPort: 9093
               protocol: TCP
+          # Background tasks worker has no HTTP listeners, use exec probe
+          livenessProbe:
+            exec:
+              command:
+                - pgrep
+                - -f
+                - "synapse.app.generic_worker"
+            initialDelaySeconds: 60
+            periodSeconds: 30
           readinessProbe:
-            httpGet:
-              path: /health
-              port: http
+            exec:
+              command:
+                - pgrep
+                - -f
+                - "synapse.app.generic_worker"
             initialDelaySeconds: 10
             periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: http
-            initialDelaySeconds: 30
-            periodSeconds: 30
-            timeoutSeconds: 10
-            failureThreshold: 3
           volumeMounts:
             - name: config-processed
               mountPath: /config
@@ -236,10 +229,10 @@ spec:
             name: synapse-config
         - name: worker-config-template
           configMap:
-            name: synapse-client-reader-config
+            name: synapse-background-tasks-config
         - name: config-processed
           emptyDir: {}
-        # Local media cache - temporary storage only, media persisted to B2
+        # Minimal data volume for media_store directory creation
         - name: data
           emptyDir:
             sizeLimit: 2Gi
@@ -250,27 +243,23 @@ spec:
               - key: signing.key
                 path: borooka.ee.signing.key
 ---
-# ClusterIP service for load balancing (nginx routes to this)
+# ClusterIP Service for replication
 apiVersion: v1
 kind: Service
 metadata:
-  name: synapse-client-reader
+  name: synapse-background-tasks
   namespace: app-matrix
   labels:
-    app: synapse-client-reader
+    app: synapse-background-tasks
     app.kubernetes.io/name: synapse
-    app.kubernetes.io/component: client-reader
+    app.kubernetes.io/component: background-tasks
     app.kubernetes.io/part-of: matrix
 spec:
   type: ClusterIP
   ports:
-    - name: http
-      port: 8083
-      targetPort: http
-      protocol: TCP
     - name: replication
       port: 9093
       targetPort: replication
       protocol: TCP
   selector:
-    app: synapse-client-reader
+    app: synapse-background-tasks

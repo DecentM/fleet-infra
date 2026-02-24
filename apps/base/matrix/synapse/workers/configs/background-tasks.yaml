@@ -1,0 +1,20 @@
+worker_app: synapse.app.generic_worker
+worker_name: background_tasks1
+
+# Worker listeners
+worker_listeners:
+  # Replication listener for inter-worker communication
+  - type: http
+    port: 9093
+    bind_addresses: ['0.0.0.0']
+    resources:
+      - names: [replication]
+
+# Background tasks worker specific settings
+# This worker handles background tasks like purging old data, cleaning up caches, etc.
+
+# Workers don't need appservices - only main process handles them
+app_service_config_files: []
+
+# Disable modules that require main-process-only resources
+modules: []
