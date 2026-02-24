@@ -207,7 +207,6 @@ spec:
             - run
             - --config-path=/config/homeserver.yaml
             - --config-path=/config/worker.yaml
-            - --config-path=/worker-config/worker.yaml
           resources:
             requests:
               cpu: 500m
@@ -248,9 +247,6 @@ spec:
           volumeMounts:
             - name: config-processed
               mountPath: /config
-              readOnly: true
-            - name: worker-config
-              mountPath: /worker-config
               readOnly: true
             - name: data
               mountPath: /data

@@ -56,26 +56,21 @@ spec:
             - sh
             - -c
             - |
-              #!/bin/sh
-              set -e
-
-              echo "Processing homeserver.yaml..."
-              envsubst < /config-template/homeserver.yaml > /config-processed/homeserver.yaml
-
-              echo "Processing log.config..."
-              envsubst < /config-template/log.config > /config-processed/log.config
-
+              echo "Processing config templates with envsubst..."
+              # Process main homeserver config
+              for file in /config-template/*; do
+                filename=$(basename "$file")
+                echo "Processing $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
               # Process worker-specific config
               for file in /worker-config-template/*; do
-                if [ -f "$file" ]; then
-                  filename=$(basename "$file")
-                  echo "Processing worker config: $filename..."
-                  envsubst < "$file" > "/config-processed/$filename"
-                fi
+                filename=$(basename "$file")
+                echo "Processing worker config: $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
               done
-
               echo "Config templating complete"
-              ls -lh /config-processed/
+              ls -la /config-processed/
           env:
             - name: SYNAPSE_DATABASE_DBNAME
               valueFrom:
@@ -158,6 +153,13 @@ spec:
                 secretKeyRef:
                   name: synapse-s3-secrets
                   key: secret-access-key
+            # Worker name based on pod ordinal
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: SYNAPSE_WORKER_NAME
+              value: "federation_sender$(echo $POD_NAME | grep -oE '[0-9]+$' | awk '{print $1+1}')"
           volumeMounts:
             - name: config-template
               mountPath: /config-template
@@ -207,7 +209,6 @@ spec:
             - run
             - --config-path=/config/homeserver.yaml
             - --config-path=/config/worker.yaml
-            - --config-path=/worker-config/worker.yaml
           resources:
             requests:
               cpu: 500m
@@ -246,9 +247,6 @@ spec:
           volumeMounts:
             - name: config-processed
               mountPath: /config
-              readOnly: true
-            - name: worker-config
-              mountPath: /worker-config
               readOnly: true
             - name: data
               mountPath: /data
