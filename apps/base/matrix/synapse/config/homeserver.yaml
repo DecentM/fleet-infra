@@ -7,6 +7,11 @@ pid_file: /data/homeserver.pid
 presence:
   enabled: false
 
+# Disable authenticated media (MSC3916) for backwards compatibility
+# This was enabled by default in Synapse 1.120+ and causes 404s on legacy
+# media endpoints (/_matrix/media/v3/*) for media uploaded after the upgrade.
+enable_authenticated_media: false
+
 # Worker coordination secret
 worker_replication_secret: "${SYNAPSE_WORKER_REPLICATION_SECRET}"
 run_background_tasks_on: background_tasks1
