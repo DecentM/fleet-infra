@@ -1,0 +1,27 @@
+# CNPG PgBouncer Connection Pooler for Synapse
+# Provides connection pooling to reduce database connection overhead
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Pooler
+metadata:
+  name: matrix-db-pooler-rw
+  namespace: app-matrix
+spec:
+  cluster:
+    name: matrix-db
+  instances: 1
+  type: rw
+  pgbouncer:
+    poolMode: transaction
+    parameters:
+      max_client_conn: "500"
+      default_pool_size: "20"
+      min_pool_size: "5"
+      reserve_pool_size: "10"
+      reserve_pool_timeout: "5"
+      max_db_connections: "40"
+      server_reset_query: "DISCARD ALL"
+      server_reset_query_always: "1"
+      client_idle_timeout: "600"
+      idle_transaction_timeout: "60"
+      query_wait_timeout: "120"

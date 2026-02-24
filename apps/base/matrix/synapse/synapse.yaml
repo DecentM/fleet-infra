@@ -39,7 +39,7 @@ spec:
             - sh
             - -c
             - |
-              until nc -z matrix-db-rw.app-matrix.svc 5432; do
+              until nc -z matrix-db-pooler-rw.app-matrix.svc 5432; do
                 echo "Waiting for database..."
                 sleep 2
               done

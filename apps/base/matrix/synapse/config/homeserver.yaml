@@ -71,10 +71,10 @@ database:
     user: synapse
     password: "${SYNAPSE_DATABASE_PASSWORD}"
     database: synapse
-    host: matrix-db-rw.app-matrix.svc
+    host: matrix-db-pooler-rw.app-matrix.svc
     port: 5432
     cp_min: 5
-    cp_max: 30
+    cp_max: 10
     keepalives_idle: 10
     keepalives_interval: 10
     keepalives_count: 3
