@@ -41,6 +41,7 @@ upstream_oauth2:
   providers:
     # Authelia OIDC provider
     - id: "01HWCM3Q7K8YDNP9Q2X5V1W2Z3"
+      synapse_idp_id: "oidc-authelia"
       issuer: "https://auth.borooka.ee"
       human_name: "Authelia"
       brand_name: "authelia"

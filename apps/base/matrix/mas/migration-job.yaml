@@ -1,0 +1,267 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mas-migration
+  namespace: app-matrix
+  labels:
+    app: mas-migration
+    app.kubernetes.io/name: mas-migration
+    app.kubernetes.io/component: migration
+    app.kubernetes.io/part-of: matrix
+
+spec:
+  # Job is suspended by default - must be manually triggered
+  # NOTE: This job will CLEAN the MAS database (drop all tables) before running
+  # the migration, as syn2mas requires an empty database.
+  suspend: true
+  # Don't retry too many times on failure
+  backoffLimit: 3
+  # Keep job around for 24 hours after completion for log inspection
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        app: mas-migration
+        app.kubernetes.io/name: mas-migration
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      # Wait for databases to be ready
+      initContainers:
+        - name: wait-for-mas-db
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              echo "Waiting for MAS database..."
+              until nc -z mas-db-rw.app-matrix.svc 5432; do
+                echo "MAS database not ready, waiting..."
+                sleep 2
+              done
+              echo "MAS database is ready"
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+        - name: wait-for-synapse-db
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              echo "Waiting for Synapse database..."
+              until nc -z matrix-db-pooler-rw.app-matrix.svc 5432; do
+                echo "Synapse database not ready, waiting..."
+                sleep 2
+              done
+              echo "Synapse database is ready"
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+        # Clean MAS database before migration (syn2mas requires empty database)
+        - name: clean-mas-db
+          image: ghcr.io/cloudnative-pg/postgresql:16
+          command:
+            - psql
+            - $(MAS_DATABASE_URI)
+            - -c
+            - DROP SCHEMA public CASCADE; CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO PUBLIC;
+          env:
+            - name: MAS_DATABASE_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mas-db-app
+                  key: uri
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+        # Process Synapse config template (it uses envsubst templating)
+        - name: process-synapse-config
+          image: oaudry/envsubst:1.6
+          command:
+            - sh
+            - -c
+            - |
+              echo "Processing Synapse config template..."
+              envsubst < /synapse-config-template/homeserver.yaml > /synapse-config/homeserver.yaml
+              echo "Synapse config processed successfully"
+          env:
+            # Synapse database credentials needed for template processing
+            - name: SYNAPSE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: matrix-db-app
+                  key: password
+            # These may be referenced in the template but aren't critical for syn2mas
+            - name: SYNAPSE_WORKER_NAME
+              value: ""
+            - name: SYNAPSE_WORKER_REPLICATION_SECRET
+              value: "not-needed-for-migration"
+            - name: SYNAPSE_REGISTRATION_SHARED_SECRET
+              value: "not-needed-for-migration"
+            - name: SYNAPSE_MACAROON_SECRET_KEY
+              value: "not-needed-for-migration"
+            - name: SYNAPSE_FORM_SECRET
+              value: "not-needed-for-migration"
+            - name: SYNAPSE_TURN_USERNAME
+              value: "not-needed-for-migration"
+            - name: SYNAPSE_TURN_PASSWORD
+              value: "not-needed-for-migration"
+            - name: SYNAPSE_MAS_SHARED_SECRET
+              value: "not-needed-for-migration"
+            - name: SYNAPSE_S3_BUCKET
+              value: "not-needed-for-migration"
+            - name: SYNAPSE_S3_ENDPOINT_URL
+              value: "not-needed-for-migration"
+            - name: SYNAPSE_S3_REGION
+              value: "not-needed-for-migration"
+            - name: SYNAPSE_S3_ACCESS_KEY_ID
+              value: "not-needed-for-migration"
+            - name: SYNAPSE_S3_SECRET_ACCESS_KEY
+              value: "not-needed-for-migration"
+            - name: OIDC_CLIENT_MATRIX_SECRET
+              value: "not-needed-for-migration"
+            # Appservice tokens (not needed for syn2mas but may be in template)
+            - name: HOOKSHOT_AS_TOKEN
+              value: "not-needed"
+            - name: HOOKSHOT_HS_TOKEN
+              value: "not-needed"
+            - name: MEOWLNIR_AS_TOKEN
+              value: "not-needed"
+            - name: MEOWLNIR_HS_TOKEN
+              value: "not-needed"
+            - name: MEOWLNIR_ANTISPAM_TOKEN
+              value: "not-needed"
+            - name: DISCORD_AS_TOKEN
+              value: "not-needed"
+            - name: DISCORD_HS_TOKEN
+              value: "not-needed"
+            - name: SIGNAL_AS_TOKEN
+              value: "not-needed"
+            - name: SIGNAL_HS_TOKEN
+              value: "not-needed"
+            - name: MEETINGS_BOT_AS_TOKEN
+              value: "not-needed"
+            - name: MEETINGS_BOT_HS_TOKEN
+              value: "not-needed"
+          volumeMounts:
+            - name: synapse-config-template
+              mountPath: /synapse-config-template
+              readOnly: true
+            - name: synapse-config-processed
+              mountPath: /synapse-config
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+      containers:
+        - name: migrate
+          image: ghcr.io/element-hq/matrix-authentication-service:1.12.0
+          command:
+            - mas-cli
+            - syn2mas
+            - migrate
+            - --config
+            - /config/mas-config.yaml
+            - --synapse-config
+            - /synapse-config/homeserver.yaml
+          env:
+            # MAS database connection
+            - name: MAS_DATABASE_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mas-db-app
+                  key: uri
+          volumeMounts:
+            # MAS config
+            - name: mas-config
+              mountPath: /config
+              readOnly: true
+            # MAS secrets (encryption key, RSA key, etc.)
+            - name: secret-encryption-key
+              mountPath: /secrets/mas-encryption-hex
+              subPath: mas-encryption-hex
+              readOnly: true
+            - name: secret-synapse-shared
+              mountPath: /secrets/synapse-mas-shared-secret
+              subPath: synapse-mas-shared-secret
+              readOnly: true
+            - name: secret-authelia-client
+              mountPath: /secrets/authelia-client-secret
+              subPath: authelia-client-secret
+              readOnly: true
+            - name: secret-rsa-key
+              mountPath: /secrets/keys/rsa_private_key.pem
+              subPath: rsa_private_key.pem
+              readOnly: true
+            # Processed Synapse config
+            - name: synapse-config-processed
+              mountPath: /synapse-config
+              readOnly: true
+            # Temp directory for any scratch work
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+      volumes:
+        # MAS config from ConfigMap
+        - name: mas-config
+          configMap:
+            name: mas-config
+        # MAS secrets
+        - name: secret-encryption-key
+          secret:
+            secretName: mas-secrets
+            items:
+              - key: mas-encryption-hex
+                path: mas-encryption-hex
+        - name: secret-synapse-shared
+          secret:
+            secretName: mas-secrets
+            items:
+              - key: synapse-mas-shared-secret
+                path: synapse-mas-shared-secret
+        - name: secret-authelia-client
+          secret:
+            secretName: mas-secrets
+            items:
+              - key: authelia-client-secret
+                path: authelia-client-secret
+        - name: secret-rsa-key
+          secret:
+            secretName: mas-secrets
+            items:
+              - key: rsa_private_key.pem
+                path: rsa_private_key.pem
+        # Synapse config template (needs envsubst processing)
+        - name: synapse-config-template
+          configMap:
+            name: synapse-config
+            items:
+              - key: homeserver.yaml
+                path: homeserver.yaml
+        # Processed Synapse config (output from initContainer)
+        - name: synapse-config-processed
+          emptyDir: {}
+        # Temp directory
+        - name: tmp
+          emptyDir: {}
