@@ -30,6 +30,15 @@ matrix:
   # MUST match the secret configured in Synapse's matrix_authentication_service section
   secret_file: "/secrets/synapse-mas-shared-secret"
 
+# Password authentication configuration
+# Required for syn2mas migration to handle existing bcrypt-hashed passwords
+passwords:
+  enabled: true
+  schemes:
+    - version: 1
+      algorithm: bcrypt
+      cost: 12
+
 secrets:
   # 32-byte hex-encoded encryption key for session data
   encryption_file: "/secrets/mas-encryption-hex"
