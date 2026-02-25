@@ -1,0 +1,29 @@
+# MAS Service - exposes HTTP and internal (health/metrics) ports
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mas
+  namespace: app-matrix
+  labels:
+    app: mas
+    app.kubernetes.io/name: mas
+    app.kubernetes.io/component: authentication
+    app.kubernetes.io/part-of: matrix
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8081"
+    prometheus.io/path: "/metrics"
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP
+    - name: internal
+      port: 8081
+      targetPort: internal
+      protocol: TCP
+  selector:
+    app: mas

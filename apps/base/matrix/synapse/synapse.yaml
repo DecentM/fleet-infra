@@ -221,6 +221,13 @@ spec:
                 secretKeyRef:
                   name: synapse-secrets
                   key: worker-replication-secret
+            # MAS shared secret for Synapse <-> MAS communication
+            # Sourced from mas-secrets to avoid duplication
+            - name: SYNAPSE_MAS_SHARED_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: mas-secrets
+                  key: synapse-mas-shared-secret
             # S3/B2 storage credentials
             - name: SYNAPSE_S3_BUCKET
               valueFrom:

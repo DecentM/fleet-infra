@@ -1,0 +1,174 @@
+# Matrix Authentication Service (MAS)
+# Documentation: https://element-hq.github.io/matrix-authentication-service/
+# NOTE: Requires Synapse >= 1.136.0 for MAS integration
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mas
+  namespace: app-matrix
+  labels:
+    app: mas
+    app.kubernetes.io/name: mas
+    app.kubernetes.io/component: authentication
+    app.kubernetes.io/part-of: matrix
+spec:
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: mas
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: mas
+        app.kubernetes.io/name: mas
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      # Run database migrations before starting MAS
+      initContainers:
+        - name: migrations
+          image: ghcr.io/element-hq/matrix-authentication-service:1.12.0
+          args:
+            - database
+            - migrate
+            - --config=/config/mas-config.yaml
+          env:
+            - name: MAS_DATABASE_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mas-db-app
+                  key: uri
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
+            - name: secret-encryption-key
+              mountPath: /secrets/mas-encryption-hex
+              subPath: mas-encryption-hex
+              readOnly: true
+            - name: secret-synapse-shared
+              mountPath: /secrets/synapse-mas-shared-secret
+              subPath: synapse-mas-shared-secret
+              readOnly: true
+            - name: secret-authelia-client
+              mountPath: /secrets/authelia-client-secret
+              subPath: authelia-client-secret
+              readOnly: true
+            - name: secret-rsa-key
+              mountPath: /secrets/keys/rsa_private_key.pem
+              subPath: rsa_private_key.pem
+              readOnly: true
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+      containers:
+        - name: mas
+          image: ghcr.io/element-hq/matrix-authentication-service:1.12.0
+          imagePullPolicy: IfNotPresent
+          args:
+            - server
+            - --config=/config/mas-config.yaml
+          env:
+            - name: MAS_DATABASE_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mas-db-app
+                  key: uri
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: internal
+              containerPort: 8081
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: internal
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: internal
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
+            - name: secret-encryption-key
+              mountPath: /secrets/mas-encryption-hex
+              subPath: mas-encryption-hex
+              readOnly: true
+            - name: secret-synapse-shared
+              mountPath: /secrets/synapse-mas-shared-secret
+              subPath: synapse-mas-shared-secret
+              readOnly: true
+            - name: secret-authelia-client
+              mountPath: /secrets/authelia-client-secret
+              subPath: authelia-client-secret
+              readOnly: true
+            - name: secret-rsa-key
+              mountPath: /secrets/keys/rsa_private_key.pem
+              subPath: rsa_private_key.pem
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: config
+          configMap:
+            name: mas-config
+        # Secret volumes - from mas-secrets SealedSecret
+        - name: secret-encryption-key
+          secret:
+            secretName: mas-secrets
+            items:
+              - key: mas-encryption-hex
+                path: mas-encryption-hex
+        - name: secret-synapse-shared
+          secret:
+            secretName: mas-secrets
+            items:
+              - key: synapse-mas-shared-secret
+                path: synapse-mas-shared-secret
+        - name: secret-authelia-client
+          secret:
+            secretName: mas-secrets
+            items:
+              - key: authelia-client-secret
+                path: authelia-client-secret
+        - name: secret-rsa-key
+          secret:
+            secretName: mas-secrets
+            items:
+              - key: rsa_private_key.pem
+                path: rsa_private_key.pem
+        - name: tmp
+          emptyDir: {}

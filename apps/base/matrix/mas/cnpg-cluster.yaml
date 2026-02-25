@@ -1,0 +1,18 @@
+# CloudNativePG PostgreSQL cluster for Matrix Authentication Service (MAS)
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: mas-db
+  namespace: app-matrix
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.10
+  storage:
+    storageClass: longhorn-local
+    size: 10Gi
+  monitoring:
+    enablePodMonitor: true
+  bootstrap:
+    initdb:
+      database: mas
+      owner: mas_user

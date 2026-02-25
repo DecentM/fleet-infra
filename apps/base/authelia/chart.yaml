@@ -82,7 +82,7 @@ spec:
         authelia-smtp-secrets: {}  # /secrets/authelia-smtp-secrets/
         lldap-authelia-bind: {}  # /secrets/lldap-authelia-bind/
         authelia-client-jellyfin: {}  # /secrets/authelia-client-jellyfin/
-        authelia-client-matrix: {}  # /secrets/authelia-client-matrix/
+        authelia-client-mas: {}  # /secrets/authelia-client-mas/
 
     configMap:
       theme: dark

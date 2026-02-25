@@ -17,6 +17,10 @@
   "org.matrix.msc3575.proxy": {
     "url": "https://matrix.borooka.ee"
   },
+  "org.matrix.msc2965.authentication": {
+    "issuer": "https://matrix-auth.borooka.ee/",
+    "account": "https://matrix-auth.borooka.ee/account/"
+  },
   "io.element.e2ee": {
     "default": true
   }

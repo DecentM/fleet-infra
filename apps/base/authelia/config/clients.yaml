@@ -22,24 +22,22 @@ identity_providers:
           - authorization_code
         token_endpoint_auth_method: client_secret_post
 
-      - client_id: matrix
-        client_name: Matrix
+      - client_id: matrix-authentication-service
+        client_name: Matrix Authentication Service
         public: false
-        client_secret: {{ secret "/secrets/authelia-client-matrix/client-secret" | msquote }}
+        client_secret: {{ secret "/secrets/authelia-client-mas/client-secret" | msquote }}
         authorization_policy: two_factor
         require_pkce: false
         pkce_challenge_method: ''
         redirect_uris:
-          - https://matrix.borooka.ee/_synapse/client/oidc/callback
+          - https://matrix-auth.borooka.ee/upstream/callback/01HWCM3Q7K8YDNP9Q2X5V1W2Z3
         scopes:
           - openid
           - profile
           - email
-          - groups
         response_types:
           - code
         grant_types:
           - authorization_code
-        access_token_signed_response_alg: 'none'
-        userinfo_signed_response_alg: 'none'
+          - refresh_token
         token_endpoint_auth_method: client_secret_basic

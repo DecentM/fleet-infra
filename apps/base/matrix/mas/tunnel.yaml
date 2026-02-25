@@ -1,0 +1,17 @@
+# Cloudflare Tunnel binding for MAS
+# Exposes matrix-auth.borooka.ee externally
+apiVersion: networking.cfargotunnel.com/v1alpha1
+kind: TunnelBinding
+metadata:
+  name: mas-tunnel
+  namespace: app-matrix
+subjects:
+  - name: mas
+    spec:
+      fqdn: matrix-auth.borooka.ee
+      protocol: http
+      target: http://mas.app-matrix.svc:8080
+
+tunnelRef:
+  kind: ClusterTunnel
+  name: cluster-tunnel-borooka

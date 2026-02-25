@@ -1,0 +1,96 @@
+# Matrix Authentication Service (MAS) Configuration
+# Public configuration - secrets are mounted as files from Kubernetes secrets
+#
+# Documentation: https://element-hq.github.io/matrix-authentication-service/
+
+http:
+  public_base: "https://matrix-auth.borooka.ee/"
+  listeners:
+    - name: web
+      resources:
+        - name: discovery
+        - name: human
+        - name: oauth
+        - name: compat
+        - name: graphql
+        - name: assets
+      binds:
+        - address: "[::]:8080"
+    - name: internal
+      resources:
+        - name: health
+        - name: prometheus
+      binds:
+        - address: "[::]:8081"
+
+matrix:
+  homeserver: "borooka.ee"
+  endpoint: "http://synapse.app-matrix.svc.cluster.local:8008"
+  # Shared secret file for Synapse <-> MAS communication
+  # MUST match the secret configured in Synapse's matrix_authentication_service section
+  secret_file: "/secrets/synapse-mas-shared-secret"
+
+secrets:
+  # 32-byte hex-encoded encryption key for session data
+  encryption_file: "/secrets/mas-encryption-hex"
+  keys:
+    # RSA signing key for JWT tokens
+    - key_file: "/secrets/keys/rsa_private_key.pem"
+
+upstream_oauth2:
+  providers:
+    # Authelia OIDC provider
+    - id: "01HWCM3Q7K8YDNP9Q2X5V1W2Z3"
+      issuer: "https://auth.borooka.ee"
+      human_name: "Authelia"
+      brand_name: "authelia"
+      # Required for Authelia compatibility - handles metadata quirks
+      discovery_mode: insecure
+      # Critical: Authelia doesn't include profile/email claims in ID token by default
+      fetch_userinfo: true
+      token_endpoint_auth_method: client_secret_basic
+      client_id: "matrix-authentication-service"
+      client_secret_file: "/secrets/authelia-client-secret"
+      scope: "openid profile email"
+      claims_imports:
+        localpart:
+          action: require
+          template: "{{ user.preferred_username }}"
+        displayname:
+          action: suggest
+          template: "{{ user.name }}"
+        email:
+          action: suggest
+          template: "{{ user.email }}"
+          set_email_verification: always
+
+# Account management settings
+account:
+  # Allow users to change their email
+  email_change_allowed: true
+  # Allow users to change their display name
+  displayname_change_allowed: true
+  # Allow users to add a password (for local auth fallback)
+  password_registration_enabled: false
+  # Password change requires current password
+  password_change_allowed: false
+
+# Branding customization
+branding:
+  service_name: "Borooka Matrix"
+
+# Policy settings
+policy:
+  # Require email verification for new accounts
+  data:
+    # Allow registration via upstream providers
+    registration: "open"
+
+# Email configuration (optional - disable for now)
+# email:
+#   from: "Matrix Auth <noreply@borooka.ee>"
+#   transport: smtp
+#   hostname: smtp.example.com
+#   port: 587
+#   username: ""
+#   password_file: "/secrets/smtp-password"
