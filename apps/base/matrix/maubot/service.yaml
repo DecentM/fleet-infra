@@ -1,6 +1,3 @@
-# Maubot ClusterIP Service
-# Exposes HTTP API and web management UI
----
 apiVersion: v1
 kind: Service
 metadata:

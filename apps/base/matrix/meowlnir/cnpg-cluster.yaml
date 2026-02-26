@@ -1,4 +1,3 @@
-# CloudNativePG PostgreSQL cluster for Meowlnir
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:

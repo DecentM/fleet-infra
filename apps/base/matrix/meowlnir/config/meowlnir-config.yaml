@@ -1,54 +1,37 @@
-# Meowlnir Configuration
-# Documentation: https://docs.mau.fi/meowlnir/
+# hhttps://docs.mau.fi/meowlnir/
 
-# Homeserver connection details
 homeserver:
   address: http://synapse-nginx-proxy.app-matrix.svc:8008
   domain: borooka.ee
 
-# Meowlnir appservice identity and HTTP server
 meowlnir:
-  # Appservice ID - MUST match registration.yml id field exactly
   id: meowlnir
   as_token: "${MEOWLNIR_AS_TOKEN}"
   hs_token: "${MEOWLNIR_HS_TOKEN}"
-  # URL the homeserver uses to reach Meowlnir
   address: http://meowlnir.app-matrix.svc:29339
-  # Bind settings
   hostname: 0.0.0.0
   port: 29339
-  # Management API secret
   management_secret: "${MEOWLNIR_MANAGEMENT_SECRET}"
-  # Data API secret (for /_meowlnir/data/* endpoints)
   data_secret: "${MEOWLNIR_DATA_SECRET}"
 
-# Database connection (using CNPG PostgreSQL)
 database:
   type: postgres
   uri: "postgres://${MEOWLNIR_DB_USER}:${MEOWLNIR_DB_PASSWORD}@meowlnir-db-rw.app-matrix.svc:5432/${MEOWLNIR_DB_NAME}?sslmode=disable"
 
-# Optional: Read-only connection to Synapse database for better performance
-# Allows faster room member lookups without hitting the Synapse API
 synapse_db:
   type: postgres
   uri: "postgres://${SYNAPSE_DB_USER}:${SYNAPSE_DB_PASSWORD}@matrix-db-rw.app-matrix.svc:5432/${SYNAPSE_DB_NAME}?sslmode=disable"
 
-# Antispam module configuration
 antispam:
-  # Secret for authenticating requests from Synapse's HTTPAntispam module
-  # Must match the 'authorization' value in Synapse's HTTPAntispam config
   secret: "${MEOWLNIR_ANTISPAM_TOKEN}"
 
-# Encryption configuration
 encryption:
   enable: true
   pickle_key: "${MEOWLNIR_PICKLE_KEY}"
 
-# Bot provisioning (optional, not actively used)
 meowlnir4all:
   admin_room: null
 
-# Logging
 logging:
   min_level: info
   writers:

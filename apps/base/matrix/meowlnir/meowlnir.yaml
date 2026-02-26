@@ -1,5 +1,4 @@
-# Meowlnir - Matrix moderation bot
-# Documentation: https://docs.mau.fi/meowlnir/
+# https://docs.mau.fi/meowlnir/
 ---
 apiVersion: apps/v1
 kind: Deployment

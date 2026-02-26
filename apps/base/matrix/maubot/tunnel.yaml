@@ -1,8 +1,3 @@
-# Maubot Cloudflare Tunnel binding
-# Exposes Maubot management UI via Cloudflare Tunnel
-#
-# Note: The /_matrix/maubot/v1/logs endpoint requires WebSocket support.
-# Cloudflare Tunnels support WebSockets by default.
 apiVersion: networking.cfargotunnel.com/v1alpha1
 kind: TunnelBinding
 metadata:

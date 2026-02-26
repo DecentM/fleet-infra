@@ -1,8 +1,4 @@
-# Maubot configuration template
-# This is a seed config that will be processed by envsubst and copied to /data/config.yaml
-# on first run. After initial setup, the container manages this file.
-#
-# Documentation: https://docs.mau.fi/maubot/
+# https://docs.mau.fi/maubot/
 
 database: postgresql://maubot:${MAUBOT_DB_PASSWORD}@maubot-db-rw.app-matrix.svc:5432/maubot?sslmode=disable
 

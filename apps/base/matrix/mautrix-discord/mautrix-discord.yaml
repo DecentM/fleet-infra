@@ -1,5 +1,4 @@
-# Mautrix Discord - Discord bridge for Matrix
-# Documentation: https://docs.mau.fi/bridges/go/discord/
+# https://docs.mau.fi/bridges/go/discord/
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -160,10 +159,8 @@ spec:
             timeoutSeconds: 5
             failureThreshold: 3
           volumeMounts:
-            # Mount entire /config directory as writable for config upgrade temp files
             - name: config-processed
               mountPath: /config
-            # Writable data directory for state storage
             - name: data
               mountPath: /data
       volumes:

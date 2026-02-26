@@ -1,5 +1,3 @@
-# Mautrix Discord Appservice Registration
-# This file must be registered with Synapse in homeserver.yaml under app_service_config_files
 id: discord
 url: http://mautrix-discord.app-matrix.svc:29334
 as_token: ${DISCORD_AS_TOKEN}
@@ -18,7 +16,6 @@ namespaces:
     - regex: "^#discord_.*:borooka\\.ee$"
       exclusive: true
 
-# End-to-end encryption support flags
 de.sorunome.msc2409.push_ephemeral: true
 push_ephemeral: true
 org.matrix.msc3202: true

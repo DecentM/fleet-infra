@@ -1,5 +1,3 @@
-# Persistent storage for Maubot data (plugins, databases, config)
-# Maubot stores SQLite databases for plugins and the main bot state here
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:

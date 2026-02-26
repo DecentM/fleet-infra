@@ -1,12 +1,9 @@
-# Mautrix Discord Bridge Configuration
-# Documentation: https://docs.mau.fi/bridges/go/discord/
+# https://docs.mau.fi/bridges/go/discord/
 
-# Homeserver connection
 homeserver:
   address: http://synapse-nginx-proxy.app-matrix.svc:8008
   domain: borooka.ee
 
-# Appservice configuration
 appservice:
   address: http://mautrix-discord.app-matrix.svc:29334
   public_address: https://discord-bridge.borooka.ee
@@ -19,26 +16,24 @@ appservice:
     avatar: mxc://borooka.ee/vBlnanPcgFgmtNrMsaZRWvNU
   as_token: "${DISCORD_AS_TOKEN}"
   hs_token: "${DISCORD_HS_TOKEN}"
-  # Database configuration (PostgreSQL via CNPG) - must be inside appservice for v0.7.6
   database:
     type: postgres
     uri: "postgres://${DISCORD_DB_USER}:${DISCORD_DB_PASSWORD}@mautrix-discord-db-rw.app-matrix.svc:5432/${DISCORD_DB_NAME}?sslmode=disable"
     max_open_conns: 20
     max_idle_conns: 2
 
-# Bridge configuration
 bridge:
   username_template: "discord_{{.}}"
   displayname_template: "{{.DisplayName}} (Discord)"
   channel_name_template: "#{{.Name}}"
   guild_name_template: "{{.Name}}"
-  # Allow users from this homeserver to use the bridge
+
   permissions:
     "*": relay
     "borooka.ee": user
     "@decentm:borooka.ee": admin
     "@meowlnir:borooka.ee": admin
-  # Double-puppeting (automatic when using same homeserver)
+
   double_puppet_server_map:
     borooka.ee: http://synapse-nginx-proxy.app-matrix.svc:8008
   login_shared_secret_map: {}
@@ -50,15 +45,12 @@ bridge:
       m.emote: "* {{.Message}}"
       m.notice: "{{.Message}}"
     displayname_format: "{{.DisplayName}} (Matrix)"
-  # Message handling
+
   message_status_events: false
   delivery_receipts: false
   message_error_notices: true
   portal_message_buffer: 128
-  # Encryption support
-  # appservice: true - Use appservice transaction mode instead of /sync polling
-  # Synapse 1.147+ no longer allows appservice users to /sync
-  # Requires: msc3202_transaction_extensions + msc2409_to_device_messages_enabled in homeserver.yaml
+
   encryption:
     allow: true
     default: false
@@ -78,7 +70,6 @@ bridge:
       send: unverified
       share: cross-signed-tofu
 
-# Logging
 logging:
   min_level: info
   writers:

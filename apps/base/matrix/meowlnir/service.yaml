@@ -1,6 +1,3 @@
-# Meowlnir ClusterIP Service
-# Exposes antispam and management APIs
----
 apiVersion: v1
 kind: Service
 metadata:

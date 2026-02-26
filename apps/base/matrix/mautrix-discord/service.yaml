@@ -1,6 +1,3 @@
-# Mautrix Discord ClusterIP Service
-# Exposes appservice API for Synapse communication
----
 apiVersion: v1
 kind: Service
 metadata:
