@@ -155,6 +155,12 @@ spec:
                 secretKeyRef:
                   name: synapse-secrets
                   key: worker-replication-secret
+            # MAS shared secret for Synapse <-> MAS communication
+            - name: SYNAPSE_MAS_SHARED_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: mas-secrets
+                  key: synapse-mas-shared-secret
             - name: OIDC_CLIENT_MATRIX_SECRET
               valueFrom:
                 secretKeyRef:
