@@ -18,7 +18,10 @@ spec:
     matchLabels:
       app: synapse
   strategy:
-    type: Recreate  # Single replica for simplicity
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   template:
     metadata:
       labels:
