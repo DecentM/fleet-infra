@@ -96,12 +96,7 @@ spec:
                 echo "Processing discord template: $filename..."
                 envsubst < "$file" > "/config-processed/$filename"
               done
-              # Process mautrix-signal registration template
-              for file in /signal-template/*; do
-                filename=$(basename "$file")
-                echo "Processing signal template: $filename..."
-                envsubst < "$file" > "/config-processed/$filename"
-              done
+
               # Process matrix-meetings registration template
               for file in /meetings-template/*; do
                 filename=$(basename "$file")
@@ -189,17 +184,7 @@ spec:
                 secretKeyRef:
                   name: mautrix-discord-secrets
                   key: hs-token
-            # Mautrix Signal tokens (for registration template)
-            - name: SIGNAL_AS_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: mautrix-signal-secrets
-                  key: as-token
-            - name: SIGNAL_HS_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: mautrix-signal-secrets
-                  key: hs-token
+
             # Matrix Meetings tokens (for registration template)
             - name: MEETINGS_BOT_AS_TOKEN
               valueFrom:
@@ -268,9 +253,6 @@ spec:
               readOnly: true
             - name: discord-registration-template
               mountPath: /discord-template
-              readOnly: true
-            - name: signal-registration-template
-              mountPath: /signal-template
               readOnly: true
             - name: meetings-registration-template
               mountPath: /meetings-template
@@ -412,12 +394,6 @@ spec:
             items:
               - key: discord-registration.yaml
                 path: discord-registration.yaml
-        - name: signal-registration-template
-          configMap:
-            name: mautrix-signal-config
-            items:
-              - key: signal-registration.yaml
-                path: signal-registration.yaml
         - name: meetings-registration-template
           configMap:
             name: matrix-meetings-config

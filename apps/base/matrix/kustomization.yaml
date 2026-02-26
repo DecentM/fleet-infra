@@ -14,7 +14,6 @@ resources:
   - meowlnir
   - redis
   - mautrix-discord
-  - mautrix-signal
   - maubot
   - matrix-meetings
   - mas
