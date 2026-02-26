@@ -12,7 +12,7 @@ appservice:
   id: discord
   bot:
     username: discordbot
-    displayname: Discord Bridge Bot
+    displayname: Brooke's Discord Bridge
     avatar: mxc://borooka.ee/vBlnanPcgFgmtNrMsaZRWvNU
   as_token: "${DISCORD_AS_TOKEN}"
   hs_token: "${DISCORD_HS_TOKEN}"
