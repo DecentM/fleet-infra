@@ -6,6 +6,7 @@ resources:
   - sealed-mautrix-discord-secrets.yaml
   - mautrix-discord.yaml
   - service.yaml
+  - tunnel.yaml
 
 configMapGenerator:
   - name: mautrix-discord-config

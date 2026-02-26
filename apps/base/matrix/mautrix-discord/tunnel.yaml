@@ -1,0 +1,14 @@
+apiVersion: networking.cfargotunnel.com/v1alpha1
+kind: TunnelBinding
+metadata:
+  name: mautrix-discord-tunnel
+  namespace: app-matrix
+subjects:
+  - name: mautrix-discord
+    spec:
+      fqdn: discord-bridge.borooka.ee
+      protocol: http
+      target: http://mautrix-discord.app-matrix.svc:29334
+tunnelRef:
+  kind: ClusterTunnel
+  name: cluster-tunnel-borooka
