@@ -36,6 +36,7 @@ bridge:
     "*": relay
     "borooka.ee": user
     "@decentm:borooka.ee": admin
+    "@meowlnir:borooka.ee": admin
   # Double-puppeting (automatic when using same homeserver)
   double_puppet_server_map:
     borooka.ee: http://synapse-nginx-proxy.app-matrix.svc:8008
