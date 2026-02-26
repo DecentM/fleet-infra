@@ -16,11 +16,12 @@ appservice:
     avatar: mxc://borooka.ee/vBlnanPcgFgmtNrMsaZRWvNU
   as_token: "${DISCORD_AS_TOKEN}"
   hs_token: "${DISCORD_HS_TOKEN}"
+  async_transactions: true
   database:
     type: postgres
     uri: "postgres://${DISCORD_DB_USER}:${DISCORD_DB_PASSWORD}@mautrix-discord-db-rw.app-matrix.svc:5432/${DISCORD_DB_NAME}?sslmode=disable"
-    max_open_conns: 20
-    max_idle_conns: 2
+    max_open_conns: 50
+    max_idle_conns: 10
 
 bridge:
   username_template: "discord_{{.}}"
@@ -58,13 +59,13 @@ bridge:
     msc4190: true
     delete_keys:
       delete_outbound_on_ack: false
-      dont_store_outbound: false
-      ratchet_on_decrypt: false
-      delete_fully_used_on_decrypt: false
-      delete_prev_on_new_session: false
-      delete_on_device_delete: false
-      periodically_delete_expired: false
-      delete_outdated_inbound: false
+      dont_store_outbound: true
+      ratchet_on_decrypt: true
+      delete_fully_used_on_decrypt: true
+      delete_prev_on_new_session: true
+      delete_on_device_delete: true
+      periodically_delete_expired: true
+      delete_outdated_inbound: true
     verification_levels:
       receive: unverified
       send: unverified
