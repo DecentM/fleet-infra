@@ -78,6 +78,33 @@ spec:
                 fi
               done
 
+              # Process appservice registration templates
+              for file in /hookshot-template/*; do
+                filename=$(basename "$file")
+                echo "Processing hookshot template: $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
+              for file in /meowlnir-template/*; do
+                filename=$(basename "$file")
+                echo "Processing meowlnir template: $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
+              for file in /discord-template/*; do
+                filename=$(basename "$file")
+                echo "Processing discord template: $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
+              for file in /signal-template/*; do
+                filename=$(basename "$file")
+                echo "Processing signal template: $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
+              for file in /meetings-template/*; do
+                filename=$(basename "$file")
+                echo "Processing meetings template: $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
+
               echo "Config templating complete"
               ls -lh /config-processed/
           env:
@@ -144,6 +171,57 @@ spec:
                 secretKeyRef:
                   name: meowlnir-secrets
                   key: meowlnir_as_token
+            # Appservice tokens for registration templates
+            - name: HOOKSHOT_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hookshot-secrets
+                  key: as-token
+            - name: HOOKSHOT_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hookshot-secrets
+                  key: hs-token
+            - name: MEOWLNIR_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: meowlnir-secrets
+                  key: meowlnir_as_token
+            - name: MEOWLNIR_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: meowlnir-secrets
+                  key: meowlnir_hs_token
+            - name: DISCORD_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mautrix-discord-secrets
+                  key: as-token
+            - name: DISCORD_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mautrix-discord-secrets
+                  key: hs-token
+            - name: SIGNAL_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mautrix-signal-secrets
+                  key: as-token
+            - name: SIGNAL_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mautrix-signal-secrets
+                  key: hs-token
+            - name: MEETINGS_BOT_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: matrix-meetings-secrets
+                  key: as-token
+            - name: MEETINGS_BOT_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: matrix-meetings-secrets
+                  key: hs-token
             # S3/B2 storage credentials
             - name: SYNAPSE_S3_BUCKET
               valueFrom:
@@ -179,6 +257,22 @@ spec:
               readOnly: true
             - name: config-processed
               mountPath: /config-processed
+            # Appservice registration templates
+            - name: hookshot-registration-template
+              mountPath: /hookshot-template
+              readOnly: true
+            - name: meowlnir-registration-template
+              mountPath: /meowlnir-template
+              readOnly: true
+            - name: discord-registration-template
+              mountPath: /discord-template
+              readOnly: true
+            - name: signal-registration-template
+              mountPath: /signal-template
+              readOnly: true
+            - name: meetings-registration-template
+              mountPath: /meetings-template
+              readOnly: true
           securityContext:
             runAsUser: 991
             runAsGroup: 991
@@ -259,6 +353,37 @@ spec:
             items:
               - key: signing.key
                 path: borooka.ee.signing.key
+        # Appservice registration templates
+        - name: hookshot-registration-template
+          configMap:
+            name: hookshot-config
+            items:
+              - key: hookshot-registration.yml
+                path: hookshot-registration.yml
+        - name: meowlnir-registration-template
+          configMap:
+            name: meowlnir-config
+            items:
+              - key: meowlnir-registration.yml
+                path: meowlnir-registration.yml
+        - name: discord-registration-template
+          configMap:
+            name: mautrix-discord-config
+            items:
+              - key: discord-registration.yaml
+                path: discord-registration.yaml
+        - name: signal-registration-template
+          configMap:
+            name: mautrix-signal-config
+            items:
+              - key: signal-registration.yaml
+                path: signal-registration.yaml
+        - name: meetings-registration-template
+          configMap:
+            name: matrix-meetings-config
+            items:
+              - key: meetings-registration.yaml
+                path: meetings-registration.yaml
 ---
 # ClusterIP service for load balancing (nginx routes to this)
 apiVersion: v1

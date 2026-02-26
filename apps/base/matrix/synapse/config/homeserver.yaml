@@ -219,6 +219,7 @@ experimental_features:
   msc3202_device_masquerading: true
   msc3202_transaction_extensions: true
   msc2409_to_device_messages_enabled: true
+  msc2815_enabled: true # Appservice encryption support
 
   # Element Call support
   msc4140_enabled: true  # Delayed events for proper call signalling

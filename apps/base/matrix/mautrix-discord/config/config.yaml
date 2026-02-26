@@ -46,10 +46,14 @@ bridge:
   message_error_notices: true
   portal_message_buffer: 128
   # Encryption support
+  # appservice: true - Use appservice transaction mode instead of /sync polling
+  # Synapse 1.147+ no longer allows appservice users to /sync
+  # Requires: msc3202_transaction_extensions + msc2409_to_device_messages_enabled in homeserver.yaml
   encryption:
     allow: true
     default: false
-    appservice: false
+    appservice: true
+    msc4190: true
     delete_keys:
       delete_outbound_on_ack: false
       dont_store_outbound: false
