@@ -3,29 +3,19 @@ public_baseurl: "https://matrix.borooka.ee/"
 worker_name: "${SYNAPSE_WORKER_NAME}"
 pid_file: /data/homeserver.pid
 
-# Disable presence - major CPU/DB consumer (was consuming 1,145s of DB time)
 presence:
-  enabled: false
+  enabled: true
 
-# Disable authenticated media (MSC3916) for backwards compatibility
-# This was enabled by default in Synapse 1.120+ and causes 404s on legacy
-# media endpoints (/_matrix/media/v3/*) for media uploaded after the upgrade.
 enable_authenticated_media: false
 
-# Worker coordination secret
 worker_replication_secret: "${SYNAPSE_WORKER_REPLICATION_SECRET}"
 run_background_tasks_on: background_tasks1
 
-# Redis for worker coordination
 redis:
   enabled: true
   host: synapse-redis.app-matrix.svc
   port: 6379
 
-# Instance map for worker discovery
-# Workers connect to each other via replication port 9093
-# NOTE: The key "main" is used for routing to the main process.
-# The stream_writers use "master" which is Synapse's internal instance name.
 instance_map:
   main:
     host: synapse-main-repl.app-matrix.svc
@@ -49,9 +39,6 @@ instance_map:
     host: synapse-appservice-sender.app-matrix.svc
     port: 9093
 
-# Stream writers - which workers handle which streams
-# NOTE: stream_writers must use "master" which is Synapse's internal instance name
-# for the main process, not the instance_map key.
 stream_writers:
   events:
     - event_persister1
@@ -64,14 +51,14 @@ stream_writers:
   receipts:
     - master
 
-# Federation senders configuration
 federation_sender_instances:
   - federation_sender1
 
-# Appservice notification assignment
-# Assign appservice notifications to a dedicated appservice sender worker
-# This worker handles sending transactions to application services (bridges, bots)
 notify_appservices_from_worker: appservice_sender1
+
+# https://spec.matrix.org/v1.17/rooms/
+default_room_version: "12"
+encryption_enabled_by_default_for_room_type: invite
 
 database:
   name: psycopg2
@@ -88,32 +75,37 @@ database:
     keepalives_count: 3
 
 listeners:
-  # Main HTTP listener for client and federation traffic
+  # Main HTTP for client and federation traffic
   - port: 8008
     tls: false
     type: http
     x_forwarded: true
-    bind_addresses: ['0.0.0.0']
+    bind_addresses:
+      - 0.0.0.0
     resources:
-      - names: [client, federation, metrics]
+      - names:
+          - client
+          - federation
+          - metrics
         compress: false
-  # Replication listener for worker communication
+
+  # Workers talk on this
   - port: 9093
     tls: false
     type: http
-    bind_addresses: ['0.0.0.0']
+    bind_addresses:
+      - 0.0.0.0
     resources:
-      - names: [replication]
+      - names:
+        - replication
 
 # Media storage path (used as temporary/cache even with S3)
 media_store_path: /data/media_store
 
-# Backblaze B2 S3 storage provider for media
-# New uploads go directly to B2, existing local files served as fallback
 media_storage_providers:
   - module: s3_storage_provider.S3StorageProviderBackend
-    store_local: true      # Store user uploads to B2
-    store_remote: true     # Store remote media/previews to B2
+    store_local: true # Uploads from local users
+    store_remote: true # From federation
     store_synchronous: true  # Upload immediately (vs background job)
     config:
       bucket: "${SYNAPSE_S3_BUCKET}"
@@ -144,14 +136,10 @@ registration_shared_secret: "${SYNAPSE_REGISTRATION_SHARED_SECRET}"
 password_config:
   enabled: false
 
-# Matrix Authentication Service (MAS) integration
-# NOTE: Requires Synapse >= 1.136.0
-# MAS handles all authentication including OIDC, so oidc_providers is disabled
 matrix_authentication_service:
   enabled: true
   endpoint: "http://mas.app-matrix.svc.cluster.local:8080/"
-  # Shared secret for MAS <-> Synapse communication
-  # MUST match the secret configured in MAS's matrix.secret_file
+  # Must match the secret configured in MAS's matrix.secret_file
   secret: "${SYNAPSE_MAS_SHARED_SECRET}"
 
 macaroon_secret_key: "${SYNAPSE_MACAROON_SECRET_KEY}"
@@ -243,9 +231,12 @@ default_power_level_content_override:
 user_directory:
   search_all_users: true
 
-# Required for matrix-meetings widget to work properly
+delete_stale_devices_after: 1y
+
 room_prejoin_state:
+  disable_default_event_types: false
   additional_event_types:
     - m.space.parent
     - net.nordeck.meetings.metadata
     - m.room.power_levels
+    - m.room.history_visibility

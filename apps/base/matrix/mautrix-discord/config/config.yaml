@@ -68,7 +68,7 @@ bridge:
     verification_levels:
       receive: unverified
       send: unverified
-      share: cross-signed-tofu
+      share: unverified
 
 logging:
   min_level: info
