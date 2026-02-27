@@ -98,7 +98,7 @@ spec:
             allowPrivilegeEscalation: false
       containers:
         - name: maubot
-          image: ghcr.io/decentm/maubot:latest
+          image: ghcr.io/decentm/maubot:sha-61c58ab
           imagePullPolicy: IfNotPresent
           command:
             - python3
