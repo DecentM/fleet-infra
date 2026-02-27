@@ -1,8 +1,22 @@
 # https://docs.mau.fi/maubot/
 
+user:
+  credentials:
+    id: "${BOT_MXID}"
+    homeserver: "${BOT_HOMESERVER}"
+    access_token: "${MAUBOT_AS_TOKEN}"
+    device_id: "${BOT_DEVICE_ID}"
+  appservice: true
+  hs_token: "${MAUBOT_HS_TOKEN}"
+  sync: false
+  ignore_initial_sync: true
+  ignore_first_sync: true
+
 database: postgresql://maubot:${MAUBOT_DB_PASSWORD}@maubot-db-rw.app-matrix.svc:5432/maubot?sslmode=disable
 
 crypto_database: default
+
+crypto_db_pickle_key: "${MAUBOT_PICKLE_KEY}"
 
 plugin_directories:
   upload: /data/plugins
@@ -22,15 +36,14 @@ server:
   ui_base_path: /_matrix/maubot
   plugin_base_path: /_matrix/maubot/plugin/
   override_resource_path: /opt/maubot/frontend
-  unshared_secret: ${MAUBOT_UNSHARED_SECRET}
+  unshared_secret: null
 
 homeservers:
   ${MATRIX_DOMAIN}:
     url: http://synapse-nginx-proxy.app-matrix.svc:8008
     secret: null
 
-admins:
-  ${MAUBOT_ADMIN_USERNAME}: ${MAUBOT_ADMIN_PASSWORD}
+admins: {}
 
 api_features:
   login: true
@@ -53,12 +66,6 @@ logging:
     console:
       class: logging.StreamHandler
       formatter: normal
-    file:
-      class: logging.handlers.RotatingFileHandler
-      formatter: normal
-      filename: /data/maubot.log
-      maxBytes: 10485760
-      backupCount: 10
   root:
     level: INFO
-    handlers: [console, file]
+    handlers: [console]

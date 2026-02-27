@@ -3,17 +3,16 @@ kind: Kustomization
 
 resources:
   - cnpg-cluster.yaml
-  - pvc.yaml
   - sealed-maubot-secrets.yaml
   - maubot.yaml
   - service.yaml
-  - tunnel.yaml
 
 configMapGenerator:
   - name: maubot-config
     namespace: app-matrix
     files:
       - config.yaml=config/config.yaml
+      - maubot-registration.yaml=config/maubot-registration.yaml
 
   - name: maubot-env
     namespace: app-matrix

@@ -93,6 +93,12 @@ spec:
                 echo "Processing meowlnir template: $filename..."
                 envsubst < "$file" > "/config-processed/$filename"
               done
+              # Process maubot registration template
+              for file in /maubot-template/*; do
+                filename=$(basename "$file")
+                echo "Processing maubot template: $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
               # Process mautrix-discord registration template
               for file in /discord-template/*; do
                 filename=$(basename "$file")
@@ -176,6 +182,17 @@ spec:
                 secretKeyRef:
                   name: meowlnir-secrets
                   key: meowlnir_as_token
+            # Maubot tokens (for registration template)
+            - name: MAUBOT_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: maubot-secrets
+                  key: as-token
+            - name: MAUBOT_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: maubot-secrets
+                  key: hs-token
             # Mautrix Discord tokens (for registration template)
             - name: DISCORD_AS_TOKEN
               valueFrom:
@@ -253,6 +270,9 @@ spec:
               readOnly: true
             - name: meowlnir-registration-template
               mountPath: /meowlnir-template
+              readOnly: true
+            - name: maubot-registration-template
+              mountPath: /maubot-template
               readOnly: true
             - name: discord-registration-template
               mountPath: /discord-template
@@ -391,6 +411,12 @@ spec:
             items:
               - key: meowlnir-registration.yml
                 path: meowlnir-registration.yml
+        - name: maubot-registration-template
+          configMap:
+            name: maubot-config
+            items:
+              - key: maubot-registration.yaml
+                path: maubot-registration.yaml
         - name: discord-registration-template
           configMap:
             name: mautrix-discord-config

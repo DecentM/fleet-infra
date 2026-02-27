@@ -53,39 +53,36 @@ spec:
               echo "Regenerating config from template..."
               envsubst < /seed/config.yaml > /data/config.yaml
               echo "Config regenerated successfully"
-              # Ensure required directories exist
-              mkdir -p /data/plugins /data/trash /data/dbs
-              # Fix override_resource_path if it's set to false (needed for web UI)
-              if grep -q 'override_resource_path: false' /data/config.yaml 2>/dev/null; then
-                echo "Fixing override_resource_path in config..."
-                sed -i 's|override_resource_path: false|override_resource_path: /opt/maubot/frontend|g' /data/config.yaml
-              fi
-              echo "Directories ready"
               ls -la /data/
           envFrom:
             - configMapRef:
                 name: maubot-env
           env:
-            - name: MAUBOT_UNSHARED_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: maubot-secrets
-                  key: MAUBOT_UNSHARED_SECRET
-            - name: MAUBOT_ADMIN_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: maubot-secrets
-                  key: MAUBOT_ADMIN_USERNAME
-            - name: MAUBOT_ADMIN_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: maubot-secrets
-                  key: MAUBOT_ADMIN_PASSWORD
             - name: MAUBOT_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: maubot-db-app
                   key: password
+            - name: MAUBOT_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: maubot-secrets
+                  key: as-token
+            - name: MAUBOT_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: maubot-secrets
+                  key: hs-token
+            - name: BOT_DEVICE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: maubot-secrets
+                  key: device-id
+            - name: MAUBOT_PICKLE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: maubot-secrets
+                  key: pickle-key
           volumeMounts:
             - name: config-seed
               mountPath: /seed
@@ -100,12 +97,44 @@ spec:
         - name: maubot
           image: ghcr.io/decentm/maubot:sha-1b5a056
           imagePullPolicy: IfNotPresent
+          workingDir: /opt/maubot-plugin
           command:
             - python3
             - -m
-            - maubot
+            - maubot.standalone
             - -c
             - /data/config.yaml
+          envFrom:
+            - configMapRef:
+                name: maubot-env
+          env:
+            - name: MAUBOT_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: maubot-db-app
+                  key: password
+            - name: MAUBOT_DB_URI
+              value: "postgres://maubot:$(MAUBOT_DB_PASSWORD)@maubot-postgresql:5432/maubot"
+            - name: MAUBOT_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: maubot-secrets
+                  key: as-token
+            - name: MAUBOT_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: maubot-secrets
+                  key: hs-token
+            - name: BOT_DEVICE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: maubot-secrets
+                  key: device-id
+            - name: MAUBOT_PICKLE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: maubot-secrets
+                  key: pickle-key
           resources:
             requests:
               cpu: 100m
@@ -143,5 +172,4 @@ spec:
           configMap:
             name: maubot-config
         - name: data
-          persistentVolumeClaim:
-            claimName: maubot-data
+          emptyDir: {}

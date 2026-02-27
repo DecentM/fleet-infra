@@ -187,6 +187,7 @@ log_config: "/config/log.config"
 app_service_config_files:
   - /config/hookshot-registration.yml
   - /config/meowlnir-registration.yml
+  - /config/maubot-registration.yaml
   - /config/discord-registration.yaml
   - /config/meetings-registration.yaml
 

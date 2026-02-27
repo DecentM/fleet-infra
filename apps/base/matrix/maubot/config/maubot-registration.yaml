@@ -1,0 +1,19 @@
+id: maubot-communitybot
+url: http://maubot.app-matrix.svc:29316
+as_token: ${MAUBOT_AS_TOKEN}
+hs_token: ${MAUBOT_HS_TOKEN}
+sender_localpart: communitybot
+rate_limited: false
+
+namespaces:
+  users:
+    - regex: "^@communitybot:borooka\\.ee$"
+      exclusive: true
+  rooms: []
+  aliases: []
+
+# End-to-end encryption support
+de.sorunome.msc2409.push_ephemeral: true
+push_ephemeral: true
+org.matrix.msc3202: true
+io.element.msc4190: true
