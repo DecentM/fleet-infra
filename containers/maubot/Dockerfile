@@ -1,6 +1,6 @@
 # Maubot standalone with CommunityBot plugin source
 
-FROM dock.mau.dev/maubot/maubot:v0.6.0
+FROM dock.mau.dev/maubot/maubot:v0.6.0-standalone
 
 USER root
 RUN apk add --no-cache git
