@@ -95,7 +95,7 @@ spec:
             allowPrivilegeEscalation: false
       containers:
         - name: maubot
-          image: ghcr.io/decentm/maubot:sha-1b5a056
+          image: ghcr.io/decentm/maubot:sha-b665fae
           imagePullPolicy: IfNotPresent
           workingDir: /opt/maubot-plugin
           command:
