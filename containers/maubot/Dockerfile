@@ -5,6 +5,7 @@ FROM dock.mau.dev/maubot/maubot:v0.6.0 AS builder
 
 USER root
 RUN apk add --no-cache git
+RUN pip install --no-cache-dir --break-system-packages 'maubot[cli]'
 
 # Build CommunityBot plugin
 WORKDIR /build/communitybot
