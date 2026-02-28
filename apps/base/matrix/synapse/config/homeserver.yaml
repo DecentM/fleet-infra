@@ -189,7 +189,6 @@ app_service_config_files:
   - /config/meowlnir-registration.yml
   - /config/maubot-registration.yaml
   - /config/discord-registration.yaml
-  - /config/meetings-registration.yaml
 
 modules:
   - module: synapse_http_antispam.HTTPAntispam

@@ -100,12 +100,6 @@ spec:
                 envsubst < "$file" > "/config-processed/$filename"
               done
 
-              for file in /meetings-template/*; do
-                filename=$(basename "$file")
-                echo "Processing meetings template: $filename..."
-                envsubst < "$file" > "/config-processed/$filename"
-              done
-
               echo "Config templating complete"
               ls -lh /config-processed/
           env:
@@ -214,16 +208,6 @@ spec:
                   name: mautrix-discord-secrets
                   key: hs-token
 
-            - name: MEETINGS_BOT_AS_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: matrix-meetings-secrets
-                  key: as-token
-            - name: MEETINGS_BOT_HS_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: matrix-meetings-secrets
-                  key: hs-token
             # S3/B2 storage credentials
             - name: SYNAPSE_S3_BUCKET
               valueFrom:
@@ -271,10 +255,6 @@ spec:
               readOnly: true
             - name: discord-registration-template
               mountPath: /discord-template
-              readOnly: true
-
-            - name: meetings-registration-template
-              mountPath: /meetings-template
               readOnly: true
           securityContext:
             runAsUser: 991
@@ -381,13 +361,6 @@ spec:
             items:
               - key: discord-registration.yaml
                 path: discord-registration.yaml
-
-        - name: meetings-registration-template
-          configMap:
-            name: matrix-meetings-config
-            items:
-              - key: meetings-registration.yaml
-                path: meetings-registration.yaml
 ---
 # ClusterIP service for load balancing (nginx routes to this)
 apiVersion: v1
