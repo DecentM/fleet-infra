@@ -9,6 +9,7 @@ user:
   appservice: true
   hs_token: "${MAUBOT_HS_TOKEN}"
   sync: false
+  autojoin: true
   ignore_initial_sync: true
   ignore_first_sync: true
 
@@ -56,6 +57,43 @@ api_features:
   client_auth: true
   dev_open: false
   log: true
+
+# Config for the plugin. These values override the plugin's base-config.yaml defaults.
+# All values must be explicitly set because standalone mode with plugin_config: {}
+# results in None for all config keys, causing runtime crashes.
+plugin_config:
+  parent_room: '!KyphcRBmHzMVfbUfJV:borooka.ee'
+  community_slug: 'borooka-ee'
+  sleep: 5
+  welcome_sleep: 0
+  encrypt: true
+  invite_power_level: 50
+  warn_threshold_days: 30
+  kick_threshold_days: 60
+  track_users: ["messages", "reactions"]
+  invitees: []
+  greetings:
+    generic: |
+      Welcome {user}! Please be sure to read the topic for helpful links and information.
+  greeting_rooms: {}
+  notification_room: '!EburA1a1wZlr55SxgYg9F65KIBtQNp2D3bzVlHwJAK8:borooka.ee'
+  join_notification_message: |
+    User <code>{user}</code> has joined <code>{room}</code>.
+  censor: false
+  uncensor_pl: 1
+  censor_files: false
+  censor_wordlist: []
+  censor_wordlist_instaban: []
+  banlists: []
+  proactive_banning: false
+  redact_on_ban: true
+  check_if_human: false
+  verification_phrases:
+    - "Yes, I am a human!"
+  verification_attempts: 3
+  verification_message: |
+    Thank you for joining {room}. Please send: "{phrase}"
+  room_version: "12"
 
 logging:
   version: 1
