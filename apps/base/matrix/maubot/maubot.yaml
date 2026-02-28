@@ -43,6 +43,38 @@ spec:
             runAsGroup: 1337
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
+        - name: run-migrations
+          image: ghcr.io/decentm/maubot:sha-b665fae
+          imagePullPolicy: IfNotPresent
+          command:
+            - python3
+            - /migrations/run-migrations.py
+          envFrom:
+            - configMapRef:
+                name: maubot-env
+          env:
+            - name: MAUBOT_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: maubot-db-app
+                  key: password
+            - name: MAUBOT_DB_URI
+              value: "postgres://maubot:$(MAUBOT_DB_PASSWORD)@maubot-db-rw.app-matrix.svc:5432/maubot"
+          volumeMounts:
+            - name: config-seed
+              mountPath: /migrations
+              readOnly: true
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          securityContext:
+            runAsUser: 1337
+            runAsGroup: 1337
+            allowPrivilegeEscalation: false
         - name: seed-config
           image: oaudry/envsubst:1.6
           imagePullPolicy: IfNotPresent
@@ -114,7 +146,7 @@ spec:
                   name: maubot-db-app
                   key: password
             - name: MAUBOT_DB_URI
-              value: "postgres://maubot:$(MAUBOT_DB_PASSWORD)@maubot-postgresql:5432/maubot"
+              value: "postgres://maubot:$(MAUBOT_DB_PASSWORD)@maubot-db-rw.app-matrix.svc:5432/maubot"
             - name: MAUBOT_AS_TOKEN
               valueFrom:
                 secretKeyRef:

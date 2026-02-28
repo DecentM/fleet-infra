@@ -13,6 +13,7 @@ configMapGenerator:
     files:
       - config.yaml=config/config.yaml
       - maubot-registration.yaml=config/maubot-registration.yaml
+      - run-migrations.py=config/run-migrations.py
 
   - name: maubot-env
     namespace: app-matrix

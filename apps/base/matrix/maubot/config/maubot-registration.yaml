@@ -1,4 +1,4 @@
-id: maubot-communitybot
+id: maubot-community
 url: http://maubot.app-matrix.svc:29316
 as_token: ${MAUBOT_AS_TOKEN}
 hs_token: ${MAUBOT_HS_TOKEN}
