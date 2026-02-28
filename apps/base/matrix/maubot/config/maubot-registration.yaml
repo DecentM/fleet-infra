@@ -2,12 +2,12 @@ id: maubot-communitybot
 url: http://maubot.app-matrix.svc:29316
 as_token: ${MAUBOT_AS_TOKEN}
 hs_token: ${MAUBOT_HS_TOKEN}
-sender_localpart: communitybot
+sender_localpart: community
 rate_limited: false
 
 namespaces:
   users:
-    - regex: "^@communitybot:borooka\\.ee$"
+    - regex: "^@community:borooka\\.ee$"
       exclusive: true
   rooms: []
   aliases: []
