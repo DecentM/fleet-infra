@@ -26,6 +26,9 @@ spec:
   routes:
     - match: Host(`qbittorrent.cluster.arpa`)
       kind: Rule
+      middlewares:
+        - name: authelia-forwardauth
+          namespace: app-authelia
       services:
         - name: qbittorrent-web
           namespace: app-servarr
@@ -44,8 +47,19 @@ spec:
     - websecure
 
   routes:
+    - match: Host(`sonarr.cluster.arpa`) && PathPrefix(`/api/`)
+      kind: Rule
+      priority: 10
+      services:
+        - name: sonarr
+          namespace: app-servarr
+          port: http
     - match: Host(`sonarr.cluster.arpa`)
       kind: Rule
+      priority: 1
+      middlewares:
+        - name: authelia-forwardauth
+          namespace: app-authelia
       services:
         - name: sonarr
           namespace: app-servarr
@@ -64,8 +78,19 @@ spec:
     - websecure
 
   routes:
+    - match: Host(`prowlarr.cluster.arpa`) && PathPrefix(`/api/`)
+      kind: Rule
+      priority: 10
+      services:
+        - name: prowlarr
+          namespace: app-servarr
+          port: http
     - match: Host(`prowlarr.cluster.arpa`)
       kind: Rule
+      priority: 1
+      middlewares:
+        - name: authelia-forwardauth
+          namespace: app-authelia
       services:
         - name: prowlarr
           namespace: app-servarr
@@ -84,8 +109,19 @@ spec:
     - websecure
 
   routes:
+    - match: Host(`radarr.cluster.arpa`) && PathPrefix(`/api/`)
+      kind: Rule
+      priority: 10
+      services:
+        - name: radarr
+          namespace: app-servarr
+          port: http
     - match: Host(`radarr.cluster.arpa`)
       kind: Rule
+      priority: 1
+      middlewares:
+        - name: authelia-forwardauth
+          namespace: app-authelia
       services:
         - name: radarr
           namespace: app-servarr

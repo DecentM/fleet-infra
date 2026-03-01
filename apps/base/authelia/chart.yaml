@@ -185,6 +185,13 @@ spec:
             subject: "group:paperless-users"
             policy: two_factor
           - domain:
+              - sonarr.cluster.arpa
+              - radarr.cluster.arpa
+              - prowlarr.cluster.arpa
+              - qbittorrent.cluster.arpa
+            subject: "group:servarr-users"
+            policy: two_factor
+          - domain:
               - "*"
             policy: deny
 

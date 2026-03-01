@@ -25,6 +25,21 @@ spec:
         runAsUser: 0
         runAsGroup: 0
         fsGroup: 1000
+      initContainers:
+        - name: qbt-auth-config
+          image: docker.io/library/busybox:1.37.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - |
+              mkdir -p /config/qBittorrent
+              if ! grep -q 'AuthSubnetWhitelistEnabled' /config/qBittorrent/qBittorrent.conf 2>/dev/null; then
+                printf '\n[Preferences]\nWebUI\\LocalHostAuth=false\nWebUI\\AuthSubnetWhitelistEnabled=true\nWebUI\\AuthSubnetWhitelist=10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16\nWebUI\\ReverseProxySupportEnabled=true\n' >> /config/qBittorrent/qBittorrent.conf
+              fi
+          volumeMounts:
+            - name: config
+              mountPath: /config
       containers:
         - name: qbittorrent
           image: lscr.io/linuxserver/qbittorrent:5.1.4-r1-ls435
