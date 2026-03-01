@@ -9,7 +9,7 @@ subjects:
     spec:
       fqdn: matrix.borooka.ee
       protocol: http
-      target: http://traefik.traefik-system.svc:80
+      target: http://traefik.traefik-system.svc:8000
 
 tunnelRef:
   kind: ClusterTunnel

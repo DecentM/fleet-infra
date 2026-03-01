@@ -6,6 +6,7 @@ metadata:
 spec:
   entryPoints:
     - web
+    - tunnel
   routes:
     # --- Priority 700: MAS auth endpoints ---
     - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/client/(r0|v3)/(login|logout|refresh)`)

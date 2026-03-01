@@ -6,6 +6,7 @@ metadata:
 spec:
   entryPoints:
     - web
+    - tunnel
   routes:
     - match: Host(`borooka.ee`) && PathPrefix(`/_matrix/`)
       kind: Rule
