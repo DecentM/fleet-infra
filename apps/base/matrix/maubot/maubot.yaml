@@ -115,6 +115,21 @@ spec:
                 secretKeyRef:
                   name: maubot-secrets
                   key: pickle-key
+            - name: MAUBOT_COMMUNITY_PARENT_ROOM
+              valueFrom:
+                secretKeyRef:
+                  name: maubot-community-config
+                  key: parent-room
+            - name: MAUBOT_COMMUNITY_SLUG
+              valueFrom:
+                secretKeyRef:
+                  name: maubot-community-config
+                  key: community-slug
+            - name: MAUBOT_COMMUNITY_NOTIFICATION_ROOM
+              valueFrom:
+                secretKeyRef:
+                  name: maubot-community-config
+                  key: notification-room
           volumeMounts:
             - name: config-seed
               mountPath: /seed

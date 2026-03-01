@@ -62,8 +62,8 @@ api_features:
 # All values must be explicitly set because standalone mode with plugin_config: {}
 # results in None for all config keys, causing runtime crashes.
 plugin_config:
-  parent_room: '!KyphcRBmHzMVfbUfJV:borooka.ee'
-  community_slug: 'borooka-ee'
+  parent_room: '${MAUBOT_COMMUNITY_PARENT_ROOM}'
+  community_slug: '${MAUBOT_COMMUNITY_SLUG}'
   sleep: 5
   welcome_sleep: 0
   encrypt: true
@@ -76,7 +76,7 @@ plugin_config:
     generic: |
       Welcome {user}! Please be sure to read the topic for helpful links and information.
   greeting_rooms: {}
-  notification_room: '!EburA1a1wZlr55SxgYg9F65KIBtQNp2D3bzVlHwJAK8:borooka.ee'
+  notification_room: '${MAUBOT_COMMUNITY_NOTIFICATION_ROOM}'
   join_notification_message: |
     User <code>{user}</code> has joined <code>{room}</code>.
   censor: false

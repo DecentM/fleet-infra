@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - cnpg-cluster.yaml
   - sealed-maubot-secrets.yaml
+  - sealed-maubot-community-config.yaml
   - maubot.yaml
   - service.yaml
 
