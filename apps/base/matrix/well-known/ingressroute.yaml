@@ -1,3 +1,65 @@
+apiVersion: networking.cfargotunnel.com/v1alpha1
+kind: TunnelBinding
+metadata:
+  name: well-known-tunnel
+  namespace: app-matrix
+subjects:
+  # Well-Known Federation Delegation (must be first for borooka.ee)
+  # Routes /.well-known/matrix/* and /_matrix/* via Traefik IngressRoute
+  - name: well-known
+    spec:
+      fqdn: borooka.ee
+      protocol: http
+      target: http://traefik.traefik-system.svc:8000
+
+tunnelRef:
+  kind: ClusterTunnel
+  name: cluster-tunnel-borooka
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: well-known-cors
+  namespace: app-matrix
+spec:
+  headers:
+    accessControlAllowOriginList:
+      - "*"
+    accessControlAllowMethods:
+      - GET
+      - OPTIONS
+    accessControlAllowHeaders:
+      - Origin
+      - X-Requested-With
+      - Content-Type
+      - Accept
+      - Authorization
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: well-known-matrix-cors
+  namespace: app-matrix
+spec:
+  headers:
+    accessControlAllowOriginList:
+      - "*"
+    accessControlAllowMethods:
+      - GET
+      - HEAD
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+    accessControlAllowHeaders:
+      - X-Requested-With
+      - Content-Type
+      - Authorization
+      - Date
+    accessControlExposeHeaders:
+      - Synapse-Trace-Id
+      - Server
+---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:

@@ -2,18 +2,16 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
    - well-known.yaml
-   - tunnel.yaml
    - ingressroute.yaml
-   - middleware.yaml
 
 configMapGenerator:
   - name: well-known-config
     namespace: app-matrix
     files:
-      - server=config/well-known-server.json
-      - client=config/well-known-client.json
+      - server=config/server.json
+      - client=config/client.json
 
   - name: well-known-nginx
     namespace: app-matrix
     files:
-      - default.conf=config/well-known-nginx.conf
+      - default.conf=config/nginx.conf

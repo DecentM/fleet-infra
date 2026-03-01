@@ -1,11 +1,3 @@
-# Well-Known Matrix Federation Delegation
-# Serves /.well-known/matrix/server and /.well-known/matrix/client
-# Required for Matrix federation when the server name differs from the actual server hostname
-#
-# ConfigMaps for this component are generated via kustomization.yaml:
-# - well-known-config: contains server and client JSON files
-# - well-known-nginx: contains nginx configuration
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
