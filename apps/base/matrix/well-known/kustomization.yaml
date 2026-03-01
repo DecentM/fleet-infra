@@ -3,6 +3,8 @@ kind: Kustomization
 resources:
    - well-known.yaml
    - tunnel.yaml
+   - ingressroute.yaml
+   - middleware.yaml
 
 configMapGenerator:
   - name: well-known-config
