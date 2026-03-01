@@ -58,7 +58,13 @@ notify_appservices_from_worker: appservice_sender1
 
 # https://spec.matrix.org/v1.17/rooms/
 default_room_version: "12"
-encryption_enabled_by_default_for_room_type: invite
+
+# This is misleading! It controls whether encryption is REQUIRED,
+# not whether it's the default:
+# - "off": optional for new rooms
+# - "invite": mandatory for invite-only rooms
+# - "on": mandatory for new rooms
+encryption_enabled_by_default_for_room_type: off
 
 database:
   name: psycopg2
