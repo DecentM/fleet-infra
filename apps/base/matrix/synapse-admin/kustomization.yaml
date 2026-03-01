@@ -8,4 +8,4 @@ configMapGenerator:
   - name: synapse-admin-config
     namespace: app-matrix
     files:
-      - config/config.json
+      - synapse-admin-config.json=config/config.json
