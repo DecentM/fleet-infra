@@ -26,17 +26,51 @@ spec:
         runAsGroup: 0
         fsGroup: 1000
       initContainers:
-        - name: qbt-auth-config
+        - name: qbt-write-config
           image: docker.io/library/busybox:1.37.0
           imagePullPolicy: IfNotPresent
-          command:
-            - /bin/sh
-            - -c
+          command: ["/bin/sh", "-c"]
+          args:
             - |
               mkdir -p /config/qBittorrent
-              if ! grep -q 'AuthSubnetWhitelistEnabled' /config/qBittorrent/qBittorrent.conf 2>/dev/null; then
-                printf '\n[Preferences]\nWebUI\\LocalHostAuth=false\nWebUI\\AuthSubnetWhitelistEnabled=true\nWebUI\\AuthSubnetWhitelist=10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16\nWebUI\\ReverseProxySupportEnabled=true\n' >> /config/qBittorrent/qBittorrent.conf
-              fi
+              cat > /config/qBittorrent/qBittorrent.conf << EOF
+              [AutoRun]
+              enabled=false
+              program=
+
+              [LegalNotice]
+              Accepted=true
+
+              [Preferences]
+              Connection\UPnP=false
+              Connection\PortRangeMin=${QBT_TORRENTING_PORT}
+              Downloads\SavePath=${QBT_SAVE_PATH}/
+              Downloads\TempPath=${QBT_SAVE_PATH}/incomplete/
+              Downloads\ScanDirsV2=@Variant(\0\0\0\x1c\0\0\0\0)
+              WebUI\Address=*
+              WebUI\ServerDomains=*
+              WebUI\BannedIPs=
+              WebUI\LocalHostAuth=false
+              WebUI\AuthSubnetWhitelistEnabled=true
+              WebUI\AuthSubnetWhitelist=${QBT_AUTH_SUBNET_WHITELIST}
+              EOF
+              chmod 444 /config/qBittorrent/qBittorrent.conf
+          env:
+            - name: QBT_TORRENTING_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: qbittorrent-config
+                  key: TORRENTING_PORT
+            - name: QBT_SAVE_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: qbittorrent-config
+                  key: SAVE_PATH
+            - name: QBT_AUTH_SUBNET_WHITELIST
+              valueFrom:
+                configMapKeyRef:
+                  name: qbittorrent-config
+                  key: AUTH_SUBNET_WHITELIST
           volumeMounts:
             - name: config
               mountPath: /config
