@@ -1,0 +1,176 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: synapse
+  namespace: app-matrix
+spec:
+  entryPoints:
+    - web
+  routes:
+    # --- Priority 700: MAS auth endpoints ---
+    - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/client/(r0|v3)/(login|logout|refresh)`)
+      kind: Rule
+      priority: 700
+      middlewares:
+        - name: synapse-buffering
+          namespace: app-matrix
+      services:
+        - name: mas
+          port: 8080
+          serversTransport: synapse-transport-default@kubernetescrd
+
+    # --- Priority 600: client sync (exact) ---
+    - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/client/(r0|v3)/sync$`)
+      kind: Rule
+      priority: 600
+      middlewares:
+        - name: synapse-buffering
+          namespace: app-matrix
+      services:
+        - name: synapse
+          port: 8008
+          serversTransport: synapse-transport-sync@kubernetescrd
+
+    # --- Priority 600: client events (exact) ---
+    - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/client/(r0|v3)/events$`)
+      kind: Rule
+      priority: 600
+      middlewares:
+        - name: synapse-buffering
+          namespace: app-matrix
+      services:
+        - name: synapse
+          port: 8008
+          serversTransport: synapse-transport-sync@kubernetescrd
+
+    # --- Priority 590: initialSync (exact) ---
+    - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/client/(r0|v3)/initialSync$`)
+      kind: Rule
+      priority: 590
+      middlewares:
+        - name: synapse-buffering
+          namespace: app-matrix
+      services:
+        - name: synapse
+          port: 8008
+          serversTransport: synapse-transport-initialsync@kubernetescrd
+
+    # --- Priority 590: room initialSync ---
+    - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/client/(r0|v3)/rooms/[^/]+/initialSync$`)
+      kind: Rule
+      priority: 590
+      middlewares:
+        - name: synapse-buffering
+          namespace: app-matrix
+      services:
+        - name: synapse
+          port: 8008
+          serversTransport: synapse-transport-initialsync@kubernetescrd
+
+    # --- Priority 500: federation send ---
+    - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/v1/send/`)
+      kind: Rule
+      priority: 500
+      middlewares:
+        - name: synapse-buffering
+          namespace: app-matrix
+      services:
+        - name: synapse-federation-reader
+          port: 8083
+          serversTransport: synapse-transport-default@kubernetescrd
+
+    # --- Priority 500: federation event ---
+    - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/v1/event/`)
+      kind: Rule
+      priority: 500
+      middlewares:
+        - name: synapse-buffering
+          namespace: app-matrix
+      services:
+        - name: synapse-federation-reader
+          port: 8083
+          serversTransport: synapse-transport-default@kubernetescrd
+
+    # --- Priority 500: federation state ---
+    - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/v1/state/`)
+      kind: Rule
+      priority: 500
+      middlewares:
+        - name: synapse-buffering
+          namespace: app-matrix
+      services:
+        - name: synapse-federation-reader
+          port: 8083
+          serversTransport: synapse-transport-default@kubernetescrd
+
+    # --- Priority 480: federation backfill ---
+    - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/v1/backfill/`)
+      kind: Rule
+      priority: 480
+      middlewares:
+        - name: synapse-buffering
+          namespace: app-matrix
+      services:
+        - name: synapse-federation-reader
+          port: 8083
+          serversTransport: synapse-transport-federation-backfill@kubernetescrd
+
+    # --- Priority 480: federation get_missing_events ---
+    - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/v1/get_missing_events/`)
+      kind: Rule
+      priority: 480
+      middlewares:
+        - name: synapse-buffering
+          namespace: app-matrix
+      services:
+        - name: synapse-federation-reader
+          port: 8083
+          serversTransport: synapse-transport-federation-backfill@kubernetescrd
+
+    # --- Priority 460: federation publicRooms ---
+    - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/v1/publicRooms`)
+      kind: Rule
+      priority: 460
+      middlewares:
+        - name: synapse-buffering
+          namespace: app-matrix
+      services:
+        - name: synapse-federation-reader
+          port: 8083
+          serversTransport: synapse-transport-default@kubernetescrd
+
+    # --- Priority 460: federation query ---
+    - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/v1/query/`)
+      kind: Rule
+      priority: 460
+      middlewares:
+        - name: synapse-buffering
+          namespace: app-matrix
+      services:
+        - name: synapse-federation-reader
+          port: 8083
+          serversTransport: synapse-transport-default@kubernetescrd
+
+    # --- Priority 460: matrix key ---
+    - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/key/`)
+      kind: Rule
+      priority: 460
+      middlewares:
+        - name: synapse-buffering
+          namespace: app-matrix
+      services:
+        - name: synapse-federation-reader
+          port: 8083
+          serversTransport: synapse-transport-default@kubernetescrd
+
+    # --- Priority 1: catch-all ---
+    - match: Host(`matrix.borooka.ee`)
+      kind: Rule
+      priority: 1
+      middlewares:
+        - name: synapse-buffering
+          namespace: app-matrix
+      services:
+        - name: synapse
+          port: 8008
+          serversTransport: synapse-transport-default@kubernetescrd

@@ -4,12 +4,12 @@ metadata:
   name: synapse-tunnel
   namespace: app-matrix
 subjects:
-  # Matrix Synapse (via nginx proxy for worker routing)
+  # Matrix Synapse (routed via Traefik IngressRoute)
   - name: synapse
     spec:
       fqdn: matrix.borooka.ee
       protocol: http
-      target: http://synapse-nginx-proxy.app-matrix.svc:8008
+      target: http://traefik.traefik-system.svc:80
 
 tunnelRef:
   kind: ClusterTunnel

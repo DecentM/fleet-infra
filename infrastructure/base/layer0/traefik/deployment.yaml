@@ -54,6 +54,7 @@ spec:
             - "--metrics.prometheus.addRoutersLabels=true"
             - "--entryPoints.web.address=:80"
             - "--entryPoints.web.http.redirections.entryPoint.to=websecure"
+            - "--entryPoints.web.transport.respondingTimeouts.readTimeout=120s"
             - "--entryPoints.websecure.address=:443"
             - "--entryPoints.samba.address=:445"
             - "--entryPoints.tunnel.address=:8000"
