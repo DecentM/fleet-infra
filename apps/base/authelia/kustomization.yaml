@@ -9,6 +9,7 @@ resources:
   - sealed-smtp-secrets.yaml
   - sealed-secrets-client-jellyfin.yaml
   - sealed-secrets-client-mas.yaml
+  - sealed-secrets-client-photoprism.yaml
   - lldap
   - middleware.yaml
   - ingress.yaml

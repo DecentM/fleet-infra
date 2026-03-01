@@ -4,4 +4,4 @@ metadata:
   name: photoprism-config
   namespace: app-photoprism
 data:
-  PHOTOPRISM_SITE_URL: "http://photoprism.cluster.arpa/"
+  PHOTOPRISM_SITE_URL: "https://photoprism.cluster.arpa/"

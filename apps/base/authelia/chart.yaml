@@ -83,6 +83,7 @@ spec:
         lldap-authelia-bind: {}  # /secrets/lldap-authelia-bind/
         authelia-client-jellyfin: {}  # /secrets/authelia-client-jellyfin/
         authelia-client-mas: {}  # /secrets/authelia-client-mas/
+        authelia-client-photoprism: {}  # /secrets/authelia-client-photoprism/
 
     configMap:
       theme: dark
@@ -173,6 +174,10 @@ spec:
           - domain:
               - traefik.cluster.arpa
             subject: "group:traefik-users"
+            policy: two_factor
+          - domain:
+              - photoprism.cluster.arpa
+            subject: "group:photoprism-users"
             policy: two_factor
           - domain:
               - "*"
