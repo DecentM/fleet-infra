@@ -2,7 +2,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - cnpg-cluster.yaml
-  - cnpg-pooler.yaml
   - sealed-synapse-secrets.yaml
   - sealed-synapse-signing-key.yaml
   - sealed-s3-secrets.yaml
@@ -91,4 +90,3 @@ configMapGenerator:
         app.kubernetes.io/name: synapse
         app.kubernetes.io/component: worker
         app.kubernetes.io/part-of: matrix
-
