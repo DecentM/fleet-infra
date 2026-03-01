@@ -1,7 +1,7 @@
 # https://docs.mau.fi/bridges/go/discord/
 
 homeserver:
-  address: http://synapse-nginx-proxy.app-matrix.svc:8008
+  address: http://synapse.app-matrix.svc:8008
   domain: borooka.ee
 
 appservice:
@@ -36,7 +36,7 @@ bridge:
     "@meowlnir:borooka.ee": admin
 
   double_puppet_server_map:
-    borooka.ee: http://synapse-nginx-proxy.app-matrix.svc:8008
+    borooka.ee: http://synapse.app-matrix.svc:8008
   login_shared_secret_map: {}
   relay:
     enabled: true

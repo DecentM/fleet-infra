@@ -1,0 +1,15 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: mas
+  namespace: app-matrix
+spec:
+  entryPoints:
+    - tunnel
+  routes:
+    - match: Host(`matrix-auth.borooka.ee`)
+      kind: Rule
+      priority: 1
+      services:
+        - name: mas
+          port: http

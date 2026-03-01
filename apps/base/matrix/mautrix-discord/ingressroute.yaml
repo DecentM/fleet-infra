@@ -1,0 +1,15 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: mautrix-discord
+  namespace: app-matrix
+spec:
+  entryPoints:
+    - tunnel
+  routes:
+    - match: Host(`discord-bridge.borooka.ee`)
+      kind: Rule
+      priority: 1
+      services:
+        - name: mautrix-discord
+          port: appservice

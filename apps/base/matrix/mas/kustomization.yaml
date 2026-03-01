@@ -7,6 +7,7 @@ resources:
   - deployment.yaml
   - service.yaml
   - tunnel.yaml
+  - ingressroute.yaml
 
 configMapGenerator:
   - name: mas-config

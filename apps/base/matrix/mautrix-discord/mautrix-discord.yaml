@@ -37,7 +37,7 @@ spec:
             - sh
             - -c
             - |
-              until wget -q --spider http://synapse-nginx-proxy.app-matrix.svc:8008/health; do
+              until wget -q --spider http://synapse.app-matrix.svc:8008/health; do
                 echo "Waiting for Synapse to be ready..."
                 sleep 5
               done

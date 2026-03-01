@@ -1,0 +1,15 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: jitsi
+  namespace: app-matrix
+spec:
+  entryPoints:
+    - tunnel
+  routes:
+    - match: Host(`meet.borooka.ee`)
+      kind: Rule
+      priority: 1
+      services:
+        - name: jitsi-web
+          port: http

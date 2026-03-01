@@ -10,7 +10,7 @@ subjects:
     spec:
       fqdn: matrix-auth.borooka.ee
       protocol: http
-      target: http://mas.app-matrix.svc:8080
+      target: http://traefik.traefik-system.svc:8000
 
 tunnelRef:
   kind: ClusterTunnel

@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
    - element.yaml
    - tunnel.yaml
+   - ingressroute.yaml
 
 configMapGenerator:
   - name: element-config

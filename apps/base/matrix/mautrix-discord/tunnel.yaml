@@ -8,7 +8,7 @@ subjects:
     spec:
       fqdn: discord-bridge.borooka.ee
       protocol: http
-      target: http://mautrix-discord.app-matrix.svc:29334
+      target: http://traefik.traefik-system.svc:8000
 tunnelRef:
   kind: ClusterTunnel
   name: cluster-tunnel-borooka

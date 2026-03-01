@@ -1,7 +1,7 @@
 # hhttps://docs.mau.fi/meowlnir/
 
 homeserver:
-  address: http://synapse-nginx-proxy.app-matrix.svc:8008
+  address: http://synapse.app-matrix.svc:8008
   domain: borooka.ee
 
 meowlnir:
