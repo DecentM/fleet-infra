@@ -171,15 +171,12 @@ spec:
             subject: "group:matrix-users"
             policy: two_factor
           - domain:
-              - matrix.borooka.ee
-              - element.borooka.ee
-              - element-call.borooka.ee
-            policy: deny
-          - domain:
-              - "*.cluster.arpa"
-              - "*.decentm.com"
-              - "*.borooka.ee"
+              - traefik.cluster.arpa
+            subject: "group:traefik-users"
             policy: two_factor
+          - domain:
+              - "*"
+            policy: deny
 
       session:
         name: authelia_session
