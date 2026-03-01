@@ -67,6 +67,13 @@ spec:
                 secretKeyRef:
                   name: paperless-db-app
                   key: password
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: paperless-oidc-secrets
+                  key: client-secret
+            - name: PAPERLESS_SOCIALACCOUNT_PROVIDERS
+              value: '{"openid_connect":{"SCOPE":["openid","profile","email"],"OAUTH_PKCE_ENABLED":true,"APPS":[{"provider_id":"authelia","name":"Authelia","client_id":"paperless-ngx","secret":"$(OIDC_CLIENT_SECRET)","settings":{"server_url":"https://auth.decentm.com","token_auth_method":"client_secret_basic","fetch_userinfo":true}}]}}'
           volumeMounts:
             - mountPath: /data
               name: data
@@ -74,6 +81,10 @@ spec:
               name: media
             - mountPath: /trash
               name: trash
+            - name: cluster-ca-bundle
+              mountPath: /etc/ssl/certs/ca-certificates.crt
+              subPath: ca-certificates.crt
+              readOnly: true
           ports:
             - containerPort: 8000
               name: http
@@ -90,6 +101,9 @@ spec:
           hostPath:
             path: /mnt/spike/storage/k8s/namespaces/app-paperless-ngx/paperless-ngx/trash
             type: DirectoryOrCreate
+        - name: cluster-ca-bundle
+          configMap:
+            name: cluster-ca-bundle
 ---
 apiVersion: v1
 kind: Service

@@ -84,6 +84,7 @@ spec:
         authelia-client-jellyfin: {}  # /secrets/authelia-client-jellyfin/
         authelia-client-mas: {}  # /secrets/authelia-client-mas/
         authelia-client-photoprism: {}  # /secrets/authelia-client-photoprism/
+        authelia-client-paperless-ngx: {}  # /secrets/authelia-client-paperless-ngx/
 
     configMap:
       theme: dark
@@ -178,6 +179,10 @@ spec:
           - domain:
               - photoprism.cluster.arpa
             subject: "group:photoprism-users"
+            policy: two_factor
+          - domain:
+              - paperless-ngx.cluster.arpa
+            subject: "group:paperless-users"
             policy: two_factor
           - domain:
               - "*"
