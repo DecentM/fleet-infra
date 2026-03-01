@@ -9,8 +9,12 @@ namespaces:
   users:
     - regex: "^@community:borooka\\.ee$"
       exclusive: true
+
+  aliases:
+    - exclusive: false
+      regex: '^#[a-z0-9]+(?:-[a-z0-9]+)?:borooka\.ee$'
+
   rooms: []
-  aliases: []
 
 # End-to-end encryption support
 de.sorunome.msc2409.push_ephemeral: true
