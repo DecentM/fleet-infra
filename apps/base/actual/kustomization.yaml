@@ -3,10 +3,10 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - actual.yaml
-  - ingressroute.yaml
+  - ingress.yaml
 
 configMapGenerator:
   - name: actual-config
     namespace: app-actual
     envs:
-      - actual-config.env
+      - config/actual.env

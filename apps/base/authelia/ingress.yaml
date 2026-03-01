@@ -93,3 +93,44 @@ spec:
       services:
         - name: authelia
           port: 9091
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: authelia-forwardauth
+  namespace: app-authelia
+spec:
+  forwardAuth:
+    address: http://authelia.app-authelia.svc:9091/api/authz/forward-auth?authelia_url=https://auth.cluster.arpa
+    trustForwardHeader: true
+    authResponseHeaders:
+      - Remote-User
+      - Remote-Groups
+      - Remote-Email
+      - Remote-Name
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: authelia-themepark
+  namespace: app-authelia
+  labels:
+    themepark.dev/managed: "true"
+spec:
+  plugin:
+    themepark:
+      app: authelia
+      theme: overseerr
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: lldap-themepark
+  namespace: app-authelia
+  labels:
+    themepark.dev/managed: "true"
+spec:
+  plugin:
+    themepark:
+      app: lldap
+      theme: overseerr
