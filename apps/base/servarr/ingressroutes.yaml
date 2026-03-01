@@ -29,6 +29,10 @@ spec:
       middlewares:
         - name: authelia-forwardauth
           namespace: app-authelia
+        - name: qbittorrent-themepark
+          namespace: app-servarr
+        - name: qbittorrent-strip-csp
+          namespace: app-servarr
       services:
         - name: qbittorrent-web
           namespace: app-servarr
@@ -60,6 +64,8 @@ spec:
       middlewares:
         - name: authelia-forwardauth
           namespace: app-authelia
+        - name: sonarr-themepark
+          namespace: app-servarr
       services:
         - name: sonarr
           namespace: app-servarr
@@ -91,6 +97,8 @@ spec:
       middlewares:
         - name: authelia-forwardauth
           namespace: app-authelia
+        - name: prowlarr-themepark
+          namespace: app-servarr
       services:
         - name: prowlarr
           namespace: app-servarr
@@ -122,6 +130,8 @@ spec:
       middlewares:
         - name: authelia-forwardauth
           namespace: app-authelia
+        - name: radarr-themepark
+          namespace: app-servarr
       services:
         - name: radarr
           namespace: app-servarr

@@ -11,6 +11,9 @@ spec:
   routes:
     - match: Host(`jellyfin.cluster.arpa`)
       kind: Rule
+      middlewares:
+        - name: jellyfin-themepark
+          namespace: app-jellyfin
       services:
         - name: jellyfin
           namespace: app-jellyfin

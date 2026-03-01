@@ -1,0 +1,55 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: sonarr-themepark
+  namespace: app-servarr
+spec:
+  plugin:
+    themepark:
+      app: sonarr
+      theme: overseerr
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: radarr-themepark
+  namespace: app-servarr
+spec:
+  plugin:
+    themepark:
+      app: radarr
+      theme: overseerr
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: prowlarr-themepark
+  namespace: app-servarr
+spec:
+  plugin:
+    themepark:
+      app: prowlarr
+      theme: overseerr
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: qbittorrent-themepark
+  namespace: app-servarr
+spec:
+  plugin:
+    themepark:
+      app: qbittorrent
+      theme: overseerr
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: qbittorrent-strip-csp
+  namespace: app-servarr
+spec:
+  headers:
+    customResponseHeaders:
+      content-security-policy: ""
+      x-webkit-csp: ""
+      X-Frame-Options: ""

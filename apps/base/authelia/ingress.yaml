@@ -39,6 +39,9 @@ spec:
   routes:
     - match: Host(`auth.cluster.arpa`)
       kind: Rule
+      middlewares:
+        - name: authelia-themepark
+          namespace: app-authelia
       services:
         - name: authelia
           port: 9091

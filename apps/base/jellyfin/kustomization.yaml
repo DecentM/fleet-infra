@@ -4,6 +4,7 @@ resources:
   - namespace.yaml
   - jellyfin.yaml
   - ingressroute.yaml
+  - themepark-middleware.yaml
 
 configMapGenerator:
   - name: jellyfin-config

@@ -130,6 +130,9 @@ spec:
   routes:
     - match: Host(`lldap.cluster.arpa`)
       kind: Rule
+      middlewares:
+        - name: lldap-themepark
+          namespace: app-authelia
       services:
         - name: lldap
           port: http

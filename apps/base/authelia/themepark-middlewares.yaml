@@ -1,0 +1,21 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: authelia-themepark
+  namespace: app-authelia
+spec:
+  plugin:
+    themepark:
+      app: authelia
+      theme: overseerr
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: lldap-themepark
+  namespace: app-authelia
+spec:
+  plugin:
+    themepark:
+      app: lldap
+      theme: overseerr

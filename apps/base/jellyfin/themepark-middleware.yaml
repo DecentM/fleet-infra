@@ -1,0 +1,11 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: jellyfin-themepark
+  namespace: app-jellyfin
+
+spec:
+  plugin:
+    themepark:
+      app: jellyfin
+      theme: overseerr
