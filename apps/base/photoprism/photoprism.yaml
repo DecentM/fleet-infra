@@ -83,6 +83,10 @@ spec:
               name: storage
             - mountPath: /photoprism/import
               name: import
+            - name: cluster-ca-bundle
+              mountPath: /etc/ssl/certs/ca-certificates.crt
+              subPath: ca-certificates.crt
+              readOnly: true
       volumes:
         - name: storage
           persistentVolumeClaim:
@@ -98,6 +102,9 @@ spec:
           hostPath:
             path: /mnt/spike/storage/k8s/namespaces/app-photoprism/originals
             type: Directory
+        - name: cluster-ca-bundle
+          configMap:
+            name: cluster-ca-bundle
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
