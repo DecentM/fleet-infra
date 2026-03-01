@@ -88,9 +88,3 @@ spec:
       services:
         - name: well-known
           port: 80
-    - match: Host(`borooka.ee`)
-      kind: Rule
-      priority: 1
-      services:
-        - name: well-known
-          port: 80
