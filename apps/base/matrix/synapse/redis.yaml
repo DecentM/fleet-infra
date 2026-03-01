@@ -11,13 +11,15 @@ metadata:
     app.kubernetes.io/component: redis
     app.kubernetes.io/part-of: matrix
 spec:
-  replicas: 1
   revisionHistoryLimit: 2
   selector:
     matchLabels:
       app: synapse-redis
   strategy:
-    type: Recreate
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   template:
     metadata:
       labels:
@@ -93,4 +95,3 @@ spec:
       protocol: TCP
   selector:
     app: synapse-redis
-
