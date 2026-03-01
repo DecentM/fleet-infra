@@ -94,12 +94,6 @@ spec:
                 echo "Processing discord template: $filename..."
                 envsubst < "$file" > "/config-processed/$filename"
               done
-              # Process maubot registration template
-              for file in /maubot-template/*; do
-                filename=$(basename "$file")
-                echo "Processing maubot template: $filename..."
-                envsubst < "$file" > "/config-processed/$filename"
-              done
 
               echo "Config templating complete"
               ls -lh /config-processed/
@@ -198,17 +192,6 @@ spec:
                 secretKeyRef:
                   name: mautrix-discord-secrets
                   key: hs-token
-            # Maubot tokens (for registration template)
-            - name: MAUBOT_AS_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: maubot-secrets
-                  key: as-token
-            - name: MAUBOT_HS_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: maubot-secrets
-                  key: hs-token
             # S3/B2 storage credentials
             - name: SYNAPSE_S3_BUCKET
               valueFrom:
@@ -253,9 +236,6 @@ spec:
               readOnly: true
             - name: discord-registration-template
               mountPath: /discord-template
-              readOnly: true
-            - name: maubot-registration-template
-              mountPath: /maubot-template
               readOnly: true
           securityContext:
             runAsUser: 991
@@ -357,10 +337,3 @@ spec:
             items:
               - key: discord-registration.yaml
                 path: discord-registration.yaml
-
-        - name: maubot-registration-template
-          configMap:
-            name: maubot-config
-            items:
-              - key: maubot-registration.yaml
-                path: maubot-registration.yaml
