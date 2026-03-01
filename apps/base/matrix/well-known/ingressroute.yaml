@@ -17,7 +17,7 @@ spec:
       services:
         - name: synapse
           port: 8008
-          serversTransport: synapse-transport-default@kubernetescrd
+          serversTransport: synapse-transport-default
     - match: Host(`borooka.ee`) && PathPrefix(`/.well-known/matrix/`)
       kind: Rule
       priority: 100

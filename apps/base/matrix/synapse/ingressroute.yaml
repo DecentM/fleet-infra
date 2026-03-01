@@ -18,7 +18,7 @@ spec:
       services:
         - name: mas
           port: 8080
-          serversTransport: synapse-transport-default@kubernetescrd
+          serversTransport: synapse-transport-default
 
     # --- Priority 600: client sync (exact) ---
     - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/client/(r0|v3)/sync$`)
@@ -30,7 +30,7 @@ spec:
       services:
         - name: synapse
           port: 8008
-          serversTransport: synapse-transport-sync@kubernetescrd
+          serversTransport: synapse-transport-sync
 
     # --- Priority 600: client events (exact) ---
     - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/client/(r0|v3)/events$`)
@@ -42,7 +42,7 @@ spec:
       services:
         - name: synapse
           port: 8008
-          serversTransport: synapse-transport-sync@kubernetescrd
+          serversTransport: synapse-transport-sync
 
     # --- Priority 590: initialSync (exact) ---
     - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/client/(r0|v3)/initialSync$`)
@@ -54,7 +54,7 @@ spec:
       services:
         - name: synapse
           port: 8008
-          serversTransport: synapse-transport-initialsync@kubernetescrd
+          serversTransport: synapse-transport-initialsync
 
     # --- Priority 590: room initialSync ---
     - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/client/(r0|v3)/rooms/[^/]+/initialSync$`)
@@ -66,7 +66,7 @@ spec:
       services:
         - name: synapse
           port: 8008
-          serversTransport: synapse-transport-initialsync@kubernetescrd
+          serversTransport: synapse-transport-initialsync
 
     # --- Priority 500: federation send ---
     - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/v1/send/`)
@@ -78,7 +78,7 @@ spec:
       services:
         - name: synapse-federation-reader
           port: 8083
-          serversTransport: synapse-transport-default@kubernetescrd
+          serversTransport: synapse-transport-default
 
     # --- Priority 500: federation event ---
     - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/v1/event/`)
@@ -90,7 +90,7 @@ spec:
       services:
         - name: synapse-federation-reader
           port: 8083
-          serversTransport: synapse-transport-default@kubernetescrd
+          serversTransport: synapse-transport-default
 
     # --- Priority 500: federation state ---
     - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/v1/state/`)
@@ -102,7 +102,7 @@ spec:
       services:
         - name: synapse-federation-reader
           port: 8083
-          serversTransport: synapse-transport-default@kubernetescrd
+          serversTransport: synapse-transport-default
 
     # --- Priority 480: federation backfill ---
     - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/v1/backfill/`)
@@ -114,7 +114,7 @@ spec:
       services:
         - name: synapse-federation-reader
           port: 8083
-          serversTransport: synapse-transport-federation-backfill@kubernetescrd
+          serversTransport: synapse-transport-federation-backfill
 
     # --- Priority 480: federation get_missing_events ---
     - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/v1/get_missing_events/`)
@@ -126,7 +126,7 @@ spec:
       services:
         - name: synapse-federation-reader
           port: 8083
-          serversTransport: synapse-transport-federation-backfill@kubernetescrd
+          serversTransport: synapse-transport-federation-backfill
 
     # --- Priority 460: federation publicRooms ---
     - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/v1/publicRooms`)
@@ -138,7 +138,7 @@ spec:
       services:
         - name: synapse-federation-reader
           port: 8083
-          serversTransport: synapse-transport-default@kubernetescrd
+          serversTransport: synapse-transport-default
 
     # --- Priority 460: federation query ---
     - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/v1/query/`)
@@ -150,7 +150,7 @@ spec:
       services:
         - name: synapse-federation-reader
           port: 8083
-          serversTransport: synapse-transport-default@kubernetescrd
+          serversTransport: synapse-transport-default
 
     # --- Priority 460: matrix key ---
     - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/key/`)
@@ -162,7 +162,7 @@ spec:
       services:
         - name: synapse-federation-reader
           port: 8083
-          serversTransport: synapse-transport-default@kubernetescrd
+          serversTransport: synapse-transport-default
 
     # --- Priority 1: catch-all ---
     - match: Host(`matrix.borooka.ee`)
@@ -174,4 +174,4 @@ spec:
       services:
         - name: synapse
           port: 8008
-          serversTransport: synapse-transport-default@kubernetescrd
+          serversTransport: synapse-transport-default
