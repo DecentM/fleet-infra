@@ -4,9 +4,10 @@ metadata:
   name: synapse-transport-default
   namespace: app-matrix
 spec:
-  dialTimeout: 60s
-  responseHeaderTimeout: 60s
-  idleConnTimeout: 90s
+  forwardingTimeouts:
+    dialTimeout: 60s
+    responseHeaderTimeout: 60s
+    idleConnTimeout: 90s
   maxIdleConnsPerHost: 32
 ---
 apiVersion: traefik.io/v1alpha1
@@ -15,9 +16,10 @@ metadata:
   name: synapse-transport-sync
   namespace: app-matrix
 spec:
-  dialTimeout: 60s
-  responseHeaderTimeout: 90s
-  idleConnTimeout: 90s
+  forwardingTimeouts:
+    dialTimeout: 60s
+    responseHeaderTimeout: 90s
+    idleConnTimeout: 90s
   maxIdleConnsPerHost: 32
 ---
 apiVersion: traefik.io/v1alpha1
@@ -26,9 +28,10 @@ metadata:
   name: synapse-transport-initialsync
   namespace: app-matrix
 spec:
-  dialTimeout: 60s
-  responseHeaderTimeout: 180s
-  idleConnTimeout: 90s
+  forwardingTimeouts:
+    dialTimeout: 60s
+    responseHeaderTimeout: 180s
+    idleConnTimeout: 90s
   maxIdleConnsPerHost: 16
 ---
 apiVersion: traefik.io/v1alpha1
@@ -37,7 +40,8 @@ metadata:
   name: synapse-transport-federation-backfill
   namespace: app-matrix
 spec:
-  dialTimeout: 30s
-  responseHeaderTimeout: 120s
-  idleConnTimeout: 90s
+  forwardingTimeouts:
+    dialTimeout: 30s
+    responseHeaderTimeout: 120s
+    idleConnTimeout: 90s
   maxIdleConnsPerHost: 16
