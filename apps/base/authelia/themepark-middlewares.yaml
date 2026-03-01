@@ -3,6 +3,8 @@ kind: Middleware
 metadata:
   name: authelia-themepark
   namespace: app-authelia
+  labels:
+    themepark.dev/managed: "true"
 spec:
   plugin:
     themepark:
@@ -14,6 +16,8 @@ kind: Middleware
 metadata:
   name: lldap-themepark
   namespace: app-authelia
+  labels:
+    themepark.dev/managed: "true"
 spec:
   plugin:
     themepark:

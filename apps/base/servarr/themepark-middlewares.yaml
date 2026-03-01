@@ -3,6 +3,8 @@ kind: Middleware
 metadata:
   name: sonarr-themepark
   namespace: app-servarr
+  labels:
+    themepark.dev/managed: "true"
 spec:
   plugin:
     themepark:
@@ -14,6 +16,8 @@ kind: Middleware
 metadata:
   name: radarr-themepark
   namespace: app-servarr
+  labels:
+    themepark.dev/managed: "true"
 spec:
   plugin:
     themepark:
@@ -25,6 +29,8 @@ kind: Middleware
 metadata:
   name: prowlarr-themepark
   namespace: app-servarr
+  labels:
+    themepark.dev/managed: "true"
 spec:
   plugin:
     themepark:
@@ -36,6 +42,8 @@ kind: Middleware
 metadata:
   name: qbittorrent-themepark
   namespace: app-servarr
+  labels:
+    themepark.dev/managed: "true"
 spec:
   plugin:
     themepark:

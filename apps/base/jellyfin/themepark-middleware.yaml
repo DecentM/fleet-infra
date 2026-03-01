@@ -3,7 +3,8 @@ kind: Middleware
 metadata:
   name: jellyfin-themepark
   namespace: app-jellyfin
-
+  labels:
+    themepark.dev/managed: "true"
 spec:
   plugin:
     themepark:
