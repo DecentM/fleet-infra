@@ -3,5 +3,4 @@ kind: Namespace
 metadata:
   name: app-jellyfin
   labels:
-    # Opt in to receive the cluster CA bundle from trust-manager
     trust.cert-manager.io/inject-bundle: "true"

@@ -3,11 +3,10 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - jellyfin.yaml
-  - ingressroute.yaml
-  - themepark-middleware.yaml
+  - ingress.yaml
 
 configMapGenerator:
   - name: jellyfin-config
     namespace: app-jellyfin
     envs:
-      - jellyfin-config.env
+      - config/jellyfin.env
