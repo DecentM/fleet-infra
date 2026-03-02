@@ -1,0 +1,72 @@
+# Runs VACUUM ANALYZE on the Synapse database to reclaim space and update statistics
+# Uses direct CNPG service (not PgBouncer) as VACUUM cannot run through transaction-mode pooling
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: synapse-vacuum
+  namespace: app-matrix
+  labels:
+    app.kubernetes.io/name: synapse
+    app.kubernetes.io/component: vacuum
+    app.kubernetes.io/part-of: matrix
+spec:
+  schedule: "0 4 * * 0"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    metadata:
+      labels:
+        app.kubernetes.io/name: synapse
+        app.kubernetes.io/component: vacuum
+        app.kubernetes.io/part-of: matrix
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: synapse
+            app.kubernetes.io/component: vacuum
+            app.kubernetes.io/part-of: matrix
+        spec:
+          serviceAccountName: synapse-janitor
+          restartPolicy: OnFailure
+          nodeSelector:
+            kubernetes.io/hostname: cadance
+          securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+          containers:
+            - name: vacuum
+              image: ghcr.io/cloudnative-pg/postgresql:16.10
+              command:
+                - psql
+                - -c
+                - "VACUUM ANALYZE;"
+              env:
+                - name: PGUSER
+                  valueFrom:
+                    secretKeyRef:
+                      name: matrix-db-app
+                      key: user
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: matrix-db-app
+                      key: password
+                - name: PGDATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: matrix-db-app
+                      key: dbname
+                - name: PGHOST
+                  value: matrix-db-rw.app-matrix.svc
+                - name: PGPORT
+                  value: "5432"
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 64Mi
+                limits:
+                  cpu: 500m
+                  memory: 256Mi

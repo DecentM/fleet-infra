@@ -7,6 +7,12 @@ metadata:
 spec:
   instances: 1
   imageName: ghcr.io/cloudnative-pg/postgresql:16.10
+  postgresql:
+    parameters:
+      autovacuum_vacuum_scale_factor: "0.05"
+      autovacuum_analyze_scale_factor: "0.02"
+      autovacuum_vacuum_cost_delay: "2ms"
+      autovacuum_max_workers: "3"
   storage:
     storageClass: longhorn-local
     size: 20Gi

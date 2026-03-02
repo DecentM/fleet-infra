@@ -1,10 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - 1-12-2-pack.yaml
+  - fallback.yaml
 
 configMapGenerator:
-  - name: 1-12-2-config
+  - name: fallback-config
     namespace: app-minecraft
     envs:
-      - config/1-12-2.env
+      - config/fallback.env

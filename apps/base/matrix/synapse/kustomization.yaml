@@ -22,6 +22,8 @@ resources:
   - workers/appservice-sender.yaml
   - workers/appservice-sender-service.yaml
 
+  - janitor
+
 configMapGenerator:
   # Main Synapse configuration
   - name: synapse-config
