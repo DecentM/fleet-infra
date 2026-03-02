@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
         - name: inv-sig-helper
-          image: quay.io/invidious/inv-sig-helper:latest
-          imagePullPolicy: Always
+          image: quay.io/invidious/inv-sig-helper:master-dcda9f1
+          imagePullPolicy: IfNotPresent
           args: ["--tcp", "0.0.0.0:12999"]
           env:
             - name: RUST_LOG

@@ -13,7 +13,8 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: bootstrap
-          image: lldap/lldap:stable
+          image: lldap/lldap:v0.6.2
+          imagePullPolicy: IfNotPresent
           command: ["/app/bootstrap.sh"]
 
           env:

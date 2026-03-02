@@ -24,7 +24,7 @@ spec:
         kubernetes.io/hostname: cadance
       containers:
         - name: lldap
-          image: lldap/lldap:stable
+          image: lldap/lldap:v0.6.2
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3890
