@@ -1,0 +1,99 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "dependencyDashboard": true,
+  "prConcurrentLimit": 10,
+  "prHourlyLimit": 2,
+  "flux": {
+    "fileMatch": ["(^|/).+\\.ya?ml$"]
+  },
+  "kubernetes": {
+    "fileMatch": [
+      "apps/base/.+\\.ya?ml$",
+      "infrastructure/base/.+\\.ya?ml$"
+    ]
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Pip packages in containers/synapse/Dockerfile",
+      "fileMatch": ["containers/synapse/Dockerfile"],
+      "matchStrings": [
+        "'(?<depName>[a-zA-Z][a-zA-Z0-9_-]+)==(?<currentValue>[0-9][0-9a-zA-Z._-]*)'"
+      ],
+      "datasourceTemplate": "pypi"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Disable github-actions manager — Dependabot handles workflow action updates",
+      "matchManagers": ["github-actions"],
+      "enabled": false
+    },
+    {
+      "description": "Ignore minecraft-servers — built from an external repo with per-variant SHA tags",
+      "matchPackageNames": ["ghcr.io/decentm/minecraft-servers"],
+      "enabled": false
+    },
+    {
+      "description": "Self-built images from this repo — group all synapse containers together",
+      "matchPackageNames": ["ghcr.io/decentm/synapse", "ghcr.io/decentm/maubot"],
+      "versioning": "loose",
+      "groupName": "self-built images"
+    },
+    {
+      "description": "Ignore local images",
+      "matchPackageNames": ["mcp/grafana"],
+      "enabled": false
+    },
+    {
+      "description": "Jitsi images must be updated together",
+      "matchPackageNames": [
+        "jitsi/jicofo",
+        "jitsi/prosody",
+        "jitsi/jvb",
+        "jitsi/web"
+      ],
+      "groupName": "jitsi"
+    },
+    {
+      "description": "Flannel images must be updated together",
+      "matchPackageNames": [
+        "ghcr.io/flannel-io/flannel",
+        "ghcr.io/flannel-io/flannel-cni-plugin"
+      ],
+      "groupName": "flannel"
+    },
+    {
+      "description": "Grafana, Loki, and Promtail Helm charts",
+      "matchPackageNames": ["grafana", "loki", "promtail"],
+      "matchManagers": ["flux"],
+      "groupName": "grafana stack"
+    },
+    {
+      "description": "Exportarr Prometheus exporter sidecar",
+      "matchPackageNames": ["ghcr.io/onedr0p/exportarr"],
+      "groupName": "exportarr"
+    },
+    {
+      "description": "envsubst init container",
+      "matchPackageNames": ["oaudry/envsubst"],
+      "groupName": "envsubst"
+    },
+    {
+      "description": "Images with non-standard version formats",
+      "matchPackageNames": [
+        "actualbudget/actual-server",
+        "photoprism/photoprism",
+        "docker.io/caomingjun/warp",
+        "quay.io/invidious/inv-sig-helper"
+      ],
+      "versioning": "loose"
+    },
+    {
+      "description": "LinuxServer.io images use custom versioning",
+      "matchPackagePatterns": ["^lscr\\.io/linuxserver/"],
+      "versioning": "loose"
+    }
+  ]
+}
