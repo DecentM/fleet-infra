@@ -2,20 +2,18 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - namespace.yaml
-  - sealed-db-secrets.yaml
-  - sealed-admin-secrets.yaml
-  - sealed-oidc-secrets.yaml
+  - secrets
   - mariadb.yaml
   - photoprism.yaml
-  - ingressroute.yaml
+  - ingress.yaml
 
 configMapGenerator:
   - name: mariadb-config
     namespace: app-photoprism
     envs:
-      - mariadb-config.env
+      - config/mariadb.env
 
   - name: photoprism-config
     namespace: app-photoprism
     envs:
-      - photoprism-config.env
+      - config/photoprism.env
