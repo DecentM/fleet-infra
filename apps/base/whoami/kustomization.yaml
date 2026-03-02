@@ -5,4 +5,3 @@ resources:
   - namespace.yaml
   - whoami.yaml
   - ingress.yaml
-  - tunnel.yaml
