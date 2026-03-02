@@ -1,3 +1,18 @@
+apiVersion: networking.cfargotunnel.com/v1alpha1
+kind: TunnelBinding
+metadata:
+  name: whoami-decentm
+  namespace: app-whoami
+subjects:
+  - name: whoami
+    spec:
+      fqdn: whoami.decentm.com
+      protocol: http
+      target: http://traefik.traefik-system.svc:8000
+tunnelRef:
+  kind: ClusterTunnel
+  name: cluster-tunnel-decentm
+---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
@@ -35,3 +50,18 @@ spec:
   commonName: "whoami.cluster.arpa"
   dnsNames:
     - "whoami.cluster.arpa"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: whoami-public
+  namespace: app-whoami
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`whoami.decentm.com`)
+      kind: Rule
+      services:
+        - name: whoami
+          port: 8080
