@@ -2,16 +2,16 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - namespace.yaml
-  - sealed-oidc-secrets.yaml
+  - secrets
   - cnpg.yaml
   - redis.yaml
   - tika.yaml
   - gotenberg.yaml
   - paperless.yaml
-  - ingressroute.yaml
+  - ingress.yaml
 
 configMapGenerator:
   - name: paperless-config
     namespace: app-paperless-ngx
     envs:
-      - paperless-config.env
+      - config/paperless.env
