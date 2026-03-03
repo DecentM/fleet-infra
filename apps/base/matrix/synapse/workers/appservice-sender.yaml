@@ -94,6 +94,11 @@ spec:
                 echo "Processing discord template: $filename..."
                 envsubst < "$file" > "/config-processed/$filename"
               done
+              for file in /bottricks-template/*; do
+                filename=$(basename "$file")
+                echo "Processing bottricks template: $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
 
               echo "Config templating complete"
               ls -lh /config-processed/
@@ -192,6 +197,16 @@ spec:
                 secretKeyRef:
                   name: mautrix-discord-secrets
                   key: hs-token
+            - name: BOTTRICKS_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: bottricks-secrets
+                  key: as-token
+            - name: BOTTRICKS_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: bottricks-secrets
+                  key: hs-token
             # S3/B2 storage credentials
             - name: SYNAPSE_S3_BUCKET
               valueFrom:
@@ -236,6 +251,9 @@ spec:
               readOnly: true
             - name: discord-registration-template
               mountPath: /discord-template
+              readOnly: true
+            - name: bottricks-registration-template
+              mountPath: /bottricks-template
               readOnly: true
           securityContext:
             runAsUser: 991
@@ -337,3 +355,33 @@ spec:
             items:
               - key: discord-registration.yaml
                 path: discord-registration.yaml
+        - name: bottricks-registration-template
+          configMap:
+            name: bottricks-config
+            items:
+              - key: bottricks-registration.yaml
+                path: bottricks-registration.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: synapse-appservice-sender
+  namespace: app-matrix
+  labels:
+    app: synapse-appservice-sender
+    app.kubernetes.io/name: synapse
+    app.kubernetes.io/component: appservice-sender
+    app.kubernetes.io/part-of: matrix
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8083
+      targetPort: http
+      protocol: TCP
+    - name: replication
+      port: 9093
+      targetPort: replication
+      protocol: TCP
+  selector:
+    app: synapse-appservice-sender

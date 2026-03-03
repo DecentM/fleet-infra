@@ -15,6 +15,7 @@ resources:
   - redis
   - mautrix-discord
   - mas
+  - bottricks
 
   - sealed-turn-secrets.yaml
 

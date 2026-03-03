@@ -238,6 +238,9 @@ spec:
             - name: discord-registration-template
               mountPath: /discord-template
               readOnly: true
+            - name: bottricks-registration-template
+              mountPath: /bottricks-template
+              readOnly: true
           securityContext:
             runAsUser: 991
             runAsGroup: 991
@@ -337,6 +340,12 @@ spec:
             items:
               - key: discord-registration.yaml
                 path: discord-registration.yaml
+        - name: bottricks-registration-template
+          configMap:
+            name: bottricks-config
+            items:
+              - key: bottricks-registration.yaml
+                path: bottricks-registration.yaml
 ---
 # ClusterIP service for load balancing (nginx routes to this)
 apiVersion: v1

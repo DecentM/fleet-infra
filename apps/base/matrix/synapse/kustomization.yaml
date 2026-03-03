@@ -20,7 +20,6 @@ resources:
   - workers/client-reader.yaml
   - workers/background-tasks.yaml
   - workers/appservice-sender.yaml
-  - workers/appservice-sender-service.yaml
 
   - janitor
 

@@ -74,30 +74,42 @@ spec:
             - sh
             - -c
             - |
-              echo "Processing config templates with envsubst..."
               for file in /config-template/*; do
                 filename=$(basename "$file")
                 echo "Processing $filename..."
                 envsubst < "$file" > "/config-processed/$filename"
               done
-              # Process hookshot registration template separately
+
               for file in /hookshot-template/*; do
                 filename=$(basename "$file")
                 echo "Processing hookshot template: $filename..."
                 envsubst < "$file" > "/config-processed/$filename"
               done
-              # Process meowlnir registration template
+
               for file in /meowlnir-template/*; do
                 filename=$(basename "$file")
                 echo "Processing meowlnir template: $filename..."
                 envsubst < "$file" > "/config-processed/$filename"
               done
-              # Process mautrix-discord registration template
+
               for file in /discord-template/*; do
                 filename=$(basename "$file")
                 echo "Processing discord template: $filename..."
                 envsubst < "$file" > "/config-processed/$filename"
               done
+
+              for file in /discord-template/*; do
+                filename=$(basename "$file")
+                echo "Processing discord template: $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
+
+              for file in /bottricks-template/*; do
+                filename=$(basename "$file")
+                echo "Processing bottricks template: $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
+
               echo "Config templating complete"
               ls -la /config-processed/
           env:
@@ -152,7 +164,7 @@ spec:
                 secretKeyRef:
                   name: hookshot-secrets
                   key: hs-token
-            # Meowlnir tokens (for registration template and antispam)
+
             - name: MEOWLNIR_AS_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -168,7 +180,7 @@ spec:
                 secretKeyRef:
                   name: meowlnir-secrets
                   key: meowlnir_as_token
-            # Mautrix Discord tokens (for registration template)
+
             - name: DISCORD_AS_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -178,6 +190,28 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: mautrix-discord-secrets
+                  key: hs-token
+
+            - name: DISCORD_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mautrix-discord-secrets
+                  key: as-token
+            - name: DISCORD_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mautrix-discord-secrets
+                  key: hs-token
+
+            - name: BOTTRICKS_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mautrix-bottricks-secrets
+                  key: as-token
+            - name: BOTTRICKS_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mautrix-bottricks-secrets
                   key: hs-token
 
             - name: OIDC_CLIENT_MATRIX_SECRET
@@ -238,6 +272,9 @@ spec:
             - name: discord-registration-template
               mountPath: /discord-template
               readOnly: true
+            - name: bottricks-registration-template
+              mountPath: /bottricks-template
+              readOnly: true
           securityContext:
             runAsUser: 991
             runAsGroup: 991
@@ -271,7 +308,6 @@ spec:
                 secretKeyRef:
                   name: matrix-db-app
                   key: user
-            # Database password from CNPG-generated secret
             - name: SYNAPSE_DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
