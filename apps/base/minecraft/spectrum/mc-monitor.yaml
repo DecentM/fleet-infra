@@ -21,7 +21,7 @@ spec:
         kubernetes.io/hostname: cadance
       containers:
         - name: mc-monitor
-          image: itzg/mc-monitor:0.16.0
+          image: itzg/mc-monitor:0.16.1
           args:
             - export-for-prometheus
           env:
