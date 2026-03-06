@@ -38,7 +38,8 @@ spec:
             runAsGroup: 991
           containers:
             - name: state-compressor
-              image: ghcr.io/matrix-org/rust-synapse-compress-state:latest
+              image: ghcr.io/matrix-org/rust-synapse-compress-state:9e01ee361b5c729beb5d53a1ae433d8f2bdeca12
+              imagePullPolicy: IfNotPresent
               command:
                 - synapse_auto_compressor
               args:

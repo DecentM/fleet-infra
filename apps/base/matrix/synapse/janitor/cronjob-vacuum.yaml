@@ -11,7 +11,7 @@ metadata:
     app.kubernetes.io/component: vacuum
     app.kubernetes.io/part-of: matrix
 spec:
-  schedule: "0 4 * * *"
+  schedule: "0 4 * * 0"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
@@ -42,7 +42,7 @@ spec:
               command:
                 - psql
                 - -c
-                - "VACUUM ANALYZE;"
+                - "VACUUM FULL;"
               env:
                 - name: PGUSER
                   valueFrom:
