@@ -41,6 +41,9 @@ instance_map:
   appservice_sender1:
     host: synapse-appservice-sender.app-matrix.svc
     port: 9093
+  presence1:
+    host: synapse-presence.app-matrix.svc
+    port: 9093
 
 stream_writers:
   events:
@@ -51,7 +54,7 @@ stream_writers:
   to_device:
     - master
   presence:
-    - master
+    - presence1
   receipts:
     - master
 

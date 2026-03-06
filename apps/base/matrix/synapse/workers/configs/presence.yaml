@@ -1,0 +1,12 @@
+worker_app: synapse.app.generic_worker
+worker_name: presence1
+
+worker_listeners:
+  - type: http
+    port: 9093
+    bind_addresses: ['0.0.0.0']
+    resources:
+      - names: [replication]
+
+app_service_config_files: []
+modules: []
