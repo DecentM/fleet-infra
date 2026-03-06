@@ -27,8 +27,8 @@ spec:
         - name: synapse-buffering
           namespace: app-matrix
       services:
-        - name: synapse
-          port: 8008
+        - name: synapse-client-reader
+          port: 8083
           serversTransport: synapse-transport-sync
 
     # --- Priority 600: client events (exact) ---
@@ -39,8 +39,8 @@ spec:
         - name: synapse-buffering
           namespace: app-matrix
       services:
-        - name: synapse
-          port: 8008
+        - name: synapse-client-reader
+          port: 8083
           serversTransport: synapse-transport-sync
 
     # --- Priority 590: initialSync (exact) ---
@@ -51,9 +51,9 @@ spec:
         - name: synapse-buffering
           namespace: app-matrix
       services:
-        - name: synapse
-          port: 8008
-          serversTransport: synapse-transport-initialsync
+        - name: synapse-client-reader
+          port: 8083
+          serversTransport: synapse-transport-sync
 
     # --- Priority 590: room initialSync ---
     - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/client/(r0|v3)/rooms/[^/]+/initialSync$`)
@@ -63,9 +63,9 @@ spec:
         - name: synapse-buffering
           namespace: app-matrix
       services:
-        - name: synapse
-          port: 8008
-          serversTransport: synapse-transport-initialsync
+        - name: synapse-client-reader
+          port: 8083
+          serversTransport: synapse-transport-sync
 
     # --- Priority 500: federation send ---
     - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/v1/send/`)

@@ -27,7 +27,10 @@ instance_map:
     host: synapse-federation-reader.app-matrix.svc
     port: 9093
   event_persister1:
-    host: synapse-event-persister.app-matrix.svc
+    host: synapse-event-persister-0.synapse-event-persister-headless.app-matrix.svc.cluster.local
+    port: 9093
+  event_persister2:
+    host: synapse-event-persister-1.synapse-event-persister-headless.app-matrix.svc.cluster.local
     port: 9093
   client_reader1:
     host: synapse-client-reader.app-matrix.svc
@@ -42,6 +45,7 @@ instance_map:
 stream_writers:
   events:
     - event_persister1
+    - event_persister2
   typing:
     - master
   to_device:
@@ -74,8 +78,8 @@ database:
     database: synapse
     host: matrix-db-pooler-rw.app-matrix.svc
     port: 5432
-    cp_min: 5
-    cp_max: 10
+    cp_min: 10
+    cp_max: 20
     keepalives_idle: 10
     keepalives_interval: 10
     keepalives_count: 3
@@ -161,10 +165,10 @@ federation_rr_transactions_per_room_per_second: 50
 
 rc_federation:
   window_size: 1000
-  sleep_limit: 10
+  sleep_limit: 20
   sleep_delay: 500
-  reject_limit: 50
-  concurrent: 3
+  reject_limit: 100
+  concurrent: 6
 
 federation_client_minimum_retryinterval: 5m
 federation_max_short_retryinterval: 1h

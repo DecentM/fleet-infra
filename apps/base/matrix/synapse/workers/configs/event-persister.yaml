@@ -1,5 +1,5 @@
 worker_app: synapse.app.generic_worker
-worker_name: event_persister1
+worker_name: ${SYNAPSE_WORKER_NAME}
 
 # Worker listeners
 worker_listeners:
