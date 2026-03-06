@@ -1310,7 +1310,8 @@
           "unit": "short"
         },
         "overrides": []
-      },
+      }
+    },
     {
       "collapsed": false,
       "gridPos": {
