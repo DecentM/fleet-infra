@@ -28,7 +28,7 @@ app_service_config_files:
   - /config/hookshot-registration.yml
   - /config/meowlnir-registration.yml
   - /config/discord-registration.yaml
-  - /config/bottricks-registration.yaml
+  - /config/bottricks-registration.yml
 
 # Disable modules that require main-process-only resources
 modules: []

@@ -344,8 +344,8 @@ spec:
           configMap:
             name: bottricks-config
             items:
-              - key: bottricks-registration.yaml
-                path: bottricks-registration.yaml
+              - key: bottricks-registration.yml
+                path: bottricks-registration.yml
 ---
 # ClusterIP service for load balancing (nginx routes to this)
 apiVersion: v1

@@ -98,12 +98,6 @@ spec:
                 envsubst < "$file" > "/config-processed/$filename"
               done
 
-              for file in /discord-template/*; do
-                filename=$(basename "$file")
-                echo "Processing discord template: $filename..."
-                envsubst < "$file" > "/config-processed/$filename"
-              done
-
               for file in /bottricks-template/*; do
                 filename=$(basename "$file")
                 echo "Processing bottricks template: $filename..."
@@ -192,26 +186,15 @@ spec:
                   name: mautrix-discord-secrets
                   key: hs-token
 
-            - name: DISCORD_AS_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: mautrix-discord-secrets
-                  key: as-token
-            - name: DISCORD_HS_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: mautrix-discord-secrets
-                  key: hs-token
-
             - name: BOTTRICKS_AS_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: mautrix-bottricks-secrets
+                  name: bottricks-secrets
                   key: as-token
             - name: BOTTRICKS_HS_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: mautrix-bottricks-secrets
+                  name: bottricks-secrets
                   key: hs-token
 
             - name: OIDC_CLIENT_MATRIX_SECRET
@@ -411,6 +394,12 @@ spec:
             items:
               - key: discord-registration.yaml
                 path: discord-registration.yaml
+        - name: bottricks-registration-template
+          configMap:
+            name: bottricks-config
+            items:
+              - key: bottricks-registration.yml
+                path: bottricks-registration.yml
 ---
 apiVersion: v1
 kind: Service

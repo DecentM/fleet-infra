@@ -359,8 +359,8 @@ spec:
           configMap:
             name: bottricks-config
             items:
-              - key: bottricks-registration.yaml
-                path: bottricks-registration.yaml
+              - key: bottricks-registration.yml
+                path: bottricks-registration.yml
 ---
 apiVersion: v1
 kind: Service
