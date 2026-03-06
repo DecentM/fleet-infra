@@ -5,3 +5,15 @@ resources:
   - cronjob-state-compressor.yaml
   - cronjob-media-purge.yaml
   - cronjob-vacuum.yaml
+  - cronjob-foreign-room-purge.yaml
+
+configMapGenerator:
+  - name: synapse-janitor-scripts
+    namespace: app-matrix
+    options:
+      labels:
+        app.kubernetes.io/name: synapse
+        app.kubernetes.io/component: janitor
+        app.kubernetes.io/part-of: matrix
+    files:
+      - scripts/foreign-room-purge.sh

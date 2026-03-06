@@ -1,0 +1,63 @@
+# Purges rooms with zero local members via Synapse admin API (async v2 delete)
+# NOTE: The key "admin-access-token" must be added to the synapse-secrets SealedSecret
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: synapse-foreign-room-purge
+  namespace: app-matrix
+  labels:
+    app.kubernetes.io/name: synapse
+    app.kubernetes.io/component: foreign-room-purge
+    app.kubernetes.io/part-of: matrix
+spec:
+  schedule: "0 3 * * 1"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    metadata:
+      labels:
+        app.kubernetes.io/name: synapse
+        app.kubernetes.io/component: foreign-room-purge
+        app.kubernetes.io/part-of: matrix
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: synapse
+            app.kubernetes.io/component: foreign-room-purge
+            app.kubernetes.io/part-of: matrix
+        spec:
+          serviceAccountName: synapse-janitor
+          restartPolicy: OnFailure
+          nodeSelector:
+            kubernetes.io/hostname: cadance
+          securityContext:
+            runAsUser: 65534
+            runAsGroup: 65534
+          volumes:
+            - name: scripts
+              configMap:
+                name: synapse-janitor-scripts
+                defaultMode: 0755
+          containers:
+            - name: foreign-room-purge
+              image: curlimages/curl:8.18.0
+              command: ["sh", "/scripts/foreign-room-purge.sh"]
+              volumeMounts:
+                - name: scripts
+                  mountPath: /scripts
+              env:
+                - name: SYNAPSE_ADMIN_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: synapse-secrets
+                      key: admin-access-token
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 128Mi
+                limits:
+                  cpu: 200m
+                  memory: 512Mi
