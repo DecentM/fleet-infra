@@ -3,6 +3,12 @@ worker_name: federation_sender1
 
 # Worker listeners
 worker_listeners:
+  - type: http
+    port: 8083
+    bind_addresses: ['0.0.0.0']
+    resources:
+      - names: [metrics]
+        compress: false
   # Replication listener for inter-worker communication
   - type: http
     port: 9093
