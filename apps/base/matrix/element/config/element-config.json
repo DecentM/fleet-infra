@@ -22,7 +22,12 @@
     "feature_video_rooms": true,
     "feature_group_calls": true,
     "feature_element_call_video_rooms": true,
-    "feature_new_room_list": true
+    "feature_new_room_list": true,
+    "feature_latex_maths": true,
+    "feature_render_reaction_images": true,
+    "feature_report_to_moderators": true,
+    "feature_mjolnir": true,
+    "feature_custom_themes": true
   },
   "element_call": {
     "use_exclusively": true,
