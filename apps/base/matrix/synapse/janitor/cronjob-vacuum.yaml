@@ -1,6 +1,3 @@
-# Runs VACUUM ANALYZE on the Synapse database to reclaim space and update statistics
-# Uses direct CNPG service (not PgBouncer) as VACUUM cannot run through transaction-mode pooling
----
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -11,7 +8,7 @@ metadata:
     app.kubernetes.io/component: vacuum
     app.kubernetes.io/part-of: matrix
 spec:
-  schedule: "0 4 * * 0"
+  schedule: "0 7 * * 0"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3

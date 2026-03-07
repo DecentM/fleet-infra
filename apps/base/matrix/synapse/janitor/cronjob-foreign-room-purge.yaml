@@ -1,6 +1,3 @@
-# Purges rooms with zero local members via Synapse admin API (async v2 delete)
-# NOTE: The key "admin-access-token" must be added to the synapse-secrets SealedSecret
----
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -11,7 +8,7 @@ metadata:
     app.kubernetes.io/component: foreign-room-purge
     app.kubernetes.io/part-of: matrix
 spec:
-  schedule: "0 3 * * 1"
+  schedule: "0 4 * * 0"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
