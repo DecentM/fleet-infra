@@ -27,10 +27,7 @@ instance_map:
     host: synapse-federation-reader.app-matrix.svc
     port: 9093
   event_persister1:
-    host: synapse-event-persister-0.synapse-event-persister-headless.app-matrix.svc.cluster.local
-    port: 9093
-  event_persister2:
-    host: synapse-event-persister-1.synapse-event-persister-headless.app-matrix.svc.cluster.local
+    host: synapse-event-persister-0.synapse-event-persister-headless.app-matrix.svc
     port: 9093
   client_reader1:
     host: synapse-client-reader.app-matrix.svc
@@ -48,7 +45,6 @@ instance_map:
 stream_writers:
   events:
     - event_persister1
-    - event_persister2
   typing:
     - master
   to_device:
