@@ -3,9 +3,18 @@ set -e
 
 BASE_URL="http://synapse.app-matrix.svc:8008"
 AUTH="Authorization: Bearer ${SYNAPSE_ADMIN_TOKEN}"
-POLL_INTERVAL=5
-POLL_TIMEOUT=300
+POLL_INTERVAL="${POLL_INTERVAL:-5}"
+POLL_TIMEOUT="${POLL_TIMEOUT:-300}"
 DELETE_BODY='{"purge":true}'
+
+LOCAL_SERVER_NAME=$(curl -sf "${BASE_URL}/_matrix/key/v2/server" | jq -r '.server_name // empty' || true)
+
+if [ -z "${LOCAL_SERVER_NAME}" ]; then
+  echo "ERROR: Failed to discover local server name from ${BASE_URL}/_matrix/key/v2/server"
+  exit 1
+fi
+
+echo "Local server name - ${LOCAL_SERVER_NAME}"
 
 ROOM_LIST="/tmp/foreign_rooms.txt"
 RESULT_FILE="/tmp/purge_results.txt"
@@ -19,13 +28,13 @@ while true; do
   response=$(curl -sf -H "${AUTH}" \
     "${BASE_URL}/_synapse/admin/v1/rooms?order_by=joined_local_members&dir=b&limit=100&from=${offset}")
 
-  total_rooms=$(printf '%s' "${response}" | grep -o '"total_rooms":[0-9]*' | head -1 | sed 's/"total_rooms"://' || true)
+  total_rooms=$(printf '%s' "${response}" | jq -r '.total_rooms // empty' || true)
   if [ -n "${total_rooms}" ]; then
     echo "Total rooms in server - ${total_rooms}"
   fi
 
-  room_ids=$(printf '%s' "${response}" | grep -o '"room_id":"[^"]*"' | sed 's/"room_id":"//;s/"//' || true)
-  local_members=$(printf '%s' "${response}" | grep -o '"joined_local_members":[0-9]*' | sed 's/"joined_local_members"://' || true)
+  room_ids=$(printf '%s' "${response}" | jq -r '.rooms[].room_id // empty' || true)
+  local_members=$(printf '%s' "${response}" | jq -r '.rooms[].joined_local_members // empty' || true)
 
   room_count=$(printf '%s\n' "${room_ids}" | grep -c '.' || true)
   if [ "${room_count}" -eq 0 ]; then
@@ -39,13 +48,16 @@ while true; do
     members=$(printf '%s\n' "${local_members}" | sed -n "${i}p")
 
     if [ "${members}" = "0" ]; then
-      printf '%s\n' "${rid}" >> "${ROOM_LIST}"
+      case "${rid}" in
+        *:${LOCAL_SERVER_NAME}) echo "  Skipping local room - ${rid}" ;;
+        *) printf '%s\n' "${rid}" >> "${ROOM_LIST}" ;;
+      esac
     fi
 
     i=$((i + 1))
   done
 
-  next_batch=$(printf '%s' "${response}" | grep -o '"next_batch":[0-9]*' | head -1 | sed 's/"next_batch"://' || true)
+  next_batch=$(printf '%s' "${response}" | jq -r '.next_batch // empty' || true)
   if [ -z "${next_batch}" ]; then
     echo "No next_batch, done discovering."
     break
@@ -86,7 +98,7 @@ while IFS= read -r room_id; do
     continue
   }
 
-  delete_id=$(printf '%s' "${delete_response}" | grep -o '"delete_id":"[^"]*"' | head -1 | sed 's/"delete_id":"//;s/"//' || true)
+  delete_id=$(printf '%s' "${delete_response}" | jq -r '.delete_id // empty' || true)
 
   if [ -z "${delete_id}" ]; then
     echo "  FAILED to get delete_id for ${room_id}"
@@ -108,7 +120,7 @@ while IFS= read -r room_id; do
       continue
     }
 
-    status=$(printf '%s' "${status_response}" | grep -o '"status":"[^"]*"' | head -1 | sed 's/"status":"//;s/"//' || true)
+    status=$(printf '%s' "${status_response}" | jq -r '.results[0].status // empty' || true)
 
     if [ "${status}" = "complete" ]; then
       echo "  SUCCESS - ${room_id} purged (${elapsed}s)"

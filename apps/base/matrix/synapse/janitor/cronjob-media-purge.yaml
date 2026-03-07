@@ -39,6 +39,7 @@ spec:
           containers:
             - name: media-purge
               image: curlimages/curl:8.11.1
+              imagePullPolicy: IfNotPresent
               command:
                 - sh
                 - -c

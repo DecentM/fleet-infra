@@ -43,12 +43,17 @@ spec:
                 defaultMode: 0755
           containers:
             - name: foreign-room-purge
-              image: curlimages/curl:8.18.0
+              image: ghcr.io/decentm/curl-jq:sha-1a12764
+              imagePullPolicy: IfNotPresent
               command: ["sh", "/scripts/foreign-room-purge.sh"]
               volumeMounts:
                 - name: scripts
                   mountPath: /scripts
               env:
+                - name: POLL_INTERVAL
+                  value: "5"
+                - name: POLL_TIMEOUT
+                  value: "300"
                 - name: SYNAPSE_ADMIN_TOKEN
                   valueFrom:
                     secretKeyRef:
