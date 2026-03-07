@@ -2,103 +2,17 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - cnpg-cluster.yaml
-  - sealed-synapse-secrets.yaml
-  - sealed-synapse-signing-key.yaml
-  - sealed-s3-secrets.yaml
-  - synapse.yaml
-  - tunnel.yaml
-
-  - ingressroute.yaml
-  - middleware.yaml
-  - serverstransport.yaml
-
+  - secrets
   - redis.yaml
+  - synapse.yaml
+  - workers
 
-  - workers/federation-sender.yaml
-  - workers/federation-reader.yaml
-  - workers/event-persister.yaml
-  - workers/client-reader.yaml
-  - workers/background-tasks.yaml
-  - workers/presence.yaml
-  - workers/appservice-sender.yaml
-
+  - ingress.yaml
   - janitor
 
 configMapGenerator:
-  # Main Synapse configuration
   - name: synapse-config
     namespace: app-matrix
     files:
       - config/homeserver.yaml
       - config/log.config
-
-  # Worker configurations
-  - name: synapse-federation-sender-config
-    namespace: app-matrix
-    files:
-      - worker.yaml=workers/configs/federation-sender.yaml
-    options:
-      labels:
-        app.kubernetes.io/name: synapse
-        app.kubernetes.io/component: worker
-        app.kubernetes.io/part-of: matrix
-
-  - name: synapse-federation-reader-config
-    namespace: app-matrix
-    files:
-      - worker.yaml=workers/configs/federation-reader.yaml
-    options:
-      labels:
-        app.kubernetes.io/name: synapse
-        app.kubernetes.io/component: worker
-        app.kubernetes.io/part-of: matrix
-
-  - name: synapse-event-persister-config
-    namespace: app-matrix
-    files:
-      - worker.yaml=workers/configs/event-persister.yaml
-    options:
-      labels:
-        app.kubernetes.io/name: synapse
-        app.kubernetes.io/component: worker
-        app.kubernetes.io/part-of: matrix
-
-  - name: synapse-client-reader-config
-    namespace: app-matrix
-    files:
-      - worker.yaml=workers/configs/client-reader.yaml
-    options:
-      labels:
-        app.kubernetes.io/name: synapse
-        app.kubernetes.io/component: worker
-        app.kubernetes.io/part-of: matrix
-
-  - name: synapse-background-tasks-config
-    namespace: app-matrix
-    files:
-      - worker.yaml=workers/configs/background-tasks.yaml
-    options:
-      labels:
-        app.kubernetes.io/name: synapse
-        app.kubernetes.io/component: worker
-        app.kubernetes.io/part-of: matrix
-
-  - name: synapse-presence-config
-    namespace: app-matrix
-    files:
-      - worker.yaml=workers/configs/presence.yaml
-    options:
-      labels:
-        app.kubernetes.io/name: synapse
-        app.kubernetes.io/component: worker
-        app.kubernetes.io/part-of: matrix
-
-  - name: synapse-appservice-sender-config
-    namespace: app-matrix
-    files:
-      - worker.yaml=workers/configs/appservice-sender.yaml
-    options:
-      labels:
-        app.kubernetes.io/name: synapse
-        app.kubernetes.io/component: worker
-        app.kubernetes.io/part-of: matrix

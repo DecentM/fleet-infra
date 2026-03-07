@@ -1,0 +1,81 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - federation-sender.yaml
+  - federation-reader.yaml
+  - event-persister.yaml
+  - client-reader.yaml
+  - background-tasks.yaml
+  - presence.yaml
+  - appservice-sender.yaml
+
+configMapGenerator:
+  - name: synapse-federation-sender-config
+    namespace: app-matrix
+    files:
+      - worker.yaml=configs/federation-sender.yaml
+    options:
+      labels:
+        app.kubernetes.io/name: synapse
+        app.kubernetes.io/component: worker
+        app.kubernetes.io/part-of: matrix
+
+  - name: synapse-federation-reader-config
+    namespace: app-matrix
+    files:
+      - worker.yaml=configs/federation-reader.yaml
+    options:
+      labels:
+        app.kubernetes.io/name: synapse
+        app.kubernetes.io/component: worker
+        app.kubernetes.io/part-of: matrix
+
+  - name: synapse-event-persister-config
+    namespace: app-matrix
+    files:
+      - worker.yaml=configs/event-persister.yaml
+    options:
+      labels:
+        app.kubernetes.io/name: synapse
+        app.kubernetes.io/component: worker
+        app.kubernetes.io/part-of: matrix
+
+  - name: synapse-client-reader-config
+    namespace: app-matrix
+    files:
+      - worker.yaml=configs/client-reader.yaml
+    options:
+      labels:
+        app.kubernetes.io/name: synapse
+        app.kubernetes.io/component: worker
+        app.kubernetes.io/part-of: matrix
+
+  - name: synapse-background-tasks-config
+    namespace: app-matrix
+    files:
+      - worker.yaml=configs/background-tasks.yaml
+    options:
+      labels:
+        app.kubernetes.io/name: synapse
+        app.kubernetes.io/component: worker
+        app.kubernetes.io/part-of: matrix
+
+  - name: synapse-presence-config
+    namespace: app-matrix
+    files:
+      - worker.yaml=configs/presence.yaml
+    options:
+      labels:
+        app.kubernetes.io/name: synapse
+        app.kubernetes.io/component: worker
+        app.kubernetes.io/part-of: matrix
+
+  - name: synapse-appservice-sender-config
+    namespace: app-matrix
+    files:
+      - worker.yaml=configs/appservice-sender.yaml
+    options:
+      labels:
+        app.kubernetes.io/name: synapse
+        app.kubernetes.io/component: worker
+        app.kubernetes.io/part-of: matrix
