@@ -22,6 +22,12 @@ spec:
   entryPoints:
     - tunnel
   routes:
+    - match: Host(`integrations.borooka.ee`) && PathPrefix(`/_meowlnir/`)
+      kind: Rule
+      priority: 10
+      services:
+        - name: integrations-meowlnir
+          port: 29339
     - match: Host(`integrations.borooka.ee`)
       kind: Rule
       priority: 1

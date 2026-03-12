@@ -12,13 +12,9 @@ spec:
   type: ClusterIP
   publishNotReadyAddresses: true
   ports:
-    - name: antispam
+    - name: http
       port: 29339
-      targetPort: antispam
-      protocol: TCP
-    - name: management
-      port: 29340
-      targetPort: management
+      targetPort: http
       protocol: TCP
   selector:
     app: integrations-meowlnir

@@ -150,16 +150,13 @@ spec:
             runAsGroup: 1000
             allowPrivilegeEscalation: false
           ports:
-            - name: antispam
+            - name: http
               containerPort: 29339
-              protocol: TCP
-            - name: management
-              containerPort: 29340
               protocol: TCP
           readinessProbe:
             httpGet:
               path: /_matrix/mau/ready
-              port: antispam
+              port: http
             initialDelaySeconds: 5
             periodSeconds: 10
             timeoutSeconds: 5
@@ -167,7 +164,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /_matrix/mau/live
-              port: antispam
+              port: http
             initialDelaySeconds: 10
             periodSeconds: 30
             timeoutSeconds: 5
