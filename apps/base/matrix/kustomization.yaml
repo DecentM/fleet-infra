@@ -10,9 +10,7 @@ resources:
   - element
   - well-known
   - livekit
-  - hookshot
   - meowlnir
-  - redis
   - mautrix-discord
   - mas
   - bottricks

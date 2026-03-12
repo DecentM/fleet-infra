@@ -79,11 +79,6 @@ spec:
               done
 
               # Process appservice registration templates
-              for file in /hookshot-template/*; do
-                filename=$(basename "$file")
-                echo "Processing hookshot template: $filename..."
-                envsubst < "$file" > "/config-processed/$filename"
-              done
               for file in /meowlnir-template/*; do
                 filename=$(basename "$file")
                 echo "Processing meowlnir template: $filename..."
@@ -167,16 +162,6 @@ spec:
                   name: meowlnir-secrets
                   key: meowlnir_as_token
             # Appservice tokens for registration templates
-            - name: HOOKSHOT_AS_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: hookshot-secrets
-                  key: as-token
-            - name: HOOKSHOT_HS_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: hookshot-secrets
-                  key: hs-token
             - name: MEOWLNIR_AS_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -243,9 +228,6 @@ spec:
             - name: config-processed
               mountPath: /config-processed
             # Appservice registration templates
-            - name: hookshot-registration-template
-              mountPath: /hookshot-template
-              readOnly: true
             - name: meowlnir-registration-template
               mountPath: /meowlnir-template
               readOnly: true
@@ -337,12 +319,6 @@ spec:
               - key: signing.key
                 path: borooka.ee.signing.key
         # Appservice registration templates
-        - name: hookshot-registration-template
-          configMap:
-            name: hookshot-config
-            items:
-              - key: hookshot-registration.yml
-                path: hookshot-registration.yml
         - name: meowlnir-registration-template
           configMap:
             name: meowlnir-config
