@@ -194,20 +194,7 @@ turn_allow_guests: true
 log_config: "/config/log.config"
 
 app_service_config_files:
-  - /config/meowlnir-registration.yml
   - /config/discord-registration.yaml
-
-modules:
-  - module: synapse_http_antispam.HTTPAntispam
-    config:
-      base_url: http://meowlnir.app-matrix.svc:29339/_meowlnir/antispam/!IVNcQHAxUUwAFjlpvf:borooka.ee
-      authorization: ${MEOWLNIR_ANTISPAM_TOKEN}
-      enabled_callbacks:
-        - user_may_invite
-        - user_may_join_room
-      fail_open:
-        user_may_invite: true
-        user_may_join_room: true
 
 experimental_features:
   msc3202_device_masquerading: true

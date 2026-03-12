@@ -25,7 +25,6 @@ worker_listeners:
 # NOTE: This overrides app_service_config_files from homeserver.yaml,
 # so ALL registrations must be listed here.
 app_service_config_files:
-  - /config/meowlnir-registration.yml
   - /config/discord-registration.yaml
 
 # Disable modules that require main-process-only resources

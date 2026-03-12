@@ -80,12 +80,6 @@ spec:
                 envsubst < "$file" > "/config-processed/$filename"
               done
 
-              for file in /meowlnir-template/*; do
-                filename=$(basename "$file")
-                echo "Processing meowlnir template: $filename..."
-                envsubst < "$file" > "/config-processed/$filename"
-              done
-
               for file in /discord-template/*; do
                 filename=$(basename "$file")
                 echo "Processing discord template: $filename..."
@@ -136,22 +130,6 @@ spec:
                 secretKeyRef:
                   name: turn-secrets
                   key: turn-password
-            - name: MEOWLNIR_AS_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: meowlnir-secrets
-                  key: meowlnir_as_token
-            - name: MEOWLNIR_HS_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: meowlnir-secrets
-                  key: meowlnir_hs_token
-            - name: MEOWLNIR_ANTISPAM_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: meowlnir-secrets
-                  key: meowlnir_as_token
-
             - name: DISCORD_AS_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -212,9 +190,6 @@ spec:
               readOnly: true
             - name: config-processed
               mountPath: /config-processed
-            - name: meowlnir-registration-template
-              mountPath: /meowlnir-template
-              readOnly: true
             - name: discord-registration-template
               mountPath: /discord-template
               readOnly: true
@@ -336,12 +311,6 @@ spec:
             items:
               - key: signing.key
                 path: borooka.ee.signing.key
-        - name: meowlnir-registration-template
-          configMap:
-            name: meowlnir-config
-            items:
-              - key: meowlnir-registration.yml
-                path: meowlnir-registration.yml
         - name: discord-registration-template
           configMap:
             name: mautrix-discord-config

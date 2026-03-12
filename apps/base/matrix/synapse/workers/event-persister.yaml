@@ -141,11 +141,6 @@ spec:
                 secretKeyRef:
                   name: synapse-secrets
                   key: OIDC_CLIENT_MATRIX_SECRET
-            - name: MEOWLNIR_ANTISPAM_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: meowlnir-secrets
-                  key: meowlnir_as_token
             # S3/B2 storage credentials
             - name: SYNAPSE_S3_BUCKET
               valueFrom:
