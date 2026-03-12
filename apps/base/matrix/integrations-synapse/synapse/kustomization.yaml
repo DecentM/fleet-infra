@@ -6,6 +6,7 @@ resources:
   - secrets
   - synapse.yaml
   - ingress.yaml
+  - janitor
 
 configMapGenerator:
   - name: integrations-synapse-config
