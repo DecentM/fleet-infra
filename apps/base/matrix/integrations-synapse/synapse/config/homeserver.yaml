@@ -2,8 +2,6 @@ server_name: "integrations.borooka.ee"
 public_baseurl: "https://integrations.borooka.ee/"
 pid_file: /data/homeserver.pid
 
-# Serves /.well-known/matrix/server → {"m.server": "integrations.borooka.ee:443"}
-# Serves /.well-known/matrix/client automatically (triggered by public_baseurl being set)
 serve_server_wellknown: true
 
 presence:
@@ -96,8 +94,7 @@ app_service_config_files:
 modules:
   - module: synapse_http_antispam.HTTPAntispam
     config:
-      # TODO: update this room ID after the meowlnir management room is created on this server
-      base_url: http://integrations-meowlnir.app-matrix.svc:29339/_meowlnir/antispam/!PLACEHOLDER:integrations.borooka.ee
+      base_url: http://integrations-meowlnir.app-matrix.svc:29339/_meowlnir/antispam/!IVNcQHAxUUwAFjlpvf:borooka.ee
       authorization: ${MEOWLNIR_ANTISPAM_TOKEN}
       enabled_callbacks:
         - user_may_invite
