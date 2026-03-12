@@ -27,7 +27,6 @@ worker_listeners:
 app_service_config_files:
   - /config/meowlnir-registration.yml
   - /config/discord-registration.yaml
-  - /config/bottricks-registration.yml
 
 # Disable modules that require main-process-only resources
 modules: []

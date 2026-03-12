@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - namespace.yaml
+  - sealed-turn-secrets.yaml
 
   - synapse
   - synapse-admin
@@ -13,9 +14,7 @@ resources:
   - meowlnir
   - mautrix-discord
   - mas
-  - bottricks
-
-  - sealed-turn-secrets.yaml
+  - integrations-synapse
 
 commonLabels:
   app.kubernetes.io/part-of: matrix-stack

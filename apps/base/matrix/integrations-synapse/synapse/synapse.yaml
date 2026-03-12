@@ -1,21 +1,21 @@
-# Synapse Matrix Homeserver
-# Documentation: https://matrix-org.github.io/synapse/latest/
+# Integrations Synapse — single-process homeserver for bots and appservices
+# No workers, no Redis, no MAS. Hosts meowlnir for moderation of main server rooms.
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: synapse
+  name: integrations-synapse
   namespace: app-matrix
   labels:
-    app: synapse
-    app.kubernetes.io/name: synapse
+    app: integrations-synapse
+    app.kubernetes.io/name: integrations-synapse
     app.kubernetes.io/component: homeserver
     app.kubernetes.io/part-of: matrix
 spec:
   revisionHistoryLimit: 2
   selector:
     matchLabels:
-      app: synapse
+      app: integrations-synapse
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -24,16 +24,13 @@ spec:
   template:
     metadata:
       labels:
-        app: synapse
-        app.kubernetes.io/name: synapse
+        app: integrations-synapse
+        app.kubernetes.io/name: integrations-synapse
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: cadance
       securityContext:
         runAsUser: 991
         runAsGroup: 991
         fsGroup: 991
-      # Wait for database and Redis to be ready
       initContainers:
         - name: wait-for-db
           image: busybox:1.36
@@ -41,7 +38,7 @@ spec:
             - sh
             - -c
             - |
-              until nc -z matrix-db-pooler-rw.app-matrix.svc 5432; do
+              until nc -z integrations-db-pooler-rw.app-matrix.svc 5432; do
                 echo "Waiting for database..."
                 sleep 2
               done
@@ -51,23 +48,6 @@ spec:
             runAsGroup: 991
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-        - name: wait-for-redis
-          image: busybox:1.36
-          command:
-            - sh
-            - -c
-            - |
-              until nc -z synapse-redis.app-matrix.svc 6379; do
-                echo "Waiting for Redis..."
-                sleep 2
-              done
-              echo "Redis is ready"
-          securityContext:
-            runAsUser: 991
-            runAsGroup: 991
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-        # Process config templates with environment variable substitution
         - name: config-templating
           image: oaudry/envsubst:1.6
           command:
@@ -86,101 +66,44 @@ spec:
                 envsubst < "$file" > "/config-processed/$filename"
               done
 
-              for file in /discord-template/*; do
-                filename=$(basename "$file")
-                echo "Processing discord template: $filename..."
-                envsubst < "$file" > "/config-processed/$filename"
-              done
-
               echo "Config templating complete"
               ls -la /config-processed/
           env:
-            # SYNAPSE_WORKER_NAME is unset for the main process - Synapse uses "master" internally
-            - name: SYNAPSE_DATABASE_DBNAME
-              valueFrom:
-                secretKeyRef:
-                  name: matrix-db-app
-                  key: dbname
-            - name: SYNAPSE_DATABASE_USER
-              valueFrom:
-                secretKeyRef:
-                  name: matrix-db-app
-                  key: user
             - name: SYNAPSE_DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: matrix-db-app
+                  name: integrations-db-app
                   key: password
             - name: SYNAPSE_REGISTRATION_SHARED_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: synapse-secrets
+                  name: integrations-synapse-secrets
                   key: registration-shared-secret
             - name: SYNAPSE_MACAROON_SECRET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: synapse-secrets
+                  name: integrations-synapse-secrets
                   key: macaroon-secret-key
             - name: SYNAPSE_FORM_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: synapse-secrets
+                  name: integrations-synapse-secrets
                   key: form-secret
-            - name: SYNAPSE_TURN_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: turn-secrets
-                  key: turn-username
-            - name: SYNAPSE_TURN_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: turn-secrets
-                  key: turn-password
             - name: MEOWLNIR_AS_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: meowlnir-secrets
+                  name: integrations-meowlnir-secrets
                   key: meowlnir_as_token
             - name: MEOWLNIR_HS_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: meowlnir-secrets
+                  name: integrations-meowlnir-secrets
                   key: meowlnir_hs_token
             - name: MEOWLNIR_ANTISPAM_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: meowlnir-secrets
+                  name: integrations-meowlnir-secrets
                   key: meowlnir_as_token
-
-            - name: DISCORD_AS_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: mautrix-discord-secrets
-                  key: as-token
-            - name: DISCORD_HS_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: mautrix-discord-secrets
-                  key: hs-token
-
-            - name: OIDC_CLIENT_MATRIX_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: synapse-secrets
-                  key: OIDC_CLIENT_MATRIX_SECRET
-            - name: SYNAPSE_WORKER_REPLICATION_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: synapse-secrets
-                  key: worker-replication-secret
-            # MAS shared secret for Synapse <-> MAS communication
-            # Sourced from mas-secrets to avoid duplication
-            - name: SYNAPSE_MAS_SHARED_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: mas-secrets
-                  key: synapse-mas-shared-secret
-            # S3/B2 storage credentials
             - name: SYNAPSE_S3_BUCKET
               valueFrom:
                 secretKeyRef:
@@ -215,9 +138,6 @@ spec:
             - name: meowlnir-registration-template
               mountPath: /meowlnir-template
               readOnly: true
-            - name: discord-registration-template
-              mountPath: /discord-template
-              readOnly: true
           securityContext:
             runAsUser: 991
             runAsGroup: 991
@@ -228,70 +148,41 @@ spec:
           imagePullPolicy: IfNotPresent
           resources:
             requests:
-              cpu: "1"
-              memory: 2Gi
+              cpu: 500m
+              memory: 512Mi
             limits:
-              cpu: "2"
-              memory: 4Gi
+              cpu: "1"
+              memory: 1Gi
           securityContext:
             runAsUser: 991
             runAsGroup: 991
             allowPrivilegeEscalation: false
           env:
-            # SYNAPSE_WORKER_NAME is unset for the main process - Synapse uses "master" internally
             - name: SYNAPSE_CONFIG_PATH
               value: /config/homeserver.yaml
-            - name: SYNAPSE_DATABASE_DBNAME
-              valueFrom:
-                secretKeyRef:
-                  name: matrix-db-app
-                  key: dbname
-            - name: SYNAPSE_DATABASE_USER
-              valueFrom:
-                secretKeyRef:
-                  name: matrix-db-app
-                  key: user
             - name: SYNAPSE_DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: matrix-db-app
+                  name: integrations-db-app
                   key: password
             - name: SYNAPSE_REGISTRATION_SHARED_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: synapse-secrets
+                  name: integrations-synapse-secrets
                   key: registration-shared-secret
             - name: SYNAPSE_MACAROON_SECRET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: synapse-secrets
+                  name: integrations-synapse-secrets
                   key: macaroon-secret-key
             - name: SYNAPSE_FORM_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: synapse-secrets
+                  name: integrations-synapse-secrets
                   key: form-secret
-            - name: SYNAPSE_TURN_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: turn-secrets
-                  key: turn-username
-            - name: SYNAPSE_TURN_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: turn-secrets
-                  key: turn-password
-            - name: OIDC_CLIENT_MATRIX_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: synapse-secrets
-                  key: OIDC_CLIENT_MATRIX_SECRET
           ports:
             - name: http
               containerPort: 8008
-              protocol: TCP
-            - name: replication
-              containerPort: 9093
               protocol: TCP
           readinessProbe:
             httpGet:
@@ -316,51 +207,42 @@ spec:
             - name: data
               mountPath: /data
             - name: signing-key
-              mountPath: /data/borooka.ee.signing.key
-              subPath: borooka.ee.signing.key
+              mountPath: /data/integrations.borooka.ee.signing.key
+              subPath: integrations.borooka.ee.signing.key
               readOnly: true
       volumes:
         - name: config-template
           configMap:
-            name: synapse-config
+            name: integrations-synapse-config
         - name: config-processed
           emptyDir: {}
-        # Ephemeral storage for temp files - all media stored in B2
         - name: data
           emptyDir:
-            sizeLimit: 5Gi
-        # Generate using: docker run --rm -v /tmp:/data matrixdotorg/synapse:v1.147.1 generate
+            sizeLimit: 2Gi
         - name: signing-key
           secret:
-            secretName: synapse-signing-key
+            secretName: integrations-synapse-signing-key
             items:
               - key: signing.key
-                path: borooka.ee.signing.key
+                path: integrations.borooka.ee.signing.key
         - name: meowlnir-registration-template
           configMap:
-            name: meowlnir-config
+            name: integrations-meowlnir-config
             items:
               - key: meowlnir-registration.yml
                 path: meowlnir-registration.yml
-        - name: discord-registration-template
-          configMap:
-            name: mautrix-discord-config
-            items:
-              - key: discord-registration.yaml
-                path: discord-registration.yaml
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: synapse
+  name: integrations-synapse
   namespace: app-matrix
   labels:
-    app: synapse
-    app.kubernetes.io/name: synapse
+    app: integrations-synapse
+    app.kubernetes.io/name: integrations-synapse
     app.kubernetes.io/component: homeserver
     app.kubernetes.io/part-of: matrix
-    job: synapse
-  # Prometheus annotations for service discovery
+    job: integrations-synapse
   annotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8008"
@@ -372,30 +254,5 @@ spec:
       port: 8008
       targetPort: http
       protocol: TCP
-    - name: replication
-      port: 9093
-      targetPort: replication
-      protocol: TCP
   selector:
-    app: synapse
----
-# Replication service for worker communication (used in instance_map)
-apiVersion: v1
-kind: Service
-metadata:
-  name: synapse-main-repl
-  namespace: app-matrix
-  labels:
-    app: synapse
-    app.kubernetes.io/name: synapse
-    app.kubernetes.io/component: homeserver
-    app.kubernetes.io/part-of: matrix
-spec:
-  type: ClusterIP
-  ports:
-    - name: replication
-      port: 9093
-      targetPort: replication
-      protocol: TCP
-  selector:
-    app: synapse
+    app: integrations-synapse

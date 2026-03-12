@@ -1,0 +1,49 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: integrations-db
+  namespace: app-matrix
+  labels:
+    app.kubernetes.io/name: integrations-synapse
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: matrix
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.10
+  postgresql:
+    parameters:
+      autovacuum_vacuum_scale_factor: "0.05"
+      autovacuum_analyze_scale_factor: "0.02"
+  storage:
+    storageClass: longhorn-local
+    size: 5Gi
+  monitoring:
+    enablePodMonitor: true
+  bootstrap:
+    initdb:
+      database: synapse
+      owner: synapse
+      postInitSQL:
+        - CREATE EXTENSION IF NOT EXISTS btree_gist;
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Pooler
+metadata:
+  name: integrations-db-pooler-rw
+  namespace: app-matrix
+  labels:
+    app.kubernetes.io/name: integrations-synapse
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: matrix
+spec:
+  cluster:
+    name: integrations-db
+  instances: 1
+  type: rw
+  pgbouncer:
+    poolMode: transaction
+    parameters:
+      max_client_conn: "100"
+      default_pool_size: "10"
+      server_reset_query: "DISCARD ALL"
+      server_reset_query_always: "1"

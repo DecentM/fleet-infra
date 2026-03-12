@@ -1,0 +1,56 @@
+apiVersion: networking.cfargotunnel.com/v1alpha1
+kind: TunnelBinding
+metadata:
+  name: integrations-synapse-tunnel
+  namespace: app-matrix
+subjects:
+  - name: integrations-synapse
+    spec:
+      fqdn: integrations.borooka.ee
+      protocol: http
+      target: http://traefik.traefik-system.svc:8000
+tunnelRef:
+  kind: ClusterTunnel
+  name: cluster-tunnel-borooka
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: integrations-synapse
+  namespace: app-matrix
+spec:
+  entryPoints:
+    - tunnel
+  routes:
+    - match: Host(`integrations.borooka.ee`)
+      kind: Rule
+      priority: 1
+      middlewares:
+        - name: integrations-synapse-buffering
+          namespace: app-matrix
+      services:
+        - name: integrations-synapse
+          port: 8008
+          serversTransport: integrations-synapse-transport
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: integrations-synapse-buffering
+  namespace: app-matrix
+spec:
+  buffering:
+    maxRequestBodyBytes: 52428800
+    memRequestBodyBytes: 1048576
+---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: integrations-synapse-transport
+  namespace: app-matrix
+spec:
+  forwardingTimeouts:
+    dialTimeout: 60s
+    responseHeaderTimeout: 60s
+    idleConnTimeout: 90s
+  maxIdleConnsPerHost: 16

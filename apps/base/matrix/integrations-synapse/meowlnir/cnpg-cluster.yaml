@@ -1,0 +1,21 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: integrations-meowlnir-db
+  namespace: app-matrix
+  labels:
+    app.kubernetes.io/name: integrations-meowlnir
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: matrix
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.10
+  storage:
+    storageClass: longhorn-local
+    size: 1Gi
+  monitoring:
+    enablePodMonitor: true
+  bootstrap:
+    initdb:
+      database: meowlnir
+      owner: meowlnir

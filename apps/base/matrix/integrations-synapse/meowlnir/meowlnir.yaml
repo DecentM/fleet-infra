@@ -3,11 +3,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: meowlnir
+  name: integrations-meowlnir
   namespace: app-matrix
   labels:
-    app: meowlnir
-    app.kubernetes.io/name: meowlnir
+    app: integrations-meowlnir
+    app.kubernetes.io/name: integrations-meowlnir
     app.kubernetes.io/component: moderation
     app.kubernetes.io/part-of: matrix
 spec:
@@ -15,21 +15,20 @@ spec:
   revisionHistoryLimit: 2
   selector:
     matchLabels:
-      app: meowlnir
+      app: integrations-meowlnir
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: meowlnir
-        job: meowlnir
-        app.kubernetes.io/name: meowlnir
+        app: integrations-meowlnir
+        job: integrations-meowlnir
+        app.kubernetes.io/name: integrations-meowlnir
     spec:
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
-      # Wait for database to be ready
       initContainers:
         - name: wait-for-db
           image: busybox:1.37.0
@@ -38,7 +37,7 @@ spec:
             - sh
             - -c
             - |
-              until nc -z meowlnir-db-rw.app-matrix.svc 5432; do
+              until nc -z integrations-meowlnir-db-rw.app-matrix.svc 5432; do
                 echo "Waiting for Meowlnir database..."
                 sleep 2
               done
@@ -48,7 +47,6 @@ spec:
             runAsGroup: 1000
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-        # Process config templates with environment variable substitution
         - name: config-templating
           image: oaudry/envsubst:1.6
           imagePullPolicy: IfNotPresent
@@ -65,55 +63,47 @@ spec:
               echo "Config templating complete"
               ls -la /config-processed/
           env:
-            # Meowlnir secrets
             - name: MEOWLNIR_AS_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: meowlnir-secrets
+                  name: integrations-meowlnir-secrets
                   key: meowlnir_as_token
             - name: MEOWLNIR_HS_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: meowlnir-secrets
+                  name: integrations-meowlnir-secrets
                   key: meowlnir_hs_token
             - name: MEOWLNIR_MANAGEMENT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: meowlnir-secrets
+                  name: integrations-meowlnir-secrets
                   key: meowlnir_management_secret
             - name: MEOWLNIR_DATA_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: meowlnir-secrets
+                  name: integrations-meowlnir-secrets
                   key: meowlnir_data_secret
             - name: MEOWLNIR_PICKLE_KEY
               valueFrom:
                 secretKeyRef:
-                  name: meowlnir-secrets
+                  name: integrations-meowlnir-secrets
                   key: meowlnir_pickle_key
-            # Antispam API secret (must match Synapse HTTPAntispam authorization)
-            - name: MEOWLNIR_ANTISPAM_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: meowlnir-secrets
-                  key: meowlnir_as_token
-            # Meowlnir database credentials
             - name: MEOWLNIR_DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: meowlnir-db-app
+                  name: integrations-meowlnir-db-app
                   key: user
             - name: MEOWLNIR_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: meowlnir-db-app
+                  name: integrations-meowlnir-db-app
                   key: password
             - name: MEOWLNIR_DB_NAME
               valueFrom:
                 secretKeyRef:
-                  name: meowlnir-db-app
+                  name: integrations-meowlnir-db-app
                   key: dbname
-            # Synapse database credentials (read-only for performance)
+            # Cross-namespace: reads main server's DB for efficient redaction
             - name: SYNAPSE_DB_USER
               valueFrom:
                 secretKeyRef:
@@ -183,31 +173,28 @@ spec:
             timeoutSeconds: 5
             failureThreshold: 3
           volumeMounts:
-            # Mount entire /config directory as writable so Meowlnir can write
-            # config upgrade temp files (mautrix config auto-upgrade feature)
             - name: config-processed
               mountPath: /config
-            # Persistent data directory for encryption state storage
             - name: data
               mountPath: /data
       volumes:
         - name: config-template
           configMap:
-            name: meowlnir-config
+            name: integrations-meowlnir-config
         - name: config-processed
           emptyDir: {}
         - name: data
           persistentVolumeClaim:
-            claimName: meowlnir-data
+            claimName: integrations-meowlnir-data
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: meowlnir-data
+  name: integrations-meowlnir-data
   namespace: app-matrix
   labels:
-    app: meowlnir
-    app.kubernetes.io/name: meowlnir
+    app: integrations-meowlnir
+    app.kubernetes.io/name: integrations-meowlnir
     app.kubernetes.io/component: moderation
     app.kubernetes.io/part-of: matrix
 spec:

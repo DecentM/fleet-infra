@@ -1,0 +1,115 @@
+server_name: "integrations.borooka.ee"
+public_baseurl: "https://integrations.borooka.ee/"
+pid_file: /data/homeserver.pid
+
+# Serves /.well-known/matrix/server → {"m.server": "integrations.borooka.ee:443"}
+# Serves /.well-known/matrix/client automatically (triggered by public_baseurl being set)
+serve_server_wellknown: true
+
+presence:
+  enabled: false
+
+enable_authenticated_media: true
+
+database:
+  name: psycopg2
+  args:
+    user: synapse
+    password: "${SYNAPSE_DATABASE_PASSWORD}"
+    database: synapse
+    host: integrations-db-pooler-rw.app-matrix.svc
+    port: 5432
+    cp_min: 5
+    cp_max: 10
+    keepalives_idle: 10
+    keepalives_interval: 10
+    keepalives_count: 3
+
+listeners:
+  - port: 8008
+    tls: false
+    type: http
+    x_forwarded: true
+    bind_addresses:
+      - 0.0.0.0
+    resources:
+      - names:
+          - client
+          - federation
+          - metrics
+        compress: false
+
+# Local cache — all media backed to S3 with integrations-specific prefix
+media_store_path: /data/media_store
+
+media_storage_providers:
+  - module: s3_storage_provider.S3StorageProviderBackend
+    store_local: true
+    store_remote: true
+    store_synchronous: true
+    config:
+      bucket: "${SYNAPSE_S3_BUCKET}"
+      endpoint_url: "${SYNAPSE_S3_ENDPOINT_URL}"
+      region_name: "${SYNAPSE_S3_REGION}"
+      access_key_id: "${SYNAPSE_S3_ACCESS_KEY_ID}"
+      secret_access_key: "${SYNAPSE_S3_SECRET_ACCESS_KEY}"
+      prefix: "integrations-media/"
+      storage_class: "STANDARD"
+
+max_upload_size: 25M
+
+signing_key_path: /data/integrations.borooka.ee.signing.key
+
+enable_registration: false
+registration_shared_secret: "${SYNAPSE_REGISTRATION_SHARED_SECRET}"
+
+password_config:
+  enabled: false
+
+macaroon_secret_key: "${SYNAPSE_MACAROON_SECRET_KEY}"
+form_secret: "${SYNAPSE_FORM_SECRET}"
+
+trusted_key_servers:
+  - server_name: "matrix.org"
+
+# No limit_remote_rooms — this server intentionally joins high-complexity rooms
+# so meowlnir can subscribe to ban lists without risking the main server's database
+
+rc_federation:
+  window_size: 1000
+  sleep_limit: 10
+  sleep_delay: 750
+  reject_limit: 50
+  concurrent: 3
+
+caches:
+  global_factor: 1.0
+
+enable_metrics: true
+report_stats: false
+
+log_config: "/config/log.config"
+
+app_service_config_files:
+  - /config/meowlnir-registration.yml
+
+modules:
+  - module: synapse_http_antispam.HTTPAntispam
+    config:
+      # TODO: update this room ID after the meowlnir management room is created on this server
+      base_url: http://integrations-meowlnir.app-matrix.svc:29339/_meowlnir/antispam/!PLACEHOLDER:integrations.borooka.ee
+      authorization: ${MEOWLNIR_ANTISPAM_TOKEN}
+      enabled_callbacks:
+        - user_may_invite
+        - user_may_join_room
+      fail_open:
+        user_may_invite: true
+        user_may_join_room: true
+
+default_room_version: "12"
+
+experimental_features:
+  msc3202_device_masquerading: true
+  msc3202_transaction_extensions: true
+  msc2409_to_device_messages_enabled: true
+  msc2815_enabled: true
