@@ -1,6 +1,6 @@
 # Custom Synapse image with anti-spam modules
 # Based on the official matrixdotorg/synapse image
-FROM matrixdotorg/synapse:v1.147.1
+FROM matrixdotorg/synapse:v1.149.1
 
 RUN apt-get update && apt-get -y install git
 
