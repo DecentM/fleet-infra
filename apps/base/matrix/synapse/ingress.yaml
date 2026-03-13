@@ -96,29 +96,17 @@ spec:
           port: 8083
           serversTransport: synapse-transport-default
 
-    # --- Priority 500: federation event ---
-    - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/v1/event/`)
+    # --- Priority 490: federation send_join / send_leave / send_knock ---
+    - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/(v1|v2)/(send_join|send_leave|send_knock)/`)
       kind: Rule
-      priority: 500
+      priority: 490
       middlewares:
         - name: synapse-buffering
           namespace: app-matrix
       services:
         - name: synapse-federation-reader
           port: 8083
-          serversTransport: synapse-transport-default
-
-    # --- Priority 500: federation state ---
-    - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/v1/state/`)
-      kind: Rule
-      priority: 500
-      middlewares:
-        - name: synapse-buffering
-          namespace: app-matrix
-      services:
-        - name: synapse-federation-reader
-          port: 8083
-          serversTransport: synapse-transport-default
+          serversTransport: synapse-transport-federation-join
 
     # --- Priority 480: federation backfill ---
     - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/v1/backfill/`)
@@ -144,20 +132,8 @@ spec:
           port: 8083
           serversTransport: synapse-transport-federation-backfill
 
-    # --- Priority 460: federation publicRooms ---
-    - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/v1/publicRooms`)
-      kind: Rule
-      priority: 460
-      middlewares:
-        - name: synapse-buffering
-          namespace: app-matrix
-      services:
-        - name: synapse-federation-reader
-          port: 8083
-          serversTransport: synapse-transport-default
-
-    # --- Priority 460: federation query ---
-    - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/v1/query/`)
+    # --- Priority 460: federation catch-all (covers all remaining federation endpoints) ---
+    - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/`)
       kind: Rule
       priority: 460
       middlewares:
@@ -249,3 +225,15 @@ spec:
     responseHeaderTimeout: 120s
     idleConnTimeout: 90s
   maxIdleConnsPerHost: 16
+---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: synapse-transport-federation-join
+  namespace: app-matrix
+spec:
+  forwardingTimeouts:
+    dialTimeout: 60s
+    responseHeaderTimeout: 300s
+    idleConnTimeout: 90s
+  maxIdleConnsPerHost: 8
