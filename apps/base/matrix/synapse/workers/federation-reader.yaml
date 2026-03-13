@@ -179,7 +179,7 @@ spec:
             allowPrivilegeEscalation: false
       containers:
         - name: synapse-worker
-          image: ghcr.io/decentm/synapse:sha-defa7cb
+          image: ghcr.io/decentm/synapse:sha-78be9cf
           imagePullPolicy: IfNotPresent
           args:
             - run
