@@ -1,0 +1,17 @@
+id: bottricks-dev
+url: null
+as_token: ${BOTTRICKS_DEV_AS_TOKEN}
+hs_token: ${BOTTRICKS_DEV_HS_TOKEN}
+sender_localpart: bottricks-dev
+rate_limited: false
+
+namespaces:
+  users:
+    - regex: "^@bottricks-dev:integrations\\.borooka\\.ee$"
+      exclusive: true
+  rooms: []
+  aliases: []
+
+de.sorunome.msc2409.push_ephemeral: true
+push_ephemeral: true
+org.matrix.msc3202: true

@@ -66,6 +66,12 @@ spec:
                 envsubst < "$file" > "/config-processed/$filename"
               done
 
+              for file in /bottricks-dev-template/*; do
+                filename=$(basename "$file")
+                echo "Processing bottricks-dev template: $filename..."
+                envsubst < "$file" > "/config-processed/$filename"
+              done
+
               echo "Config templating complete"
               ls -la /config-processed/
           env:
@@ -104,6 +110,16 @@ spec:
                 secretKeyRef:
                   name: integrations-meowlnir-secrets
                   key: meowlnir_as_token
+            - name: BOTTRICKS_DEV_AS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: integrations-bottricks-dev-secrets
+                  key: as-token
+            - name: BOTTRICKS_DEV_HS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: integrations-bottricks-dev-secrets
+                  key: hs-token
             - name: SYNAPSE_S3_BUCKET
               valueFrom:
                 secretKeyRef:
@@ -137,6 +153,9 @@ spec:
               mountPath: /config-processed
             - name: meowlnir-registration-template
               mountPath: /meowlnir-template
+              readOnly: true
+            - name: bottricks-dev-registration-template
+              mountPath: /bottricks-dev-template
               readOnly: true
           securityContext:
             runAsUser: 991
@@ -231,6 +250,12 @@ spec:
             items:
               - key: meowlnir-registration.yml
                 path: meowlnir-registration.yml
+        - name: bottricks-dev-registration-template
+          configMap:
+            name: integrations-bottricks-dev-config
+            items:
+              - key: bottricks-dev-registration.yaml
+                path: bottricks-dev-registration.yaml
 ---
 apiVersion: v1
 kind: Service
