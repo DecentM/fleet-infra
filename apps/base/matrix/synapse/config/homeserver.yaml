@@ -205,6 +205,7 @@ experimental_features:
   # Element Call support
   msc4140_enabled: true  # Delayed events for proper call signalling
   msc3266_enabled: true  # Room summaries
+  msc4222_enabled: true  # use_state_after
 
 server_notices:
   system_mxid_localpart: notices

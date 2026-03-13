@@ -111,3 +111,4 @@ experimental_features:
   msc3202_transaction_extensions: true
   msc2409_to_device_messages_enabled: true
   msc2815_enabled: true
+  msc4222_enabled: true # use_state_after
