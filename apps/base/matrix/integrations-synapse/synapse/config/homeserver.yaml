@@ -62,7 +62,7 @@ enable_registration: false
 registration_shared_secret: "${SYNAPSE_REGISTRATION_SHARED_SECRET}"
 
 password_config:
-  enabled: false
+  enabled: true
 
 macaroon_secret_key: "${SYNAPSE_MACAROON_SECRET_KEY}"
 form_secret: "${SYNAPSE_FORM_SECRET}"
