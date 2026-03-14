@@ -35,7 +35,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: photoprism
-          image: photoprism/photoprism:251130-ce
+          image: photoprism/photoprism:251130
           readinessProbe:
             tcpSocket:
               port: 2342
