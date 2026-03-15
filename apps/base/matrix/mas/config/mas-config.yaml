@@ -73,3 +73,8 @@ policy:
   data:
     # A new user in SSO will "register" a user here
     registration: "open"
+    client_registration:
+      # covers cases where client_uri is absent in the DCR request.
+      allow_missing_client_uri: true
+      # covers http:// URIs (e.g. if accessed over plain HTTP internally).
+      allow_insecure_uris: true
