@@ -12,7 +12,6 @@ resources:
 - ../base/restic
 - ../base/samba
 - ../base/servarr
-- ../base/ollama
 - ../base/warp-proxy
 - ../base/matrix
 - ../base/whoami
