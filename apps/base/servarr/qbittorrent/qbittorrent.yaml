@@ -76,7 +76,7 @@ spec:
               mountPath: /config
       containers:
         - name: qbittorrent
-          image: lscr.io/linuxserver/qbittorrent:5.1.4-r1-ls435
+          image: lscr.io/linuxserver/qbittorrent:5.1.4
           imagePullPolicy: IfNotPresent
           readinessProbe:
             tcpSocket:
