@@ -23,5 +23,13 @@
   },
   "io.element.e2ee": {
     "default": true
+  },
+  "m.integrations": {
+    "managers": [
+      {
+        "api_url": "https://scalar.vector.im/api",
+        "ui_url": "https://scalar.vector.im/"
+      }
+    ]
   }
 }

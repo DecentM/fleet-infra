@@ -96,6 +96,7 @@ listeners:
           - client
           - federation
           - metrics
+          - openid
         compress: false
 
   # Workers talk on this
