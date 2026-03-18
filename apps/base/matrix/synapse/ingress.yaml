@@ -132,6 +132,18 @@ spec:
           port: 8083
           serversTransport: synapse-transport-federation-backfill
 
+    # --- Priority 465: federation openid userinfo (not implemented by federation-reader) ---
+    - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/v1/openid/userinfo`)
+      kind: Rule
+      priority: 465
+      middlewares:
+        - name: synapse-buffering
+          namespace: app-matrix
+      services:
+        - name: synapse
+          port: 8008
+          serversTransport: synapse-transport-default
+
     # --- Priority 460: federation catch-all (covers all remaining federation endpoints) ---
     - match: Host(`matrix.borooka.ee`) && PathRegexp(`^/_matrix/federation/`)
       kind: Rule
