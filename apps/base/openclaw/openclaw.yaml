@@ -53,7 +53,7 @@ spec:
               mountPath: /config-template
       containers:
         - name: openclaw
-          image: ghcr.io/openclaw/openclaw:2026.3.1
+          image: ghcr.io/openclaw/openclaw:2026.3.12
           imagePullPolicy: IfNotPresent
           command: ["node", "dist/index.js", "gateway", "--bind", "lan", "--port", "18789"]
           readinessProbe:
