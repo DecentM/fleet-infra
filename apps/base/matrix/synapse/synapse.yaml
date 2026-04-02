@@ -36,7 +36,7 @@ spec:
       # Wait for database and Redis to be ready
       initContainers:
         - name: wait-for-db
-          image: busybox:1.36
+          image: busybox:1.37
           command:
             - sh
             - -c
@@ -52,7 +52,7 @@ spec:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
         - name: wait-for-redis
-          image: busybox:1.36
+          image: busybox:1.37
           command:
             - sh
             - -c
