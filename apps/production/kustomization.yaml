@@ -1,26 +1,25 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-- ../base/actual
-- ../base/home-assistant
-- ../base/invidious
-- ../base/jellyfin
-- ../base/joplin
-- ../base/minecraft
-- ../base/paperless-ngx
-- ../base/photoprism
-- ../base/restic
-- ../base/samba
-- ../base/servarr
-- ../base/warp-proxy
-- ../base/matrix
-- ../base/whoami
-- ../base/authelia
-- ../base/openclaw
+  - ../base/actual
+  - ../base/home-assistant
+  - ../base/invidious
+  - ../base/jellyfin
+  - ../base/joplin
+  - ../base/minecraft
+  - ../base/paperless-ngx
+  - ../base/photoprism
+  - ../base/restic
+  - ../base/samba
+  - ../base/servarr
+  - ../base/warp-proxy
+  - ../base/matrix
+  - ../base/whoami
+  - ../base/authelia
 patches:
-- path: patches/photoprism.yaml
-- path: patches/spectrum-mc-rp-tunnel.yaml
-- path: patches/themepark-theme.yaml
-  target:
-    kind: Middleware
-    labelSelector: "themepark.dev/managed=true"
+  - path: patches/photoprism.yaml
+  - path: patches/spectrum-mc-rp-tunnel.yaml
+  - path: patches/themepark-theme.yaml
+    target:
+      kind: Middleware
+      labelSelector: "themepark.dev/managed=true"
