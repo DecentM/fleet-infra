@@ -23,10 +23,8 @@ spec:
         - name: opencode
           image: ghcr.io/decentm/opencode:sha-492cc88
           imagePullPolicy: IfNotPresent
-          args: ["serve", "--port", "8888", "--host", "0.0.0.0"]
+          args: ["serve", "--port", "8888", "--hostname", "0.0.0.0"]
           envFrom:
-            - configMapRef:
-                name: opencode-config
             - secretRef:
                 name: opencode-secrets
           readinessProbe:
@@ -47,10 +45,15 @@ spec:
           volumeMounts:
             - name: workspace
               mountPath: /workspace
+            - name: state
+              mountPath: /root/.local/share/opencode
       volumes:
         - name: workspace
           persistentVolumeClaim:
             claimName: opencode-workspace
+        - name: state
+          persistentVolumeClaim:
+            claimName: opencode-state
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -63,6 +66,19 @@ spec:
   resources:
     requests:
       storage: 15Gi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: opencode-state
+  namespace: app-opencode
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
   storageClassName: longhorn-local
 ---
 apiVersion: v1
