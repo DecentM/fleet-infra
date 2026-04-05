@@ -8,7 +8,7 @@ spec:
   revisionHistoryLimit: 2
   selector:
     matchLabels:
-      task: opencode
+      app: opencode
   strategy:
     type: RollingUpdate
   rollingUpdate:
@@ -17,7 +17,7 @@ spec:
   template:
     metadata:
       labels:
-        task: opencode
+        app: opencode
     spec:
       containers:
         - name: opencode
@@ -93,5 +93,4 @@ spec:
       port: 8888
       targetPort: http
   selector:
-    app: traefiklabs
-    task: opencode
+    app: opencode
