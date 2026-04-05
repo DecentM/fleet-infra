@@ -1,0 +1,81 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: opencode
+  namespace: app-opencode
+
+spec:
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      task: opencode
+  strategy:
+    type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
+  template:
+    metadata:
+      labels:
+        task: opencode
+    spec:
+      containers:
+        - name: opencode
+          image: ghcr.io/decentm/opencode:sha-492cc88
+          imagePullPolicy: IfNotPresent
+          args: ["serve", "--port", "8888", "--host", "0.0.0.0"]
+          envFrom:
+            - configMapRef:
+                name: opencode-config
+            - secretRef:
+                name: opencode-secrets
+          readinessProbe:
+            tcpSocket:
+              port: 8888
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: 8888
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          ports:
+            - containerPort: 8888
+              name: http
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace
+      volumes:
+        - name: workspace
+          persistentVolumeClaim:
+            claimName: opencode-workspace
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: opencode-workspace
+  namespace: app-opencode
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 15Gi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opencode
+  namespace: app-opencode
+
+spec:
+  ports:
+    - name: http
+      port: 8888
+      targetPort: http
+  selector:
+    app: traefiklabs
+    task: opencode
