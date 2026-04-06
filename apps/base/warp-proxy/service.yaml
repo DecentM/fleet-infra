@@ -6,7 +6,6 @@ metadata:
   labels:
     tailscale.com/proxy-class: privileged-proxy
   annotations:
-    # Set the hostname in Tailscale to 'warp-proxy'
     tailscale.com/hostname: warp-proxy
 spec:
   type: LoadBalancer

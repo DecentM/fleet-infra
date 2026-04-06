@@ -2,5 +2,11 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - namespace.yaml
-  - deployment.yaml
+  - warp-proxy.yaml
   - service.yaml
+
+configMapGenerator:
+  - name: warp-proxy-config
+    namespace: app-warp-proxy
+    envs:
+      - config/warp-proxy.env

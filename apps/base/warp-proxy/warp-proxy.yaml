@@ -29,12 +29,9 @@ spec:
             - containerPort: 1080
               name: socks5
               protocol: TCP
-          env:
-            - name: WARP_SLEEP
-              value: "10"
-            # Accept Cloudflare's TOS
-            - name: WARP_LICENSE_ACCEPT
-              value: "true"
+          envFrom:
+            - configMapRef:
+                name: warp-proxy-config
           volumeMounts:
             - name: warp-data
               mountPath: /var/lib/cloudflare-warp
