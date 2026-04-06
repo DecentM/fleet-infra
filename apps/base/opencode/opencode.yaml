@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: opencode
-          image: ghcr.io/decentm/opencode:sha-504f521
+          image: ghcr.io/decentm/opencode:sha-8522931
           imagePullPolicy: IfNotPresent
           args: ["serve", "--port", "8888", "--hostname", "0.0.0.0"]
           envFrom:
