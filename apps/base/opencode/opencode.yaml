@@ -39,6 +39,13 @@ spec:
             initialDelaySeconds: 60
             periodSeconds: 5
             failureThreshold: 20
+          resources:
+            requests:
+              memory: "1256Mi"
+              cpu: "250m"
+            limits:
+              memory: "4Gi"
+              cpu: "1000m"
           ports:
             - containerPort: 8888
               name: http
