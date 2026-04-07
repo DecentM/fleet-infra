@@ -131,7 +131,7 @@ spec:
             allowPrivilegeEscalation: false
       containers:
         - name: meowlnir
-          image: dock.mau.dev/maunium/meowlnir:v0.2602.0
+          image: dock.mau.dev/maunium/meowlnir:v0.2603.0
           imagePullPolicy: IfNotPresent
           command:
             - /usr/bin/meowlnir
