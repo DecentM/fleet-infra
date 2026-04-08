@@ -72,7 +72,7 @@ spec:
             - "--providers.kubernetescrd"
             - "--providers.kubernetescrd.allowCrossNamespace=true"
             - "--experimental.plugins.themepark.moduleName=github.com/packruler/traefik-themepark"
-            - "--experimental.plugins.themepark.version=v1.2.0"
+            - "--experimental.plugins.themepark.version=v1.4.2"
           ports:
             - name: http
               containerPort: 80
