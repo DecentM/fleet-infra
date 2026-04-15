@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: gotenberg
-          image: gotenberg/gotenberg:8.21
+          image: gotenberg/gotenberg:8.30
           imagePullPolicy: IfNotPresent
           readinessProbe:
             tcpSocket:
