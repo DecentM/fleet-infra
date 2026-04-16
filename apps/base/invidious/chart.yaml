@@ -17,7 +17,7 @@ spec:
   chart:
     spec:
       chart: invidious
-      version: "2.1.0"
+      version: "2.3.0"
       sourceRef:
         kind: HelmRepository
         name: invidious
