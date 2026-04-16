@@ -20,7 +20,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: grafana
-      version: "6.27.0"
+      version: "6.55.0"
   interval: 10m
   values:
     deploymentMode: SingleBinary
