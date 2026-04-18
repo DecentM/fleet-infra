@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: peertube-redis
+  namespace: app-peertube
+  labels:
+    app: peertube-redis
+spec:
+  revisionHistoryLimit: 2
+  replicas: 1
+  selector:
+    matchLabels:
+      app: peertube-redis
+  template:
+    metadata:
+      labels:
+        app: peertube-redis
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
+      containers:
+        - name: redis
+          image: docker.io/library/redis:7-alpine
+          readinessProbe:
+            tcpSocket:
+              port: 6379
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: 6379
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          volumeMounts:
+            - mountPath: /data
+              name: redisdata
+          ports:
+            - containerPort: 6379
+              name: redis
+        - name: exporter
+          image: oliver006/redis_exporter:v1.80.1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: REDIS_ADDR
+              value: "redis://localhost:6379"
+          ports:
+            - containerPort: 9121
+              name: metrics
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 10
+            periodSeconds: 30
+      volumes:
+        - name: redisdata
+          hostPath:
+            path: /mnt/spike/storage/k8s/namespaces/app-peertube/redis/data
+            type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: peertube-redis
+  namespace: app-peertube
+spec:
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: redis
+  selector:
+    app: peertube-redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: peertube-redis-metrics
+  namespace: app-peertube
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9121"
+spec:
+  ports:
+    - name: metrics
+      port: 9121
+      targetPort: metrics
+  selector:
+    app: peertube-redis

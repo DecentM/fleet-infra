@@ -16,6 +16,7 @@ resources:
   - ../base/matrix
   - ../base/whoami
   - ../base/authelia
+  - ../base/peertube
 patches:
   - path: patches/photoprism.yaml
   - path: patches/spectrum-mc-rp-tunnel.yaml
