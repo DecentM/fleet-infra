@@ -35,6 +35,23 @@ spec:
       name: peertube-secrets
       valuesKey: peertube-secret
       targetPath: server.config.secrets.peertube
+    # PostgreSQL credentials from CloudNativePG secret
+    - kind: Secret
+      name: peertube-db-app
+      valuesKey: username
+      targetPath: server.externalPostgres.username
+    - kind: Secret
+      name: peertube-db-app
+      valuesKey: password
+      targetPath: server.externalPostgres.password
+    - kind: Secret
+      name: peertube-db-app
+      valuesKey: dbname
+      targetPath: server.externalPostgres.name
+    - kind: Secret
+      name: peertube-db-app
+      valuesKey: port
+      targetPath: server.externalPostgres.port
 
   values:
     server:
@@ -86,18 +103,38 @@ spec:
               secretKeyRef:
                 name: peertube-secrets
                 key: admin-password
+          # S3 Object Storage credentials
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: peertube-s3-secrets
+                key: access-key-id
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: peertube-s3-secrets
+                key: secret-access-key
+          - name: AWS_ENDPOINT_URL
+            valueFrom:
+              secretKeyRef:
+                name: peertube-s3-secrets
+                key: endpoint
+          - name: AWS_REGION
+            valueFrom:
+              secretKeyRef:
+                name: peertube-s3-secrets
+                key: region
+          - name: S3_BUCKET
+            valueFrom:
+              secretKeyRef:
+                name: peertube-s3-secrets
+                key: bucket
 
       persistence:
-        enabled: true
-        size: 100Gi
-        storageClass: longhorn-local
+        enabled: false
 
       externalPostgres:
         hostname: "peertube-db-rw.app-peertube.svc.cluster.local"
-        port: 5432
-        name: "peertube"
-        username: "peertube"
-        existingSecret: "peertube-db-app"
         pool:
           max: 10
 
@@ -147,6 +184,42 @@ spec:
               port: 1935
             rtmps:
               enabled: false
+          # Object Storage (S3) Configuration
+          object_storage:
+            enabled: true
+            endpoint: ''  # Set via AWS_ENDPOINT_URL env var or override
+            region: ''    # Set via AWS_REGION env var or override
+            upload_acl:
+              public: 'public-read'
+              private: 'private'
+            proxy:
+              proxify_private_files: true
+            credentials:
+              access_key_id: ''  # Set via AWS_ACCESS_KEY_ID env var
+              secret_access_key: ''  # Set via AWS_SECRET_ACCESS_KEY env var
+            max_upload_part: 100MB
+            max_request_attempts: 3
+            streaming_playlists:
+              bucket_name: ''  # Set via S3_BUCKET env var
+              prefix: 'streaming-playlists/'
+              base_url: ''
+              store_live_streams: false
+            web_videos:
+              bucket_name: ''  # Set via S3_BUCKET env var
+              prefix: 'web-videos/'
+              base_url: ''
+            user_exports:
+              bucket_name: ''  # Set via S3_BUCKET env var
+              prefix: 'user-exports/'
+              base_url: ''
+            original_video_files:
+              bucket_name: ''  # Set via S3_BUCKET env var
+              prefix: 'original-video-files/'
+              base_url: ''
+            captions:
+              bucket_name: ''  # Set via S3_BUCKET env var
+              prefix: 'captions/'
+              base_url: ''
           transcoding:
             enabled: true
             threads: 2
