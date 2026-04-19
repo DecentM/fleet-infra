@@ -13,3 +13,6 @@ configMapGenerator:
     namespace: app-peertube
     envs:
       - config/peertube.env
+
+configurations:
+  - kustomizeconfig/helmrelease-configmap-name.yaml
