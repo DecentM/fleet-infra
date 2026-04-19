@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - ../base/actual
   - ../base/home-assistant
-  - ../base/invidious
   - ../base/jellyfin
   - ../base/joplin
   - ../base/minecraft
