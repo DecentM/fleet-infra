@@ -77,6 +77,10 @@ spec:
 
         # Instance configuration via environment variables
         extraEnvVars:
+          - name: PEERTUBE_REDIS_AUTH
+            value: ""  # No auth for our Redis
+          - name: PEERTUBE_REDIS_PORT
+            value: "6379"
           - name: PEERTUBE_INSTANCE_NAME
             valueFrom:
               configMapKeyRef:
