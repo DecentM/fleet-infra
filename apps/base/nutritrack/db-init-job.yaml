@@ -10,8 +10,11 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: db-init
-          # Same image as the main app — must be built and pushed first
-          image: ghcr.io/sderosiaux/nutritrack:latest
+          # Migrator image (pnpm + tsx + full source), built from the
+          # `migrator` target of containers/nutritrack/Dockerfile.
+          # The main runner image is a Next.js standalone bundle with only
+          # `node server.js` — it has no pnpm/tsx and can't run the scripts.
+          image: ghcr.io/decentm/nutritrack-migrator:latest
           imagePullPolicy: IfNotPresent
           command:
             - sh

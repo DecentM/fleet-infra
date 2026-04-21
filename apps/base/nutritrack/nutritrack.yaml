@@ -23,11 +23,11 @@ spec:
     spec:
       containers:
         - name: nutritrack
-          # TODO: nutritrack has no published image upstream
-          # (https://github.com/sderosiaux/nutritrack).
-          # Build from source (Next.js 15 standalone output) and push
-          # to a registry, then pin to a specific tag here instead of :latest.
-          image: ghcr.io/sderosiaux/nutritrack:latest
+          # Built by this repo's CI from containers/nutritrack/Dockerfile,
+          # which clones upstream (https://github.com/sderosiaux/nutritrack)
+          # at a pinned ref and builds the Next.js 15 standalone output.
+          # TODO: pin to a specific sha-XXXXXXX tag instead of :latest.
+          image: ghcr.io/decentm/nutritrack:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000

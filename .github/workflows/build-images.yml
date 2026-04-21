@@ -8,6 +8,7 @@ on:
       - 'v*'
     paths:
       - 'containers/**/Dockerfile'
+      - 'containers/**/*.Dockerfile'
   workflow_dispatch:
 
 env:
@@ -32,20 +33,17 @@ jobs:
         with:
           files: |
             containers/**/Dockerfile
-          dir_names: true
-          dir_names_max_depth: 0
+            containers/**/*.Dockerfile
 
       - name: Build matrix from changed Dockerfiles
         id: set-matrix
         run: |
           matrix_items=()
 
-          # Handle workflow_dispatch - build all images
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "Workflow dispatch detected - scanning all Dockerfiles"
-            dockerfiles=$(find containers/ -name "Dockerfile" 2>/dev/null || true)
+            dockerfiles=$(find containers/ \( -name "Dockerfile" -o -name "*.Dockerfile" \) 2>/dev/null || true)
           else
-            # Use changed files from tj-actions
             changed="${{ steps.changed-files.outputs.all_changed_files }}"
             if [[ -z "$changed" ]]; then
               echo "No Dockerfile changes detected"
@@ -53,27 +51,27 @@ jobs:
               echo "has_changes=false" >> $GITHUB_OUTPUT
               exit 0
             fi
-            dockerfiles=""
-            for dir in $changed; do
-              if [[ -f "$dir/Dockerfile" ]]; then
-                dockerfiles="$dockerfiles $dir/Dockerfile"
-              fi
-            done
+            dockerfiles="$changed"
           fi
 
           for dockerfile in $dockerfiles; do
-            if [[ -z "$dockerfile" ]]; then
-              continue
-            fi
+            [[ -z "$dockerfile" ]] && continue
+            [[ ! -f "$dockerfile" ]] && continue
 
             context=$(dirname "$dockerfile")
-            
-            # Derive image name from context path
-            # containers/synapse -> synapse
-            # containers/maubot -> maubot
-            image_name=$(echo "$context" | sed 's|containers/||' | cut -d'/' -f1)
+            filename=$(basename "$dockerfile")
+            dir_name=$(echo "$context" | sed 's|containers/||' | cut -d'/' -f1)
 
-            matrix_items+=("{\"context\":\"$context\",\"image\":\"$image_name\"}")
+            if [[ "$filename" == "Dockerfile" ]]; then
+              # containers/foo/Dockerfile -> foo
+              image_name="$dir_name"
+            else
+              # containers/foo/bar.Dockerfile -> foo-bar
+              stem="${filename%.Dockerfile}"
+              image_name="${dir_name}-${stem}"
+            fi
+
+            matrix_items+=("{\"context\":\"$context\",\"dockerfile\":\"$dockerfile\",\"image\":\"$image_name\"}")
           done
 
           if [[ ${#matrix_items[@]} -eq 0 ]]; then
@@ -83,7 +81,6 @@ jobs:
             exit 0
           fi
 
-          # Build JSON matrix
           matrix_json=$(printf '%s\n' "${matrix_items[@]}" | jq -s '{include: .}' | tr -d '\n')
           echo "matrix=$matrix_json" >> $GITHUB_OUTPUT
           echo "has_changes=true" >> $GITHUB_OUTPUT
@@ -132,6 +129,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
           platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
