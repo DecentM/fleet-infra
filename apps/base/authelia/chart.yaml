@@ -214,14 +214,11 @@ spec:
         remember_me: 1M
         cookies:
           - domain: cluster.arpa
-            authelia_url: https://auth.cluster.arpa
-            default_redirection_url: https://auth.cluster.arpa
+            subdomain: auth
           - domain: decentm.com
-            authelia_url: https://auth.decentm.com
-            default_redirection_url: https://auth.decentm.com
+            subdomain: auth
           - domain: borooka.ee
-            authelia_url: https://auth.borooka.ee
-            default_redirection_url: https://auth.borooka.ee
+            subdomain: auth
         encryption_key:
           disabled: false
           secret_name: ~  # null = use internal secret
