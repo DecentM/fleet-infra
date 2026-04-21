@@ -14,6 +14,16 @@ tunnelRef:
   name: cluster-tunnel-decentm
 ---
 apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: peertube-vary-accept
+  namespace: app-peertube
+spec:
+  headers:
+    customResponseHeaders:
+      Vary: Accept
+---
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: peertube-public
@@ -22,8 +32,18 @@ spec:
   entryPoints:
     - tunnel
   routes:
+    - match: Host(`tube.decentm.com`) && (PathPrefix(`/accounts/`) || PathPrefix(`/video-channels/`) || PathPrefix(`/videos/watch/`) || PathPrefix(`/.well-known/`) || PathPrefix(`/inbox`) || PathPrefix(`/outbox`))
+      kind: Rule
+      priority: 10
+      services:
+        - name: peertube-server-svc
+          port: 9000
+      middlewares:
+        - name: peertube-vary-accept
+          namespace: app-peertube
     - match: Host(`tube.decentm.com`)
       kind: Rule
+      priority: 1
       services:
         - name: peertube-server-svc
           port: 9000
