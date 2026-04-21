@@ -6,6 +6,7 @@ resources:
   - ../base/jellyfin
   - ../base/joplin
   - ../base/minecraft
+  - ../base/nutritrack
   - ../base/paperless-ngx
   - ../base/photoprism
   - ../base/restic
