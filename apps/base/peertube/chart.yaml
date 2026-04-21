@@ -135,7 +135,10 @@ spec:
                 key: bucket
 
       persistence:
-        enabled: false
+        enabled: true
+        size: 5Gi
+        storageClass: longhorn-local
+        accessMode: ReadWriteOnce
 
       externalPostgres:
         hostname: "peertube-db-rw.app-peertube.svc.cluster.local"
