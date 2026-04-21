@@ -20,7 +20,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: prometheus-community
-      version: "27.4.0"
+      version: "27.52.0"
   interval: 10m
   install:
     remediation:
