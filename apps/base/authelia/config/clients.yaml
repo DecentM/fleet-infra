@@ -85,8 +85,7 @@ identity_providers:
 
       - client_id: peertube
         client_name: PeerTube
-        public: false
-        client_secret: {{ secret "/secrets/authelia-client-peertube/client-secret" | msquote }}
+        public: true
         authorization_policy: two_factor
         require_pkce: true
         pkce_challenge_method: S256
@@ -100,4 +99,4 @@ identity_providers:
           - code
         grant_types:
           - authorization_code
-        token_endpoint_auth_method: client_secret_basic
+        token_endpoint_auth_method: none
