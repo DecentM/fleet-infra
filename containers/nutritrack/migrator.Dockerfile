@@ -7,19 +7,23 @@
 # To update: change NUTRITRACK_REF to match the main Dockerfile.
 ARG NUTRITRACK_REF=main
 
-# ── Stage 1: clone ─────────────────────────────────────────────────────────
+# ── Stage 1: clone + generate lockfile ────────────────────────────────────
 FROM alpine/git:2.47.2 AS source
 ARG NUTRITRACK_REF
+RUN apk add --no-cache nodejs npm \
+ && npm install -g pnpm
 RUN git clone --depth 1 https://github.com/sderosiaux/nutritrack.git /src
 WORKDIR /src
 RUN git fetch --depth 1 origin ${NUTRITRACK_REF} && git checkout ${NUTRITRACK_REF}
+# Generate lockfile — upstream repo does not commit pnpm-lock.yaml
+RUN pnpm install --lockfile-only
 
 # ── Stage 2: deps ──────────────────────────────────────────────────────────
 FROM node:22-alpine AS deps
 RUN apk add --no-cache libc6-compat unzip
 RUN npm install -g pnpm
 WORKDIR /app
-COPY --from=source /src/package.json /src/pnpm-lock.yaml* ./
+COPY --from=source /src/package.json /src/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 # ── Stage 3: builder ───────────────────────────────────────────────────────
