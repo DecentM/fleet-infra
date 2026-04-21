@@ -22,6 +22,14 @@ spec:
         name: grafana
       version: "6.55.0"
   interval: 10m
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+      remediateLastFailure: true
   values:
     deploymentMode: SingleBinary
     loki:

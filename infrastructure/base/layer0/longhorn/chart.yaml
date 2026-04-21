@@ -24,3 +24,11 @@ spec:
       valuesFiles:
         - values.yaml
   interval: 10m
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+      remediateLastFailure: true
