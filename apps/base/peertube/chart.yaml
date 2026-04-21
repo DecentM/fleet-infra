@@ -85,6 +85,8 @@ spec:
 
         # Instance configuration via environment variables
         extraEnvVars:
+          - name: PNPM_HOME
+            value: "/data/pnpm"
           - name: PEERTUBE_REDIS_AUTH
             value: ""  # No auth for our Redis
           - name: PEERTUBE_REDIS_PORT
