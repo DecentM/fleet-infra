@@ -172,9 +172,9 @@ spec:
             - '172.64.0.0/13'
             - '131.0.72.0/22'
           webserver:
-            https: false
-            hostname: '0.0.0.0'
-            port: 9000
+            https: true
+            hostname: 'tube.decentm.com'
+            port: 443
           log:
             level: info
           open_telemetry:
