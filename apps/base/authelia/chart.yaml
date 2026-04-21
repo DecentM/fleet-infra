@@ -203,6 +203,10 @@ spec:
             subject: "group:servarr-users"
             policy: two_factor
           - domain:
+              - tube.decentm.com
+            subject: "group:peertube-users"
+            policy: two_factor
+          - domain:
               - "*"
             policy: deny
 
