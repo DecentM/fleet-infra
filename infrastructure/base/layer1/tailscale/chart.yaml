@@ -25,7 +25,7 @@ spec:
   chart:
     spec:
       chart: tailscale-operator
-      version: "1.92.5"
+      version: "1.96.5"
       valuesFiles:
         - values.yaml
       sourceRef:
