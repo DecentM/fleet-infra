@@ -33,10 +33,13 @@ object_storage:
     private: null
   web_videos:
     prefix: 'web-videos/'
-    base_url: 'https://${PEERTUBE_S3_BUCKET}.${PEERTUBE_S3_ENDPOINT}/web-videos'
+    # base_url is the bucket root only - PeerTube appends `prefix` itself.
+    # Including the prefix here would produce doubled paths like
+    # /web-videos/web-videos/... which 404 in B2.
+    base_url: 'https://${PEERTUBE_S3_BUCKET}.${PEERTUBE_S3_ENDPOINT}'
   streaming_playlists:
     prefix: 'streaming-playlists/'
-    base_url: 'https://${PEERTUBE_S3_BUCKET}.${PEERTUBE_S3_ENDPOINT}/streaming-playlists'
+    base_url: 'https://${PEERTUBE_S3_BUCKET}.${PEERTUBE_S3_ENDPOINT}'
   user_exports:
     prefix: 'user-exports/'
   original_video_files:
