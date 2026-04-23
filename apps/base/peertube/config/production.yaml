@@ -1,0 +1,145 @@
+# Templated at pod start with envsubst. Values in ${VAR} form are replaced by
+# the config-templating init container using secrets from peertube-s3-secrets.
+# Secrets covered by PeerTube's custom-environment-variables.yaml are set via
+# env vars directly on the container (endpoint, region, credentials, bucket
+# names). base_url and prefix are not in the env var mapping, so they are
+# templated here.
+
+# Required: PeerTube merges this file over its default config, and listen
+# has no fallback once a custom production.yaml is present.
+listen:
+  hostname: '0.0.0.0'
+  port: 9000
+
+webserver:
+  https: true
+  hostname: 'videos.decentm.com'
+  port: 443
+
+trust_proxy:
+  - '127.0.0.1'
+  - 'loopback'
+  - '10.0.0.0/8'
+  - '172.16.0.0/12'
+
+redis:
+  hostname: 'peertube-redis.app-peertube.svc'
+  port: 6379
+
+object_storage:
+  enabled: true
+  upload_acl:
+    public: null
+    private: null
+  web_videos:
+    prefix: 'web-videos/'
+    base_url: 'https://${PEERTUBE_S3_BUCKET}.${PEERTUBE_S3_ENDPOINT}/web-videos'
+  streaming_playlists:
+    prefix: 'streaming-playlists/'
+    base_url: 'https://${PEERTUBE_S3_BUCKET}.${PEERTUBE_S3_ENDPOINT}/streaming-playlists'
+  user_exports:
+    prefix: 'user-exports/'
+  original_video_files:
+    prefix: 'original-video-files/'
+  captions:
+    prefix: 'captions/'
+
+live:
+  enabled: true
+  rtmp:
+    enabled: true
+    port: 1935
+  allow_replay: true
+  latency_setting:
+    enabled: true
+  transcoding:
+    enabled: true
+    threads: 2
+
+transcoding:
+  enabled: true
+  threads: 2
+  allow_additional_extensions: true
+  allow_audio_files: true
+
+log:
+  level: 'info'
+  log_ping_requests: false
+
+contact_form:
+  enabled: false
+
+signup:
+  enabled: false
+  requires_approval: true
+  limit: 10
+
+user:
+  video_quota: -1
+  video_quota_daily: -1
+
+cache:
+  previews:
+    size: 500
+  captions:
+    size: 500
+  torrents:
+    size: 500
+  storyboards:
+    size: 500
+
+instance:
+  name: 'DecentM PeerTube'
+  short_description: 'Personal PeerTube instance'
+  is_nsfw: false
+  default_nsfw_policy: 'do_not_list'
+  customizations:
+    javascript: ''
+    css: ''
+  default_client_route: '/videos/trending'
+  default_theme: 'default'
+  robots: |
+    User-agent: *
+    Disallow:
+  export_expiration: '2 days'
+
+services:
+  twitter:
+    username: '@decentm'
+
+followers:
+  instance:
+    enabled: true
+    manual_approval: false
+
+followings:
+  instance:
+    auto_follow_back:
+      enabled: false
+    auto_follow_index:
+      enabled: false
+      index_url: ''
+
+theme:
+  default: 'default'
+
+broadcast_message:
+  enabled: false
+  level: 'info'
+  dismissable: false
+  message: ''
+
+search:
+  remote_uri:
+    users: true
+    anonymous: false
+  search_index:
+    enabled: false
+    url: ''
+    disable_local_search: false
+    is_default_search: false
+
+federation:
+  videos:
+    federate_unlisted: false
+    cleanup_remote_interactions: true

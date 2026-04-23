@@ -90,13 +90,17 @@ identity_providers:
         require_pkce: true
         pkce_challenge_method: S256
         redirect_uris:
-          - https://tube.decentm.com/plugins/auth-openid-connect/router/code-cb
+          - https://videos.decentm.com/plugins/auth-openid-connect/router/code-cb
         scopes:
           - openid
           - profile
           - email
         response_types:
           - code
+        # PeerTube's auth-openid-connect plugin always uses form_post; Authelia
+        # rejects the auth request without this mode explicitly allowed.
+        response_modes:
+          - form_post
         grant_types:
           - authorization_code
         token_endpoint_auth_method: none

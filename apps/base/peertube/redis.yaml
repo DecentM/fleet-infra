@@ -7,20 +7,43 @@ metadata:
     app: peertube-redis
 spec:
   revisionHistoryLimit: 2
-  replicas: 1
   selector:
     matchLabels:
       app: peertube-redis
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   template:
     metadata:
       labels:
         app: peertube-redis
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: cadance
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
       containers:
         - name: redis
-          image: docker.io/library/redis:7-alpine
+          image: redis:7.4.8-alpine3.21
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
           readinessProbe:
             tcpSocket:
               port: 6379
@@ -34,63 +57,25 @@ spec:
             periodSeconds: 5
             failureThreshold: 20
           volumeMounts:
-            - mountPath: /data
-              name: redisdata
-          ports:
-            - containerPort: 6379
-              name: redis
-        - name: exporter
-          image: oliver006/redis_exporter:v1.80.1
-          imagePullPolicy: IfNotPresent
-          env:
-            - name: REDIS_ADDR
-              value: "redis://localhost:6379"
-          ports:
-            - containerPort: 9121
-              name: metrics
-          readinessProbe:
-            httpGet:
-              path: /metrics
-              port: metrics
-            initialDelaySeconds: 5
-            periodSeconds: 10
-          livenessProbe:
-            httpGet:
-              path: /metrics
-              port: metrics
-            initialDelaySeconds: 10
-            periodSeconds: 30
+            - name: data
+              mountPath: /data
       volumes:
-        - name: redisdata
-          hostPath:
-            path: /mnt/spike/storage/k8s/namespaces/app-peertube/redis/data
-            type: DirectoryOrCreate
+        - name: data
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: peertube-redis
   namespace: app-peertube
+  labels:
+    app: peertube-redis
 spec:
+  type: ClusterIP
   ports:
     - name: redis
       port: 6379
       targetPort: redis
-  selector:
-    app: peertube-redis
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: peertube-redis-metrics
-  namespace: app-peertube
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "9121"
-spec:
-  ports:
-    - name: metrics
-      port: 9121
-      targetPort: metrics
+      protocol: TCP
   selector:
     app: peertube-redis

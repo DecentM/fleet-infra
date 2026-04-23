@@ -1,0 +1,342 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: peertube-data
+  namespace: app-peertube
+spec:
+  accessModes:
+    - ReadWriteOnce
+  # longhorn-pool has Retain reclaim policy so the underlying volume survives
+  # accidental claim deletion. Holds pnpm store, thumbnails, avatars, and temp
+  # transcoding scratch - videos themselves go to B2.
+  storageClassName: longhorn-pool
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: peertube
+  namespace: app-peertube
+  labels:
+    app: peertube
+spec:
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: peertube
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: peertube
+    spec:
+      securityContext:
+        fsGroup: 999
+      initContainers:
+        - name: wait-for-db
+          image: busybox:1.37.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z peertube-db-rw.app-peertube.svc 5432; do
+                echo "waiting for postgres..."
+                sleep 2
+              done
+          securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 32Mi
+        - name: wait-for-redis
+          image: busybox:1.37.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z peertube-redis.app-peertube.svc 6379; do
+                echo "waiting for redis..."
+                sleep 2
+              done
+          securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 32Mi
+        - name: config-templating
+          image: oaudry/envsubst:1.7
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              echo "Processing production.yaml..."
+              envsubst < /config-template/production.yaml > /config-processed/production.yaml
+              echo "Config templating complete"
+              ls -lh /config-processed/
+          env:
+            - name: PEERTUBE_S3_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-s3-secrets
+                  key: bucket
+            - name: PEERTUBE_S3_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-s3-secrets
+                  key: endpoint
+          securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          volumeMounts:
+            - name: config-template
+              mountPath: /config-template
+              readOnly: true
+            - name: config-processed
+              mountPath: /config-processed
+      containers:
+        - name: peertube
+          image: chocobozzz/peertube:v8.1.5
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              cpu: 2
+              memory: 2Gi
+          ports:
+            - name: http
+              containerPort: 9000
+              protocol: TCP
+            - name: rtmp
+              containerPort: 1935
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /api/v1/ping
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /api/v1/ping
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            failureThreshold: 5
+          env:
+            # NODE_ENV must be set so the config package loads production.yaml
+            # instead of defaulting to development.yaml (which doesn't exist).
+            - name: NODE_ENV
+              value: production
+            # Preserve the image's default NODE_CONFIG_DIR (defaults +
+            # custom-environment-variables.yaml with all PEERTUBE_* mappings)
+            # and append our templated /config last so our overrides win.
+            - name: NODE_CONFIG_DIR
+              value: '/app/config:/app/support/docker/production/config:/config'
+            - name: PEERTUBE_DB_HOSTNAME
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-db-app
+                  key: host
+            - name: PEERTUBE_DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-db-app
+                  key: port
+            - name: PEERTUBE_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-db-app
+                  key: username
+            - name: PEERTUBE_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-db-app
+                  key: password
+            - name: PEERTUBE_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-db-app
+                  key: dbname
+            - name: PEERTUBE_DB_SSL
+              value: "false"
+            # Override Kubernetes auto-injected service env vars that collide
+            # with PeerTube's custom-environment-variables.yaml mappings. K8s
+            # injects PEERTUBE_REDIS_PORT=tcp://<ip>:6379 for the peertube-redis
+            # Service, which node-config tries to JSON5-parse as a number and
+            # crashes. PEERTUBE_PORT is not mapped by PeerTube today but the
+            # peertube Service injects it too; setting it defensively.
+            - name: PEERTUBE_REDIS_HOSTNAME
+              value: 'peertube-redis.app-peertube.svc'
+            - name: PEERTUBE_REDIS_PORT
+              value: '6379'
+            - name: PEERTUBE_PORT
+              value: '9000'
+            # pnpm store defaults to /home/peertube/.local/share/pnpm which is
+            # on the read-only root filesystem. Redirect to /data so plugins
+            # can actually be installed.
+            - name: PNPM_HOME
+              value: /data/pnpm
+            - name: PEERTUBE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-secrets
+                  key: peertube-secret
+            - name: PEERTUBE_ADMIN_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-secrets
+                  key: admin-email
+            - name: PT_INITIAL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-secrets
+                  key: admin-password
+            - name: PEERTUBE_OBJECT_STORAGE_ENABLED
+              value: "true"
+            # Backblaze B2's S3-compatible API supports virtual-hosted style
+            # (bucket.endpoint), which is what we want for the base_url in
+            # production.yaml to resolve correctly.
+            - name: PEERTUBE_OBJECT_STORAGE_FORCE_PATH_STYLE
+              value: "false"
+            - name: PEERTUBE_OBJECT_STORAGE_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-s3-secrets
+                  key: endpoint
+            - name: PEERTUBE_OBJECT_STORAGE_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-s3-secrets
+                  key: region
+            - name: PEERTUBE_OBJECT_STORAGE_CREDENTIALS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-s3-secrets
+                  key: access-key-id
+            - name: PEERTUBE_OBJECT_STORAGE_CREDENTIALS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-s3-secrets
+                  key: secret-access-key
+            - name: PEERTUBE_OBJECT_STORAGE_WEB_VIDEOS_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-s3-secrets
+                  key: bucket
+            - name: PEERTUBE_OBJECT_STORAGE_STREAMING_PLAYLISTS_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-s3-secrets
+                  key: bucket
+            - name: PEERTUBE_OBJECT_STORAGE_USER_EXPORTS_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-s3-secrets
+                  key: bucket
+            - name: PEERTUBE_OBJECT_STORAGE_ORIGINAL_VIDEO_FILES_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-s3-secrets
+                  key: bucket
+            - name: PEERTUBE_OBJECT_STORAGE_CAPTIONS_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-s3-secrets
+                  key: bucket
+          volumeMounts:
+            - name: config-processed
+              mountPath: /config
+            - name: data
+              mountPath: /data
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: config-template
+          configMap:
+            name: peertube-config
+        - name: config-processed
+          emptyDir: {}
+        - name: data
+          persistentVolumeClaim:
+            claimName: peertube-data
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: peertube
+  namespace: app-peertube
+  labels:
+    app: peertube
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 9000
+      targetPort: http
+      protocol: TCP
+    - name: rtmp
+      port: 1935
+      targetPort: rtmp
+      protocol: TCP
+  selector:
+    app: peertube
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: peertube-rtmp
+  namespace: app-peertube
+  labels:
+    app: peertube
+spec:
+  type: ClusterIP
+  ports:
+    - name: rtmp
+      port: 1935
+      targetPort: rtmp
+      protocol: TCP
+  selector:
+    app: peertube

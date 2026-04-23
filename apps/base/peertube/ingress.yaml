@@ -1,14 +1,49 @@
 apiVersion: networking.cfargotunnel.com/v1alpha1
 kind: TunnelBinding
 metadata:
-  name: peertube-decentm
+  name: peertube-tunnel
   namespace: app-peertube
 subjects:
   - name: peertube
     spec:
-      fqdn: tube.decentm.com
+      fqdn: videos.decentm.com
       protocol: http
-      target: http://traefik.traefik-system:8000
+      target: http://traefik.traefik-system.svc:8000
+tunnelRef:
+  kind: ClusterTunnel
+  name: cluster-tunnel-decentm
+---
+apiVersion: networking.cfargotunnel.com/v1alpha1
+kind: TunnelBinding
+metadata:
+  name: peertube-decentm-root-tunnel
+  namespace: app-peertube
+subjects:
+  # Subject name must resolve to an existing Service in the namespace - the
+  # Cloudflare tunnel operator looks it up even though the real routing is
+  # handled by Traefik via the `target` field below.
+  - name: peertube
+    spec:
+      fqdn: decentm.com
+      protocol: http
+      target: http://traefik.traefik-system.svc:8000
+tunnelRef:
+  kind: ClusterTunnel
+  name: cluster-tunnel-decentm
+---
+# Cloudflare Tunnel wraps TCP in WebSocket; standard RTMP clients (OBS, etc.)
+# cannot connect directly. Requires cloudflared access tcp on the client side.
+apiVersion: networking.cfargotunnel.com/v1alpha1
+kind: TunnelBinding
+metadata:
+  name: peertube-rtmp-tunnel
+  namespace: app-peertube
+subjects:
+  - name: peertube-rtmp
+    spec:
+      fqdn: rtmp.videos.decentm.com
+      protocol: tcp
+      target: tcp://peertube.app-peertube.svc:1935
 tunnelRef:
   kind: ClusterTunnel
   name: cluster-tunnel-decentm
@@ -16,34 +51,61 @@ tunnelRef:
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
-  name: peertube-vary-accept
+  name: peertube-buffering
   namespace: app-peertube
 spec:
-  headers:
-    customResponseHeaders:
-      Vary: Accept
+  buffering:
+    maxRequestBodyBytes: 524288000
+    memRequestBodyBytes: 1048576
+---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: peertube-transport
+  namespace: app-peertube
+spec:
+  forwardingTimeouts:
+    dialTimeout: 60s
+    responseHeaderTimeout: 120s
+    idleConnTimeout: 120s
+  maxIdleConnsPerHost: 16
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: peertube-public
+  name: peertube
   namespace: app-peertube
 spec:
   entryPoints:
     - tunnel
   routes:
-    - match: Host(`tube.decentm.com`) && (PathPrefix(`/accounts/`) || PathPrefix(`/video-channels/`) || PathPrefix(`/videos/watch/`) || PathPrefix(`/.well-known/`) || PathPrefix(`/inbox`) || PathPrefix(`/outbox`))
-      kind: Rule
-      priority: 10
-      services:
-        - name: peertube-server-svc
-          port: 9000
-      middlewares:
-        - name: peertube-vary-accept
-          namespace: app-peertube
-    - match: Host(`tube.decentm.com`)
+    - match: Host(`videos.decentm.com`)
       kind: Rule
       priority: 1
+      middlewares:
+        - name: peertube-buffering
+          namespace: app-peertube
       services:
-        - name: peertube-server-svc
+        - name: peertube
           port: 9000
+          serversTransport: peertube-transport
+---
+# Webfinger + host-meta are served by the webfinger-nginx sidecar which handles
+# query-param rewrite, response body rewrite, and the static host-meta XML.
+# Traefik v3 rewritebody plugins (packruler/rewrite-body, traefik/plugin-rewritebody)
+# silently no-op due to http.CloseNotifier removal, so nginx is the workable path.
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: peertube-well-known
+  namespace: app-peertube
+spec:
+  entryPoints:
+    - tunnel
+  routes:
+    - match: Host(`decentm.com`) && (Path(`/.well-known/webfinger`) || Path(`/.well-known/host-meta`))
+      kind: Rule
+      priority: 100
+      services:
+        - name: webfinger-nginx
+          port: 8000

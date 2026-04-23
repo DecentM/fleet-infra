@@ -5,10 +5,10 @@ metadata:
   namespace: app-peertube
 spec:
   instances: 1
-  imageName: ghcr.io/cloudnative-pg/postgresql:16.10
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.13
   storage:
     storageClass: longhorn-local
-    size: 20Gi
+    size: 10Gi
   monitoring:
     enablePodMonitor: true
   bootstrap:
