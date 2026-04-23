@@ -217,6 +217,39 @@ spec:
             # can actually be installed.
             - name: PNPM_HOME
               value: /data/pnpm
+            # SMTP - PEERTUBE_SMTP_PORT and PEERTUBE_SMTP_TLS use __format:json
+            # in PeerTube's env var mapping, so the secret values must be stored
+            # as bare integers/booleans (e.g. `465`, `true`) not quoted strings.
+            - name: PEERTUBE_SMTP_HOSTNAME
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-smtp-secrets
+                  key: hostname
+            - name: PEERTUBE_SMTP_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-smtp-secrets
+                  key: port
+            - name: PEERTUBE_SMTP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-smtp-secrets
+                  key: username
+            - name: PEERTUBE_SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-smtp-secrets
+                  key: password
+            - name: PEERTUBE_SMTP_FROM
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-smtp-secrets
+                  key: from-address
+            - name: PEERTUBE_SMTP_TLS
+              valueFrom:
+                secretKeyRef:
+                  name: peertube-smtp-secrets
+                  key: tls
             - name: PEERTUBE_SECRET
               valueFrom:
                 secretKeyRef:
