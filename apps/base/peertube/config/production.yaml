@@ -28,24 +28,27 @@ redis:
 
 object_storage:
   enabled: true
+
+  endpoint: '${PEERTUBE_S3_ENDPOINT}'
+
   upload_acl:
     public: null
     private: null
   web_videos:
     prefix: 'web-videos/'
-    # base_url is the bucket root only - PeerTube appends `prefix` itself.
-    # Including the prefix here would produce doubled paths like
-    # /web-videos/web-videos/... which 404 in B2.
-    base_url: 'https://${PEERTUBE_S3_BUCKET}.${PEERTUBE_S3_ENDPOINT}'
+    bucket_name: '${PEERTUBE_S3_BUCKET}'
   streaming_playlists:
     prefix: 'streaming-playlists/'
-    base_url: 'https://${PEERTUBE_S3_BUCKET}.${PEERTUBE_S3_ENDPOINT}'
+    bucket_name: '${PEERTUBE_S3_BUCKET}'
   user_exports:
     prefix: 'user-exports/'
+    bucket_name: '${PEERTUBE_S3_BUCKET}'
   original_video_files:
     prefix: 'original-video-files/'
+    bucket_name: '${PEERTUBE_S3_BUCKET}'
   captions:
     prefix: 'captions/'
+    bucket_name: '${PEERTUBE_S3_BUCKET}'
 
 live:
   enabled: true
@@ -56,7 +59,7 @@ live:
   latency_setting:
     enabled: true
   transcoding:
-    enabled: true
+    enabled: false
     threads: 2
 
 transcoding:
@@ -92,14 +95,14 @@ cache:
     size: 500
 
 instance:
-  name: 'DecentM PeerTube'
-  short_description: 'Personal PeerTube instance'
+  name: 'DecentM''s PeerTube'
+  short_description: 'My PeerTube instance'
   is_nsfw: false
-  default_nsfw_policy: 'do_not_list'
+  default_nsfw_policy: 'blur'
   customizations:
     javascript: ''
     css: ''
-  default_client_route: '/videos/trending'
+  default_client_route: '/videos/subscriptions'
   default_theme: 'default'
   robots: |
     User-agent: *
@@ -108,7 +111,7 @@ instance:
 
 services:
   twitter:
-    username: '@decentm'
+    username: ''
 
 followers:
   instance:
@@ -145,11 +148,6 @@ search:
 client:
   videos:
     resumable_upload:
-      # Cap tus chunk size below Cloudflare's 100MB per-request limit so large
-      # video uploads succeed regardless of Cloudflare plan. Each chunk is a
-      # separate HTTP request, so the full file size is not constrained.
-      # Value is a byte string parsed by the `bytes` package - a bare number
-      # would be interpreted as bytes, not megabytes.
       max_chunk_size: '90MB'
 
 federation:
