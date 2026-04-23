@@ -139,6 +139,16 @@ search:
     disable_local_search: false
     is_default_search: false
 
+client:
+  videos:
+    resumable_upload:
+      # Cap tus chunk size below Cloudflare's 100MB per-request limit so large
+      # video uploads succeed regardless of Cloudflare plan. Each chunk is a
+      # separate HTTP request, so the full file size is not constrained.
+      # Value is a byte string parsed by the `bytes` package - a bare number
+      # would be interpreted as bytes, not megabytes.
+      max_chunk_size: '90MB'
+
 federation:
   videos:
     federate_unlisted: false
