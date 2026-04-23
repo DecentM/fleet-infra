@@ -49,16 +49,6 @@ tunnelRef:
   name: cluster-tunnel-decentm
 ---
 apiVersion: traefik.io/v1alpha1
-kind: Middleware
-metadata:
-  name: peertube-buffering
-  namespace: app-peertube
-spec:
-  buffering:
-    maxRequestBodyBytes: 524288000
-    memRequestBodyBytes: 1048576
----
-apiVersion: traefik.io/v1alpha1
 kind: ServersTransport
 metadata:
   name: peertube-transport
@@ -82,9 +72,6 @@ spec:
     - match: Host(`videos.decentm.com`)
       kind: Rule
       priority: 1
-      middlewares:
-        - name: peertube-buffering
-          namespace: app-peertube
       services:
         - name: peertube
           port: 9000
