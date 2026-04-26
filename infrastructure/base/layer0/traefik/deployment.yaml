@@ -29,7 +29,7 @@ spec:
       serviceAccountName: traefik-ingress-controller
       containers:
         - name: traefik
-          image: traefik:v3.6.13
+          image: traefik:v3.6.14
           imagePullPolicy: IfNotPresent
           readinessProbe:
             tcpSocket:
