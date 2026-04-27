@@ -21,7 +21,7 @@ spec:
         kubernetes.io/hostname: cadance
       containers:
         - name: mc-monitor
-          image: itzg/mc-monitor:0.16.1
+          image: itzg/mc-monitor:0.16.2
           resources:
             requests:
               cpu: 10m
