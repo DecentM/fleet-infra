@@ -1,0 +1,45 @@
+import = /etc/rtorrent/rtorrent.rc
+
+network.port_range.set = __TORRENTING_PORT__-__TORRENTING_PORT__
+network.port_random.set = no
+directory.default.set = /downloads
+protocol.encryption.set = require_RC4,allow_incoming,enable_retry,try_outgoing
+
+# Seeding policy
+# Public:  remove with data after 1 week idle (604800s)
+# Private: remove with data at ratio >= 5.0 (5000) or 3 weeks idle (1814400s)
+# "Idle" = no upload activity (d.up.rate == 0) since the last poller tick
+# d.erase does not delete data - we shell out rm -rf before erasing
+
+method.insert = d.data_path, simple, \
+    "if=(d.is_multi_file),\
+        (cat,(d.directory),/),\
+        (cat,(d.directory),/,(d.name))"
+
+method.insert = policy.stamp_active, simple, \
+    "branch=d.up.rate=,\
+        ((d.custom.set,seed_idle_since,(system.time_seconds)))"
+
+method.insert = policy.init_stamp, simple, \
+    "d.custom.set_if_z=seed_idle_since,(system.time_seconds)"
+
+method.insert = policy.remove_with_data, simple, \
+    "execute.nothrow=rm,-rf,(d.data_path);\
+     d.erase="
+
+method.insert = policy.check_public, simple, \
+    "branch=\
+        \"and={not=$d.is_private=,elapsed.greater=$d.custom=seed_idle_since,604800}\",\
+        ((policy.remove_with_data))"
+
+method.insert = policy.check_private, simple, \
+    "branch=\
+        \"and={$d.is_private=,or={greater=$d.ratio=,5000,elapsed.greater=$d.custom=seed_idle_since,1814400}}\",\
+        ((policy.remove_with_data))"
+
+schedule2 = policy_seed_poller, 60, 300, \
+    "d.multicall2=seeding,\
+        policy.init_stamp=,\
+        policy.stamp_active=,\
+        policy.check_public=,\
+        policy.check_private="

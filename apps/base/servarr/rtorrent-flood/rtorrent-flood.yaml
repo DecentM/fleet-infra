@@ -29,15 +29,7 @@ spec:
           imagePullPolicy: IfNotPresent
           command: ["/bin/sh", "-c"]
           args:
-            - |
-              mkdir -p /config/.config/rtorrent
-              cat > /config/.config/rtorrent/rtorrent.rc << EOF
-              import = /etc/rtorrent/rtorrent.rc
-              network.port_range.set = ${TORRENTING_PORT}-${TORRENTING_PORT}
-              network.port_random.set = no
-              directory.default.set = /downloads
-              protocol.encryption.set = require_RC4,allow_incoming,enable_retry,try_outgoing
-              EOF
+            - mkdir -p /config/.config/rtorrent && sed 's/__TORRENTING_PORT__/'"${TORRENTING_PORT}"'/g' /rtorrent-rc/rtorrent.rc > /config/.config/rtorrent/rtorrent.rc
           env:
             - name: TORRENTING_PORT
               valueFrom:
@@ -47,6 +39,9 @@ spec:
           volumeMounts:
             - name: rtorrent-config
               mountPath: /config
+            - name: rtorrent-rc
+              mountPath: /rtorrent-rc
+              readOnly: true
       containers:
         - name: rtorrent-flood
           image: jesec/rtorrent-flood:4.13.9@sha256:3694b996c1ab858148c324b154e02dea464add42063b273125b9b0f4b615d6e3
@@ -108,6 +103,9 @@ spec:
         - name: rtorrent-config
           persistentVolumeClaim:
             claimName: rtorrent-config
+        - name: rtorrent-rc
+          configMap:
+            name: rtorrent-rc
         - name: downloads
           hostPath:
             path: /mnt/spike/mass-storage/downloads

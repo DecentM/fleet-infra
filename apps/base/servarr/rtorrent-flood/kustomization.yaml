@@ -7,3 +7,7 @@ configMapGenerator:
     namespace: app-servarr
     envs:
       - config/rtorrent-flood.env
+  - name: rtorrent-rc
+    namespace: app-servarr
+    files:
+      - config/rtorrent.rc
