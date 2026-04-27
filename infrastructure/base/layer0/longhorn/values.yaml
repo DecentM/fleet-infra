@@ -8,4 +8,4 @@ metrics:
 defaultSettings:
   backupTarget: ""
   concurrentAutomaticEngineUpgradePerNodeLimit: 1
-  guaranteedInstanceManagerCPU: "12"
+  guaranteedInstanceManagerCPU: "4"
