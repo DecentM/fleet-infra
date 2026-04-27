@@ -120,6 +120,7 @@ spec:
         disable: false
         display_name: Authelia
         enable_passkey_login: true
+        experimental_enable_passkey_uv_two_factors: true
         attestation_conveyance_preference: "direct"
 
         selection_criteria:
