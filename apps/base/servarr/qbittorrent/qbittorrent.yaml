@@ -90,13 +90,15 @@ spec:
               port: 8081
             initialDelaySeconds: 2
             periodSeconds: 5
+            timeoutSeconds: 10
             failureThreshold: 20
           livenessProbe:
             tcpSocket:
               port: 8081
-            initialDelaySeconds: 60
-            periodSeconds: 5
-            failureThreshold: 20
+            initialDelaySeconds: 120
+            periodSeconds: 40
+            timeoutSeconds: 40
+            failureThreshold: 4
           ports:
             - containerPort: 30688
               name: torrent
