@@ -12,7 +12,7 @@ spec:
       app: qbittorrent
   strategy:
     type: Recreate
-  replicas: 1
+  replicas: 0
   template:
     metadata:
       labels:
