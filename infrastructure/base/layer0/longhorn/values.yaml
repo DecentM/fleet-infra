@@ -7,3 +7,4 @@ metrics:
 
 defaultSettings:
   backupTarget: ""
+  concurrentAutomaticEngineUpgradePerNodeLimit: 1
