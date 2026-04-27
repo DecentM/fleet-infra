@@ -14,3 +14,4 @@ resources:
   - kubevirt
   - cdi
   - monitoring
+  - metrics-server
