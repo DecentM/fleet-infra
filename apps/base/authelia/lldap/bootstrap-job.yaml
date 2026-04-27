@@ -3,8 +3,6 @@ kind: Job
 metadata:
   name: lldap-bootstrap
   namespace: app-authelia
-  annotations:
-    kustomize.toolkit.fluxcd.io/reconcile: "always"
 spec:
   ttlSecondsAfterFinished: 300
   backoffLimit: 6
