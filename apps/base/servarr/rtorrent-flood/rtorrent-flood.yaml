@@ -69,6 +69,8 @@ spec:
             - "/downloads"
             - "--auth"
             - "none"
+            - "--rtsocket"
+            - "/config/.local/share/rtorrent/rtorrent.sock"
           ports:
             - containerPort: 3001
               name: http
