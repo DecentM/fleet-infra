@@ -7,6 +7,7 @@ resources:
   - secrets
   - sonarr
   - qbittorrent
+  - rtorrent-flood
   - prowlarr
   - flaresolverr
   - recyclarr

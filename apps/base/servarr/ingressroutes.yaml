@@ -43,6 +43,33 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
+  name: flood
+  namespace: app-servarr
+
+spec:
+  entryPoints:
+    - websecure
+
+  routes:
+    - match: Host(`flood.cluster.arpa`)
+      kind: Rule
+      middlewares:
+        - name: authelia-forwardauth
+          namespace: app-authelia
+        - name: flood-themepark
+          namespace: app-servarr
+        - name: flood-strip-csp
+          namespace: app-servarr
+      services:
+        - name: rtorrent-flood-web
+          namespace: app-servarr
+          port: http
+  tls:
+    secretName: traefik-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
   name: sonarr
   namespace: app-servarr
 
@@ -157,3 +184,4 @@ spec:
     - "prowlarr.cluster.arpa"
     - "sonarr.cluster.arpa"
     - "qbittorrent.cluster.arpa"
+    - "flood.cluster.arpa"

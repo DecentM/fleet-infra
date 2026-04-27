@@ -61,3 +61,28 @@ spec:
       content-security-policy: ""
       x-webkit-csp: ""
       X-Frame-Options: ""
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: flood-themepark
+  namespace: app-servarr
+  labels:
+    themepark.dev/managed: "true"
+spec:
+  plugin:
+    themepark:
+      app: flood
+      theme: overseerr
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: flood-strip-csp
+  namespace: app-servarr
+spec:
+  headers:
+    customResponseHeaders:
+      content-security-policy: ""
+      x-webkit-csp: ""
+      X-Frame-Options: ""

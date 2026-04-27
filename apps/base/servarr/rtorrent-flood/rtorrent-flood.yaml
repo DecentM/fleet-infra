@@ -1,0 +1,145 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: rtorrent-flood
+  namespace: app-servarr
+
+spec:
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: rtorrent-flood
+  strategy:
+    type: Recreate
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rtorrent-flood
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
+      hostNetwork: true
+      securityContext:
+        fsGroup: 1000
+      initContainers:
+        - name: write-rtorrent-config
+          image: docker.io/library/busybox:1.37.0
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              mkdir -p /config/.config/rtorrent
+              cat > /config/.config/rtorrent/rtorrent.rc << EOF
+              import = /etc/rtorrent/rtorrent.rc
+              network.port_range.set = ${TORRENTING_PORT}-${TORRENTING_PORT}
+              network.port_random.set = no
+              directory.default.set = /downloads
+              EOF
+          env:
+            - name: TORRENTING_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: rtorrent-flood-config
+                  key: TORRENTING_PORT
+          volumeMounts:
+            - name: rtorrent-config
+              mountPath: /config
+      containers:
+        - name: rtorrent-flood
+          image: jesec/rtorrent-flood:4.13.9@sha256:3694b996c1ab858148c324b154e02dea464add42063b273125b9b0f4b615d6e3
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+          env:
+            - name: HOME
+              value: /config
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: Europe/Tallinn
+          args:
+            - "--port"
+            - "3001"
+            - "--allowedpath"
+            - "/downloads"
+          ports:
+            - containerPort: 3001
+              name: http
+            - containerPort: 30689
+              name: torrent
+          resources:
+            requests:
+              cpu: 20m
+              memory: 256Mi
+            limits:
+              cpu: "2"
+              memory: 1Gi
+          readinessProbe:
+            httpGet:
+              path: /api/auth/verify
+              port: 3001
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 12
+          livenessProbe:
+            httpGet:
+              path: /api/auth/verify
+              port: 3001
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 3
+          volumeMounts:
+            - name: rtorrent-config
+              mountPath: /config
+            - name: downloads
+              mountPath: /downloads
+
+      volumes:
+        - name: rtorrent-config
+          persistentVolumeClaim:
+            claimName: rtorrent-config
+        - name: downloads
+          hostPath:
+            path: /mnt/spike/mass-storage/downloads
+            type: Directory
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: home.arpa/zfs-pool
+                    operator: In
+                    values:
+                      - "true"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rtorrent-config
+  namespace: app-servarr
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rtorrent-flood-web
+  namespace: app-servarr
+
+spec:
+  ports:
+    - name: http
+      port: 3001
+      targetPort: http
+  selector:
+    app: rtorrent-flood

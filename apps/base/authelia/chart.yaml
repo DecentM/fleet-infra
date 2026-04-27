@@ -206,6 +206,7 @@ spec:
               - radarr.cluster.arpa
               - prowlarr.cluster.arpa
               - qbittorrent.cluster.arpa
+              - flood.cluster.arpa
             subject: "group:servarr-users"
             policy: two_factor
           - domain:
