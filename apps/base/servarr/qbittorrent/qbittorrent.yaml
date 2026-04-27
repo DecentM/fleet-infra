@@ -164,13 +164,13 @@ spec:
             httpGet:
               path: /metrics
               port: metrics
-            initialDelaySeconds: 5
+            initialDelaySeconds: 90
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /metrics
               port: metrics
-            initialDelaySeconds: 10
+            initialDelaySeconds: 90
             periodSeconds: 30
 
       volumes:
