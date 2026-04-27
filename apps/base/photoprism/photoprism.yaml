@@ -38,7 +38,7 @@ spec:
           image: photoprism/photoprism:251130-ce
           resources:
             requests:
-              cpu: 200m
+              cpu: 20m
               memory: 512Mi
             limits:
               cpu: "2"
