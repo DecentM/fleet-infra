@@ -36,6 +36,13 @@ spec:
       containers:
         - name: photoprism
           image: photoprism/photoprism:251130-ce
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: "2"
+              memory: 2Gi
           readinessProbe:
             tcpSocket:
               port: 2342

@@ -26,6 +26,13 @@ spec:
         - name: jellyfin
           image: lscr.io/linuxserver/jellyfin:10.11.8
           imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 8Gi
           readinessProbe:
             tcpSocket:
               port: 8096

@@ -28,6 +28,13 @@ spec:
         - name: paperless-ngx
           image: ghcr.io/paperless-ngx/paperless-ngx:2.20.14
           imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: "2"
+              memory: 2Gi
           readinessProbe:
             tcpSocket:
               port: 8000

@@ -6,6 +6,7 @@ metadata:
   namespace: app-actual
 
 spec:
+  replicas: 0
   revisionHistoryLimit: 2
   selector:
     matchLabels:
@@ -30,6 +31,13 @@ spec:
         - name: actual
           image: actualbudget/actual-server:sha-843e957-alpine
           imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
           readinessProbe:
             exec:
               command: ["/usr/bin/node", "/app/src/scripts/health-check.js"]

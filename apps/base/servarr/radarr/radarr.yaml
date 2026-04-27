@@ -26,6 +26,13 @@ spec:
         - name: radarr
           image: lscr.io/linuxserver/radarr:6.0.4.10291-ls289
           imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
           readinessProbe:
             tcpSocket:
               port: 7878
@@ -64,6 +71,13 @@ spec:
         - name: exportarr
           image: ghcr.io/onedr0p/exportarr:v2.3.0
           imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 20m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
           args:
             - radarr
           env:

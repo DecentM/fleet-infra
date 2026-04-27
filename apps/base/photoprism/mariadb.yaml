@@ -26,6 +26,13 @@ spec:
         - name: mariadb
           image: mariadb:11-ubi
           imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
           readinessProbe:
             tcpSocket:
               port: 3306
@@ -57,6 +64,13 @@ spec:
         - name: exporter
           image: prom/mysqld-exporter:v0.18.0
           imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 20m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
           args:
             - --mysqld.address=localhost:3306
             - --mysqld.username=root
