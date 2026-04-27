@@ -68,9 +68,15 @@ spec:
           configMap:
             name: authelia-oidc-clients
             namespace: app-authelia
+        - name: webauthn-experimental
+          configMap:
+            name: authelia-webauthn-experimental
       extraVolumeMounts:
         - name: oidc-clients
           mountPath: /config.d
+          readOnly: true
+        - name: webauthn-experimental
+          mountPath: /extra-configs
           readOnly: true
 
     service:
@@ -99,6 +105,7 @@ spec:
 
       extraConfigs:
         - /config.d/clients.yaml
+        - /extra-configs/webauthn-experimental.yaml
 
       server:
         headers:
@@ -120,7 +127,6 @@ spec:
         disable: false
         display_name: Authelia
         enable_passkey_login: true
-        experimental_enable_passkey_uv_two_factors: true
         attestation_conveyance_preference: "direct"
 
         selection_criteria:

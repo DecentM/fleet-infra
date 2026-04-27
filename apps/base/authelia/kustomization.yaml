@@ -17,6 +17,13 @@ configMapGenerator:
         app.kubernetes.io/component: oidc-clients
     files:
       - config/clients.yaml
+  - name: authelia-webauthn-experimental
+    options:
+      labels:
+        app.kubernetes.io/name: authelia
+        app.kubernetes.io/component: webauthn-experimental
+    files:
+      - config/webauthn-experimental.yaml
 
 configurations:
   - kustomizeconfig/helmrelease-configmap-name.yaml
