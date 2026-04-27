@@ -36,6 +36,7 @@ spec:
               network.port_range.set = ${TORRENTING_PORT}-${TORRENTING_PORT}
               network.port_random.set = no
               directory.default.set = /downloads
+              protocol.encryption.set = require_RC4,allow_incoming,enable_retry,try_outgoing
               EOF
           env:
             - name: TORRENTING_PORT
