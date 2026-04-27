@@ -84,11 +84,11 @@ spec:
             - /etc/livekit.yaml
           resources:
             requests:
-              cpu: 500m
-              memory: 1Gi
+              cpu: 200m
+              memory: 512Mi
             limits:
-              cpu: "2"
-              memory: 4Gi
+              cpu: "1"
+              memory: 2Gi
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000

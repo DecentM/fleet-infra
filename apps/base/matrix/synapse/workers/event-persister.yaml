@@ -190,11 +190,11 @@ spec:
             - --config-path=/config/worker.yaml
           resources:
             requests:
-              cpu: 400m
-              memory: 1Gi
+              cpu: 150m
+              memory: 512Mi
             limits:
-              cpu: 1500m
-              memory: 2Gi
+              cpu: 500m
+              memory: 1Gi
           securityContext:
             runAsUser: 991
             runAsGroup: 991

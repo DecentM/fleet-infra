@@ -183,7 +183,7 @@ spec:
             - --config-path=/config/worker.yaml
           resources:
             requests:
-              cpu: 200m
+              cpu: 50m
               memory: 256Mi
             limits:
               cpu: 500m
