@@ -3,7 +3,7 @@ import = /etc/rtorrent/rtorrent.rc
 network.port_range.set = __TORRENTING_PORT__-__TORRENTING_PORT__
 network.port_random.set = no
 directory.default.set = /downloads
-protocol.encryption.set = require_RC4,allow_incoming,enable_retry,try_outgoing
+protocol.encryption.set = require,enable_retry,try_outgoing
 throttle.global_up.max_rate.set_kb = 7680
 throttle.global_down.max_rate.set_kb = 7680
 
