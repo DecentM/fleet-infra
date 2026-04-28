@@ -7,12 +7,6 @@ protocol.encryption.set = require,enable_retry,try_outgoing
 throttle.global_up.max_rate.set_kb = 7680
 throttle.global_down.max_rate.set_kb = 7680
 
-# Seeding policy
-# Public:  remove with data after 1 week idle (604800s)
-# Private: remove with data at ratio >= 5.0 (5000) or 3 weeks idle (1814400s)
-# "Idle" = no upload activity (d.up.rate == 0) since the last poller tick
-# d.erase does not delete data - we shell out rm -rf before erasing
-
 method.insert = d.data_path, simple, \
     "if=(d.is_multi_file),\
         (cat,(d.directory),/),\
@@ -36,7 +30,7 @@ method.insert = policy.check_public, simple, \
 
 method.insert = policy.check_private, simple, \
     "branch=\
-        \"and={$d.is_private=,or={greater=$d.ratio=,5000,elapsed.greater=$d.custom=seed_idle_since,1814400}}\",\
+        \"and={$d.is_private=,or={and={greater=$d.ratio=,2000,elapsed.greater=$d.custom=seed_idle_since,1209600},elapsed.greater=$d.custom=seed_idle_since,2419200}}\",\
         ((policy.remove_with_data))"
 
 schedule2 = policy_seed_poller, 60, 300, \
