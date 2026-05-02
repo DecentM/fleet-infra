@@ -6,7 +6,6 @@ resources:
   - themepark-middlewares.yaml
   - secrets
   - sonarr
-  - qbittorrent
   - rtorrent-flood
   - prowlarr
   - flaresolverr
