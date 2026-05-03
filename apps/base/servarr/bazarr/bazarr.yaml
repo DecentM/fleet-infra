@@ -32,17 +32,21 @@ spec:
               cpu: 250m
               memory: 512Mi
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: /api/system/ping
+              port: 6767
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 20
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /api/system/ping
               port: 6767
             initialDelaySeconds: 30
-            periodSeconds: 5
-            failureThreshold: 20
-          livenessProbe:
-            tcpSocket:
-              port: 6767
-            initialDelaySeconds: 60
-            periodSeconds: 5
-            failureThreshold: 20
+            periodSeconds: 10
+            failureThreshold: 5
+            timeoutSeconds: 5
           envFrom:
             - configMapRef:
                 name: bazarr-config
