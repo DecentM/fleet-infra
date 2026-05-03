@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: bazarr
+  namespace: app-servarr
+
+spec:
+  revisionHistoryLimit: 2
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bazarr
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: bazarr
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
+      containers:
+        - name: bazarr
+          image: lscr.io/linuxserver/bazarr:v1.5.6-ls346
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 10m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 512Mi
+          readinessProbe:
+            tcpSocket:
+              port: 6767
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: 6767
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          envFrom:
+            - configMapRef:
+                name: bazarr-config
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+          ports:
+            - containerPort: 6767
+              name: http
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: movies
+              mountPath: /movies
+            - name: series
+              mountPath: /series
+            - name: downloads
+              mountPath: /downloads
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: bazarr-config
+        - name: movies
+          hostPath:
+            path: /mnt/spike/mass-storage/videos/movies
+            type: Directory
+        - name: series
+          hostPath:
+            path: /mnt/spike/mass-storage/videos/series
+            type: Directory
+        - name: downloads
+          hostPath:
+            path: /mnt/spike/mass-storage/downloads
+            type: Directory
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: home.arpa/zfs-pool
+                    operator: In
+                    values:
+                      - "true"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bazarr-config
+  namespace: app-servarr
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bazarr
+  namespace: app-servarr
+
+spec:
+  ports:
+    - name: http
+      port: 6767
+      targetPort: http
+  selector:
+    app: bazarr

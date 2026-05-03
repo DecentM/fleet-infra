@@ -86,3 +86,16 @@ spec:
       content-security-policy: ""
       x-webkit-csp: ""
       X-Frame-Options: ""
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: bazarr-themepark
+  namespace: app-servarr
+  labels:
+    themepark.dev/managed: "true"
+spec:
+  plugin:
+    themepark:
+      app: bazarr
+      theme: overseerr
