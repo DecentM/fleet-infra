@@ -13,3 +13,4 @@ resources:
   - checkrr
   - radarr
   - bazarr
+  - posterizarr

@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - posterizarr.yaml
+  - secrets
+
+configMapGenerator:
+  - name: posterizarr-config
+    namespace: app-servarr
+    envs:
+      - config/posterizarr.env
+  - name: posterizarr-config-seed
+    namespace: app-servarr
+    files:
+      - config/config.json

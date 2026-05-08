@@ -1,0 +1,131 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: posterizarr
+  namespace: app-servarr
+
+spec:
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: posterizarr
+  strategy:
+    type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: posterizarr
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      initContainers:
+        - name: config-templating
+          image: oaudry/envsubst:1.7
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              envsubst < /config-template/config.json > /config/config.json
+              echo "config.json written."
+          env:
+            - name: JELLYFIN_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: posterizarr-jellyfin-api-key
+                  key: api-key
+          volumeMounts:
+            - name: config-template
+              mountPath: /config-template
+              readOnly: true
+            - name: config
+              mountPath: /config
+      containers:
+        - name: posterizarr
+          image: ghcr.io/fscorrupt/posterizarr:2.2.43
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          readinessProbe:
+            httpGet:
+              path: /api
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            httpGet:
+              path: /api
+              port: 8000
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 5
+          envFrom:
+            - configMapRef:
+                name: posterizarr-config
+          ports:
+            - containerPort: 8000
+              name: http
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: assets
+              mountPath: /assets
+            - name: assetsbackup
+              mountPath: /assetsbackup
+            - name: manualassets
+              mountPath: /manualassets
+      volumes:
+        - name: config
+          emptyDir: {}
+        - name: config-template
+          configMap:
+            name: posterizarr-config-seed
+        - name: assets
+          hostPath:
+            path: /mnt/spike/storage/k8s/namespaces/app-servarr/posterizarr/assets
+            type: DirectoryOrCreate
+        - name: assetsbackup
+          hostPath:
+            path: /mnt/spike/storage/k8s/namespaces/app-servarr/posterizarr/assetsbackup
+            type: DirectoryOrCreate
+        - name: manualassets
+          hostPath:
+            path: /mnt/spike/storage/k8s/namespaces/app-servarr/posterizarr/manualassets
+            type: DirectoryOrCreate
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: home.arpa/zfs-pool
+                    operator: In
+                    values:
+                      - "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: posterizarr
+  namespace: app-servarr
+
+spec:
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http
+  selector:
+    app: posterizarr
