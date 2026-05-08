@@ -40,8 +40,23 @@ spec:
             - name: JELLYFIN_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: posterizarr-jellyfin-api-key
-                  key: api-key
+                  name: posterizarr-api-keys
+                  key: jellyfin-api-key
+            - name: TMDB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: posterizarr-api-keys
+                  key: tmdb-token
+            - name: TVDB_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: posterizarr-api-keys
+                  key: tvdb-api-key
+            - name: FANART_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: posterizarr-api-keys
+                  key: fanart-api-key
           volumeMounts:
             - name: config-template
               mountPath: /config-template

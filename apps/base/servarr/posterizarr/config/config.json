@@ -5,9 +5,9 @@
     "basicAuthPassword": ""
   },
   "ApiPart": {
-    "tvdbapi": "",
-    "tmdbtoken": "",
-    "FanartTvAPIKey": "",
+    "tvdbapi": "${TVDB_API_KEY}",
+    "tmdbtoken": "${TMDB_TOKEN}",
+    "FanartTvAPIKey": "${FANART_API_KEY}",
     "PlexToken": "",
     "JellyfinAPIKey": "${JELLYFIN_API_KEY}",
     "EmbyAPIKey": "",
