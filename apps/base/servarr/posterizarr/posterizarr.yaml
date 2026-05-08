@@ -63,6 +63,25 @@ spec:
               readOnly: true
             - name: config
               mountPath: /config
+        - name: fix-permissions
+          image: busybox:1.37.0
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+          command:
+            - sh
+            - -c
+            - |
+              chown -R 1000:1000 /assets /assetsbackup /manualassets
+              echo "Permissions fixed."
+          volumeMounts:
+            - name: assets
+              mountPath: /assets
+            - name: assetsbackup
+              mountPath: /assetsbackup
+            - name: manualassets
+              mountPath: /manualassets
       containers:
         - name: posterizarr
           image: ghcr.io/fscorrupt/posterizarr:2.2.43
