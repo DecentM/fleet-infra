@@ -1,0 +1,104 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: checkrr
+  namespace: app-servarr
+spec:
+  schedule: "0 4 * * *" # daily at 4am, staggered from restic at 3am
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        metadata:
+          labels:
+            app: checkrr
+        spec:
+          nodeSelector:
+            kubernetes.io/hostname: cadance
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+          restartPolicy: OnFailure
+          initContainers:
+            - name: render-config
+              image: docker.io/library/busybox:1.37.0
+              imagePullPolicy: IfNotPresent
+              command: ["/bin/sh", "-c"]
+              args:
+                - sed 's/__SERVARR_API_KEY__/'"${SERVARR_API_KEY}"'/g' /config-template/checkrr.yaml > /config/checkrr.yaml
+              env:
+                - name: SERVARR_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: servarr-api-key
+                      key: value
+              volumeMounts:
+                - name: config-template
+                  mountPath: /config-template
+                  readOnly: true
+                - name: config-rendered
+                  mountPath: /config
+          containers:
+            - name: checkrr
+              image: ghcr.io/aetaric/checkrr:3.6.1
+              imagePullPolicy: IfNotPresent
+              command:
+                - /checkrr
+                - -c
+                - /etc/checkrr/checkrr.yaml
+                - -o
+              env:
+                - name: TZ
+                  value: Europe/Tallinn
+                - name: LOCALDOMAIN
+                  value: cluster.local # Fix c-ares DNS resolution with ndots:5
+              volumeMounts:
+                - name: config-rendered
+                  mountPath: /etc/checkrr
+                - name: db
+                  mountPath: /checkrr.db
+                  subPath: checkrr.db
+                - name: movies
+                  mountPath: /movies
+                - name: series
+                  mountPath: /series
+                - name: downloads
+                  mountPath: /downloads
+          volumes:
+            - name: config-template
+              configMap:
+                name: checkrr-config
+            - name: config-rendered
+              emptyDir: {}
+            - name: db
+              persistentVolumeClaim:
+                claimName: checkrr-db
+            - name: movies
+              hostPath:
+                path: /mnt/spike/mass-storage/videos/movies
+                type: Directory
+            - name: series
+              hostPath:
+                path: /mnt/spike/mass-storage/videos/series
+                type: Directory
+            - name: downloads
+              hostPath:
+                path: /mnt/spike/mass-storage/downloads
+                type: Directory
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: checkrr-db
+  namespace: app-servarr
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 512Mi
+  storageClassName: longhorn-local

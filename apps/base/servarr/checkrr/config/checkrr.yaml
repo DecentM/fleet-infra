@@ -1,0 +1,48 @@
+lang: "en-us"
+
+checkrr:
+  checkpath:
+    - /movies
+    - /series
+  database: /checkrr.db
+  # The cron field is required by checkrr even in --run-once mode
+  cron: "@daily"
+  ignorehidden: true
+  ignoreexts:
+    - .nfo
+    - .nzb
+    - .url
+    - .txt
+    - .jpg
+    - .png
+    - .srt
+    - .sub
+    - .idx
+  ffprobe: true
+
+arr:
+  radarr:
+    service: radarr
+    process: true
+    address: radarr.app-servarr.svc.cluster.local
+    port: 7878
+    ssl: false
+    baseurl: /
+    apikey: __SERVARR_API_KEY__
+    mappings:
+      "/mnt/spike/mass-storage/videos/movies/": "/movies/"
+  sonarr:
+    service: sonarr
+    process: true
+    address: sonarr.app-servarr.svc.cluster.local
+    port: 8989
+    ssl: false
+    baseurl: /
+    apikey: __SERVARR_API_KEY__
+    mappings:
+      "/mnt/spike/mass-storage/videos/series/": "/series/"
+
+logs:
+  stdout:
+    out: stdout
+    formatter: default

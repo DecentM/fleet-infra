@@ -10,5 +10,6 @@ resources:
   - prowlarr
   - flaresolverr
   - recyclarr
+  - checkrr
   - radarr
   - bazarr
