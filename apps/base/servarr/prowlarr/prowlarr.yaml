@@ -24,7 +24,7 @@ spec:
         kubernetes.io/hostname: cadance
       containers:
         - name: prowlarr
-          image: lscr.io/linuxserver/prowlarr:2.3.6-nightly
+          image: lscr.io/linuxserver/prowlarr:2.4.0-nightly
           imagePullPolicy: IfNotPresent
           resources:
             requests:
