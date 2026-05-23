@@ -215,6 +215,28 @@ spec:
               - videos.decentm.com
             subject: "group:peertube-users"
             policy: two_factor
+
+          - domain:
+              - ntfy.decentm.com
+            resources:
+              - "^/$"
+              - "^/app\\.html"
+              - "^/static(/.*)?$"
+              - "^/sw\\.js(\\.map)?$"
+              - "^/manifest\\.webmanifest$"
+              - "^/config\\.js$"
+              - "^/docs(/.*)?$"
+              - "^/account$"
+              - "^/settings$"
+              - "^/login$"
+              - "^/signup$"
+            policy: one_factor
+
+          # clients need no sso auth, they have their own
+          - domain:
+              - ntfy.decentm.com
+            policy: bypass
+
           - domain:
               - "*"
             policy: deny

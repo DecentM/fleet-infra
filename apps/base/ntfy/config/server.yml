@@ -4,6 +4,9 @@ cache-file: "/var/cache/ntfy/cache.db"
 cache-duration: "12h"
 auth-file: "/var/lib/ntfy/auth.db"
 auth-default-access: "deny-all"
+enable-signup: false
+enable-login: true
+enable-reservations: false
 behind-proxy: true
 attachment-cache-dir: "/var/cache/ntfy/attachments"
 attachment-total-size-limit: "5G"
