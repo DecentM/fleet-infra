@@ -44,7 +44,7 @@ spec:
                   mountPath: /config
           containers:
             - name: checkrr
-              image: ghcr.io/aetaric/checkrr:3.6.1
+              image: ghcr.io/aetaric/checkrr:3.6.1-amd64
               imagePullPolicy: IfNotPresent
               command:
                 - /checkrr
