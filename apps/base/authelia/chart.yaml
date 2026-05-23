@@ -230,7 +230,8 @@ spec:
               - "^/settings$"
               - "^/login$"
               - "^/signup$"
-            policy: one_factor
+            subject: "group:ntfy-users"
+            policy: two_factor
 
           # clients need no sso auth, they have their own
           - domain:
