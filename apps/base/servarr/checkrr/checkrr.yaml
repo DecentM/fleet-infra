@@ -4,7 +4,7 @@ metadata:
   name: checkrr
   namespace: app-servarr
 spec:
-  schedule: "0 4 * * *" # daily at 4am, staggered from restic at 3am
+  schedule: "0 4 * * *"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3
@@ -55,7 +55,7 @@ spec:
                 - name: TZ
                   value: Europe/Tallinn
                 - name: LOCALDOMAIN
-                  value: cluster.local # Fix c-ares DNS resolution with ndots:5
+                  value: cluster.local
               volumeMounts:
                 - name: config-rendered
                   mountPath: /etc/checkrr
