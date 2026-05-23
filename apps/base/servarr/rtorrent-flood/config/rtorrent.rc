@@ -1,11 +1,39 @@
 import = /etc/rtorrent/rtorrent.rc
 
-network.port_range.set = __TORRENTING_PORT__-__TORRENTING_PORT__
+network.port_range.set = __TORRENTING_PORT_START__-__TORRENTING_PORT_END__
 network.port_random.set = no
 directory.default.set = /downloads
 protocol.encryption.set = allow_incoming,try_outgoing,enable_retry
 throttle.global_up.max_rate.set_kb = 7680
 throttle.global_down.max_rate.set_kb = 7680
+
+## Peer limits
+throttle.min_peers.seed.set   = 10
+throttle.max_peers.seed.set   = 50
+throttle.min_peers.normal.set = 40
+throttle.max_peers.normal.set = 100
+
+## Upload/download slot caps
+throttle.max_uploads.set          = 50
+throttle.max_downloads.set        = 50
+throttle.max_uploads.global.set   = 200
+throttle.max_downloads.global.set = 200
+
+## Connection limits
+network.http.max_open.set         = 99
+network.max_open_sockets.set      = 999
+network.max_open_files.set        = 600
+network.xmlrpc.size_limit.set     = 4M
+
+## Tracker settings
+# Request more peers per announce response
+trackers.numwant.set = 80
+# Apparently dht is handled poorly in our version of libtorrent
+dht.mode.set         = disable
+protocol.pex.set     = no
+
+## Memory
+pieces.memory.max.set = 1800M
 
 method.insert = d.data_path, simple, \
     "if=(d.is_multi_file),\
