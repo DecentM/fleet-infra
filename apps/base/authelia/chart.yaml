@@ -209,6 +209,7 @@ spec:
               - flood.cluster.arpa
               - bazarr.cluster.arpa
               - posterizarr.cluster.arpa
+              - tdarr.cluster.arpa
             subject: "group:servarr-users"
             policy: two_factor
           - domain:

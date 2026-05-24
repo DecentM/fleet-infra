@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tdarr-config
+  namespace: app-tdarr
+data:
+  PUID: "1000"
+  PGID: "1000"
+  internalNode: "true"
+  nodeID: "internal"
