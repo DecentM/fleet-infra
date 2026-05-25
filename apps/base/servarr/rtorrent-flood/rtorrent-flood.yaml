@@ -49,7 +49,7 @@ spec:
               readOnly: true
       containers:
         - name: rtorrent-flood
-          image: jesec/rtorrent-flood:4.14.1@sha256:128e02e9c7d5fe36335742e50ece70a885e6201b7ef0ba8d1814a83881376971
+          image: jesec/rtorrent-flood:4.14.2@sha256:ddcd5c4c0c7e99011a1b06e921ad40451c6880cf4ea3283b285ae9f2dfe68fb6
           imagePullPolicy: IfNotPresent
           securityContext:
             runAsUser: 1000
