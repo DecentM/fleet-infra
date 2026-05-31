@@ -79,8 +79,8 @@ spec:
             path: /mnt/spike/mass-storage/videos/series
             type: Directory
         - name: transcode
-          persistentVolumeClaim:
-            claimName: tdarr-transcode
+          emptyDir:
+            sizeLimit: 30Gi
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -106,17 +106,4 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  storageClassName: longhorn-local
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: tdarr-transcode
-  namespace: app-tdarr
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 30Gi
   storageClassName: longhorn-local
