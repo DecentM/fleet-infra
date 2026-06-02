@@ -218,28 +218,6 @@ spec:
             policy: two_factor
 
           - domain:
-              - ntfy.decentm.com
-            resources:
-              - "^/$"
-              - "^/app\\.html"
-              - "^/static(/.*)?$"
-              - "^/sw\\.js(\\.map)?$"
-              - "^/manifest\\.webmanifest$"
-              - "^/config\\.js$"
-              - "^/docs(/.*)?$"
-              - "^/account$"
-              - "^/settings$"
-              - "^/login$"
-              - "^/signup$"
-            subject: "group:ntfy-users"
-            policy: two_factor
-
-          # clients need no sso auth, they have their own
-          - domain:
-              - ntfy.decentm.com
-            policy: bypass
-
-          - domain:
               - "*"
             policy: deny
 
