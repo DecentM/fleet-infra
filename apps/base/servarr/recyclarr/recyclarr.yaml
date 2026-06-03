@@ -4,7 +4,7 @@ metadata:
   name: recyclarr
   namespace: app-servarr
 spec:
-  schedule: "0 * * * *" # every hour, on the hour
+  schedule: "@daily"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3
@@ -25,7 +25,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: recyclarr
-              image: ghcr.io/recyclarr/recyclarr:7.5.2
+              image: ghcr.io/recyclarr/recyclarr:8.6.0
               imagePullPolicy: IfNotPresent
               command:
                 - /app/recyclarr/recyclarr
@@ -35,6 +35,8 @@ spec:
                   value: Europe/Tallinn
                 - name: LOCALDOMAIN
                   value: cluster.local # Fix c-ares DNS resolution with ndots:5
+                - name: RECYCLARR_DATA_DIR
+                  value: /data
                 - name: SERVARR_API_KEY
                   valueFrom:
                     secretKeyRef:
@@ -43,97 +45,26 @@ spec:
               volumeMounts:
                 - name: config
                   mountPath: /config
-                - name: cache
-                  mountPath: /config/cache
-                - name: logs
-                  mountPath: /config/logs
-                - name: configs
-                  mountPath: /config/configs
-                - name: includes
-                  mountPath: /config/includes
-                - name: repositories
-                  mountPath: /config/repositories
+                  readOnly: true
+                - name: data
+                  mountPath: /data
           volumes:
             - name: config
               configMap:
                 name: recyclarr-config
-            - name: cache
+            - name: data
               persistentVolumeClaim:
-                claimName: recyclarr-cache
-            - name: logs
-              persistentVolumeClaim:
-                claimName: recyclarr-logs
-            - name: configs
-              persistentVolumeClaim:
-                claimName: recyclarr-configs
-            - name: includes
-              persistentVolumeClaim:
-                claimName: recyclarr-includes
-            - name: repositories
-              persistentVolumeClaim:
-                claimName: recyclarr-repositories
+                claimName: recyclarr-data
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: recyclarr-cache
+  name: recyclarr-data
   namespace: app-servarr
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 512Mi
-  storageClassName: longhorn-local
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: recyclarr-logs
-  namespace: app-servarr
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 200Mi
-  storageClassName: longhorn-local
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: recyclarr-configs
-  namespace: app-servarr
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 16Mi
-  storageClassName: longhorn-local
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: recyclarr-includes
-  namespace: app-servarr
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 16Mi
-  storageClassName: longhorn-local
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: recyclarr-repositories
-  namespace: app-servarr
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
+      storage: 2Gi
   storageClassName: longhorn-local

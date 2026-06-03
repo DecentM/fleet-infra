@@ -53,6 +53,8 @@ spec:
               value: "1000"
             - name: PGID
               value: "1000"
+            - name: LOCALDOMAIN
+              value: cluster.local # Fix c-ares DNS resolution with ndots:5
             - name: PROWLARR__AUTH__APIKEY
               valueFrom:
                 secretKeyRef:
