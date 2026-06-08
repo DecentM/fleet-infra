@@ -15,6 +15,21 @@ spec:
       port: 8266
 ---
 apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: authelia-forwardauth
+  namespace: app-tdarr
+spec:
+  forwardAuth:
+    address: http://authelia.app-authelia.svc:9091/api/authz/forward-auth?authelia_url=https://auth.cluster.arpa
+    trustForwardHeader: true
+    authResponseHeaders:
+      - Remote-User
+      - Remote-Groups
+      - Remote-Email
+      - Remote-Name
+---
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: tdarr
@@ -29,7 +44,7 @@ spec:
       kind: Rule
       middlewares:
         - name: authelia-forwardauth
-          namespace: app-authelia
+          namespace: app-tdarr
       services:
         - name: tdarr
           namespace: app-tdarr
