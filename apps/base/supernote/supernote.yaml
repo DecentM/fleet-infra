@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: supernote
+  namespace: app-supernote
+
+spec:
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: supernote
+  strategy:
+    type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: supernote
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: supernote
+          image: ghcr.io/allenporter/supernote:v0.14.8
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          env:
+            - name: SUPERNOTE_HOST
+              value: 0.0.0.0
+            - name: SUPERNOTE_PORT
+              value: "8080"
+            - name: SUPERNOTE_STORAGE_DIR
+              value: /data
+            - name: SUPERNOTE_CONFIG_DIR
+              value: /data/config
+            - name: SUPERNOTE_PROXY_MODE
+              value: relaxed
+            - name: SUPERNOTE_ENABLE_REGISTRATION
+              value: "false"
+            - name: SUPERNOTE_ENABLE_REMOTE_PASSWORD_RESET
+              value: "false"
+            - name: SUPERNOTE_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: supernote-secrets
+                  key: jwt-secret
+          ports:
+            - containerPort: 8080
+              name: http
+          volumeMounts:
+            - mountPath: /data
+              name: data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: supernote-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: supernote-data
+  namespace: app-supernote
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: supernote
+  namespace: app-supernote
+
+spec:
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+  selector:
+    app: supernote

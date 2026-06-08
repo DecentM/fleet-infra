@@ -9,6 +9,7 @@ resources:
   - ../base/photoprism
   - ../base/restic
   - ../base/samba
+  - ../base/supernote
   - ../base/servarr
   - ../base/warp-proxy
   - ../base/matrix
