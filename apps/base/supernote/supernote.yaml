@@ -1,15 +1,240 @@
+---
+# ---------------------------------------------------------------------------
+# mariadb: Supernote database
+# ---------------------------------------------------------------------------
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mariadb-data
+  namespace: app-supernote
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: longhorn-local
+---
 apiVersion: apps/v1
 kind: Deployment
-
 metadata:
-  name: supernote
+  name: mariadb
   namespace: app-supernote
-
 spec:
   revisionHistoryLimit: 2
   selector:
     matchLabels:
-      app: supernote
+      app: mariadb
+  strategy:
+    type: Recreate
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      initContainers:
+        # Fetch the official Supernote DB schema and drop it into
+        # /docker-entrypoint-initdb.d so the mariadb image runs it on first boot.
+        - name: fetch-init-sql
+          image: busybox:1.37.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              set -eu
+              if [ ! -s /initdb/supernotedb.sql ]; then
+                echo "downloading supernotedb.sql..."
+                wget -O /initdb/supernotedb.sql \
+                  https://supernote-private-cloud.supernote.com/cloud/supernotedb.sql
+              else
+                echo "supernotedb.sql already present, skipping download"
+              fi
+          volumeMounts:
+            - mountPath: /initdb
+              name: initdb
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+      containers:
+        - name: mariadb
+          image: mariadb:10.6.24
+          imagePullPolicy: IfNotPresent
+          args: ["--skip-name-resolve", "--bind-address=0.0.0.0"]
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 10
+          env:
+            - name: MYSQL_DATABASE
+              value: supernotedb
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: supernote-db-secrets
+                  key: MYSQL_ROOT_PASSWORD
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: supernote-db-secrets
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: supernote-db-secrets
+                  key: MYSQL_PASSWORD
+          ports:
+            - containerPort: 3306
+              name: mysql
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mariadb-data
+            - mountPath: /docker-entrypoint-initdb.d
+              name: initdb
+      volumes:
+        - name: mariadb-data
+          persistentVolumeClaim:
+            claimName: mariadb-data
+        - name: initdb
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb
+  namespace: app-supernote
+spec:
+  ports:
+    - name: mysql
+      port: 3306
+      targetPort: mysql
+  selector:
+    app: mariadb
+---
+# ---------------------------------------------------------------------------
+# redis: Supernote cache
+# ---------------------------------------------------------------------------
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-data
+  namespace: app-supernote
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: longhorn-local
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: app-supernote
+spec:
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: redis
+  strategy:
+    type: Recreate
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7.4.7
+          imagePullPolicy: IfNotPresent
+          command:
+            - redis-server
+            - --requirepass
+            - $(REDIS_PASSWORD)
+            - --dir
+            - /data
+            - --dbfilename
+            - dump.rdb
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: supernote-redis-secrets
+                  key: REDIS_PASSWORD
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          readinessProbe:
+            tcpSocket:
+              port: 6379
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 20
+          ports:
+            - containerPort: 6379
+              name: redis
+          volumeMounts:
+            - mountPath: /data
+              name: redis-data
+      volumes:
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: redis-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: app-supernote
+spec:
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: redis
+  selector:
+    app: redis
+---
+# ---------------------------------------------------------------------------
+# notelib: note rendering sidecar
+# supernote-service reaches it via the in-cluster DNS name `notelib`,
+# which resolves through this Service.
+# ---------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notelib
+  namespace: app-supernote
+spec:
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: notelib
   strategy:
     type: RollingUpdate
   rollingUpdate:
@@ -18,73 +243,51 @@ spec:
   template:
     metadata:
       labels:
-        app: supernote
+        app: notelib
     spec:
-      securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
       containers:
-        - name: supernote
-          image: ghcr.io/allenporter/supernote:v0.14.8
+        - name: notelib
+          image: supernote/notelib:6.9.3
           imagePullPolicy: IfNotPresent
-          securityContext:
-            runAsUser: 1000
-            runAsGroup: 1000
           resources:
             requests:
               cpu: 50m
-              memory: 128Mi
+              memory: 256Mi
             limits:
               cpu: 500m
               memory: 512Mi
-          readinessProbe:
-            tcpSocket:
-              port: 8080
-            initialDelaySeconds: 2
-            periodSeconds: 5
-            failureThreshold: 20
-          livenessProbe:
-            tcpSocket:
-              port: 8080
-            initialDelaySeconds: 60
-            periodSeconds: 5
-            failureThreshold: 20
-          env:
-            - name: SUPERNOTE_HOST
-              value: 0.0.0.0
-            - name: SUPERNOTE_PORT
-              value: "8080"
-            - name: SUPERNOTE_STORAGE_DIR
-              value: /data
-            - name: SUPERNOTE_CONFIG_DIR
-              value: /data/config
-            - name: SUPERNOTE_PROXY_MODE
-              value: relaxed
-            - name: SUPERNOTE_ENABLE_REGISTRATION
-              value: "false"
-            - name: SUPERNOTE_ENABLE_REMOTE_PASSWORD_RESET
-              value: "false"
-            - name: SUPERNOTE_JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: supernote-secrets
-                  key: jwt-secret
           ports:
-            - containerPort: 8080
+            - containerPort: 6000
               name: http
           volumeMounts:
-            - mountPath: /data
-              name: data
-            - mountPath: /home/supernote
-              name: home
+            # notelib uploads converted files back to supernote-service over HTTPS.
+            # supernote-service uses a self-signed cert bundled with the image, so
+            # notelib needs the cluster CA bundle to validate it.
+            - name: cluster-ca-bundle
+              mountPath: /etc/ssl/certs/ca-certificates.crt
+              subPath: ca-certificates.crt
+              readOnly: true
       volumes:
-        - name: data
-          persistentVolumeClaim:
-            claimName: supernote-data
-        - name: home
-          emptyDir: {}
+        - name: cluster-ca-bundle
+          configMap:
+            name: cluster-ca-bundle
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notelib
+  namespace: app-supernote
+spec:
+  ports:
+    - name: http
+      port: 6000
+      targetPort: http
+  selector:
+    app: notelib
+---
+# ---------------------------------------------------------------------------
+# supernote-service: main application (nginx + Java backend)
+# ---------------------------------------------------------------------------
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -95,19 +298,153 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 10Gi
+      storage: 20Gi
   storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: supernote-recycle
+  namespace: app-supernote
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: supernote-convert
+  namespace: app-supernote
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: longhorn-local
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: supernote-service
+  namespace: app-supernote
+spec:
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: supernote-service
+  strategy:
+    type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: supernote-service
+    spec:
+      containers:
+        - name: supernote-service
+          image: supernote/supernote-service:26.06.04
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: "2"
+              memory: 2Gi
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 30
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 120
+            periodSeconds: 15
+            failureThreshold: 10
+          env:
+            # DB connection - hostname/database are plain values, creds come from the secret
+            - name: DB_HOSTNAME
+              value: mariadb
+            - name: MYSQL_DATABASE
+              value: supernotedb
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: supernote-db-secrets
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: supernote-db-secrets
+                  key: MYSQL_PASSWORD
+            # Redis connection
+            - name: REDIS_HOST
+              value: redis
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: supernote-redis-secrets
+                  key: REDIS_PASSWORD
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 18072
+              name: websync
+          volumeMounts:
+            - mountPath: /home/supernote/data
+              name: data
+            - mountPath: /home/supernote/recycle
+              name: recycle
+            - mountPath: /home/supernote/convert
+              name: convert
+            # Logs - intentionally not persisted. emptyDir keeps the image happy
+            # without consuming PV space for rotating log files.
+            - mountPath: /home/supernote/cloud/logs
+              name: cloud-logs
+            - mountPath: /home/supernote/logs
+              name: app-logs
+            - mountPath: /var/log/nginx
+              name: nginx-logs
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: supernote-data
+        - name: recycle
+          persistentVolumeClaim:
+            claimName: supernote-recycle
+        - name: convert
+          persistentVolumeClaim:
+            claimName: supernote-convert
+        - name: cloud-logs
+          emptyDir: {}
+        - name: app-logs
+          emptyDir: {}
+        - name: nginx-logs
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: supernote
+  name: supernote-service
   namespace: app-supernote
-
 spec:
   ports:
     - name: http
       port: 8080
       targetPort: http
+    - name: websync
+      port: 18072
+      targetPort: websync
   selector:
-    app: supernote
+    app: supernote-service
