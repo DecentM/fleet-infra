@@ -84,7 +84,7 @@ spec:
               mountPath: /manualassets
       containers:
         - name: posterizarr
-          image: ghcr.io/fscorrupt/posterizarr:2.2.45
+          image: ghcr.io/fscorrupt/posterizarr:2.2.48
           imagePullPolicy: IfNotPresent
           resources:
             requests:
