@@ -1,5 +1,32 @@
 ---
 # ---------------------------------------------------------------------------
+# supernote-entrypoint: custom entrypoint script for supernote-service
+# Skips nginx (Traefik handles routing) and starts only node + java.
+# ---------------------------------------------------------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: supernote-entrypoint
+  namespace: app-supernote
+data:
+  docker-entrypoint.sh: |
+    #!/bin/bash
+    set -e
+
+    LICENSE_FILE="/home/supernote/data/.license"
+
+    if [ ! -f "$LICENSE_FILE" ]; then
+        LICENSE_KEY=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1 2>/dev/null || echo "DEFAULT_KEY_$(date +%s)")
+        echo "$LICENSE_KEY" > "$LICENSE_FILE"
+        chmod 644 $LICENSE_FILE
+    fi
+
+    cd /home/supernote/cloud && \
+    nohup bash -c "npm run start >> /home/supernote/cloud/logs/web_install_start.log 2>&1" &
+
+    exec java -XX:+UseG1GC -javaagent:/home/supernote/supernote-service.jar -jar /home/supernote/supernote-service.jar
+---
+# ---------------------------------------------------------------------------
 # mariadb: Supernote database
 # ---------------------------------------------------------------------------
 apiVersion: v1
@@ -360,13 +387,13 @@ spec:
               memory: 2Gi
           readinessProbe:
             tcpSocket:
-              port: 8080
+              port: 19071
             initialDelaySeconds: 30
             periodSeconds: 10
             failureThreshold: 30
           livenessProbe:
             tcpSocket:
-              port: 8080
+              port: 19071
             initialDelaySeconds: 120
             periodSeconds: 15
             failureThreshold: 10
@@ -397,10 +424,12 @@ spec:
                   name: supernote-redis-secrets
                   key: REDIS_PASSWORD
           ports:
-            - containerPort: 8080
-              name: http
+            - containerPort: 9888
+              name: frontend
+            - containerPort: 19071
+              name: api
             - containerPort: 18072
-              name: websync
+              name: sync
           volumeMounts:
             - mountPath: /home/supernote/data
               name: data
@@ -416,6 +445,11 @@ spec:
               name: app-logs
             - mountPath: /var/log/nginx
               name: nginx-logs
+            # Override the bundled entrypoint to skip nginx; Traefik handles routing
+            # directly to node (9888) and java (19071, 18072) instead.
+            - mountPath: /usr/bin/docker-entrypoint.sh
+              name: entrypoint
+              subPath: docker-entrypoint.sh
       volumes:
         - name: data
           persistentVolumeClaim:
@@ -432,19 +466,48 @@ spec:
           emptyDir: {}
         - name: nginx-logs
           emptyDir: {}
+        - name: entrypoint
+          configMap:
+            name: supernote-entrypoint
+            defaultMode: 0755
 ---
+# Three Services - one per backend port. Traefik routes path-based to each.
+# nginx (8080) is intentionally absent: Traefik replaces it.
 apiVersion: v1
 kind: Service
 metadata:
-  name: supernote-service
+  name: supernote-frontend
   namespace: app-supernote
 spec:
   ports:
     - name: http
-      port: 8080
-      targetPort: http
-    - name: websync
+      port: 9888
+      targetPort: 9888
+  selector:
+    app: supernote-service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: supernote-api
+  namespace: app-supernote
+spec:
+  ports:
+    - name: http
+      port: 19071
+      targetPort: 19071
+  selector:
+    app: supernote-service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: supernote-sync
+  namespace: app-supernote
+spec:
+  ports:
+    - name: http
       port: 18072
-      targetPort: websync
+      targetPort: 18072
   selector:
     app: supernote-service
