@@ -48,6 +48,18 @@ spec:
       X-Forwarded-Proto: https
       X-Forwarded-Port: "443"
 ---
+# Blocks requests by allowing only loopback. Any request coming through the
+# tunnel will have a real source IP and get a 403.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: supernote-block-registration
+  namespace: app-supernote
+spec:
+  ipAllowList:
+    sourceRange:
+      - 127.0.0.1/32
+---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
@@ -68,6 +80,21 @@ spec:
         - name: supernote-sync
           port: http
           serversTransport: supernote-transport-sync
+
+    # Block registration endpoints - no public registration allowed.
+    # Higher priority than the /api/ catch-all so these match first.
+    - match: Host(`supernote.decentm.com`) && (Path(`/api/user/register`) || Path(`/api/user/mail/validcode`))
+      kind: Rule
+      priority: 25
+      middlewares:
+        - name: supernote-block-registration
+          namespace: app-supernote
+        - name: supernote-forwarded-headers
+          namespace: app-supernote
+      services:
+        - name: supernote-api
+          port: http
+          serversTransport: supernote-transport
 
     # Java API backend
     - match: Host(`supernote.decentm.com`) && PathPrefix(`/api/`)
