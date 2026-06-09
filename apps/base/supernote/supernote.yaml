@@ -76,10 +76,14 @@ spec:
           volumeMounts:
             - mountPath: /data
               name: data
+            - mountPath: /home/supernote
+              name: home
       volumes:
         - name: data
           persistentVolumeClaim:
             claimName: supernote-data
+        - name: home
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
