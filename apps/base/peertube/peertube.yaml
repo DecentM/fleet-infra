@@ -128,7 +128,7 @@ spec:
               mountPath: /config-processed
       containers:
         - name: peertube
-          image: chocobozzz/peertube:v8.1.5
+          image: chocobozzz/peertube:v8.2.1
           imagePullPolicy: IfNotPresent
           securityContext:
             runAsUser: 999
