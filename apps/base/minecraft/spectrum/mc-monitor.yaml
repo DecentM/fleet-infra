@@ -25,7 +25,7 @@ spec:
             value: "1"
       containers:
         - name: mc-monitor
-          image: itzg/mc-monitor:0.16.2
+          image: itzg/mc-monitor:0.16.7
           resources:
             requests:
               cpu: 10m
