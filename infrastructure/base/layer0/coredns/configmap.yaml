@@ -17,9 +17,6 @@ data:
            fallthrough in-addr.arpa ip6.arpa
            ttl 30
         }
-        template IN AAAA {
-           rcode NOERROR
-        }
         prometheus :9153
         # Forward external queries directly to NextDNS profile dedicated IPs.
         # We cannot use /etc/resolv.conf here because the host resolver points
