@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - cloudflare
   - cnpg
+  - coredns
   - flannel
   - longhorn
   - traefik
