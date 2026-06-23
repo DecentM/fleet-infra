@@ -15,5 +15,3 @@ resources:
   - cdi
   - monitoring
   - metrics-server
-  - coredns
-  - node-local-dns

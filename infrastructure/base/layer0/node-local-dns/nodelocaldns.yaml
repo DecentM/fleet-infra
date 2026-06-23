@@ -97,7 +97,7 @@ data:
         reload
         loop
         bind 169.254.20.10 10.96.0.10
-        forward . 9.9.9.9 149.112.112.112
+        forward . __PILLAR__UPSTREAM__SERVERS__
         prometheus :9253
         }
 ---
