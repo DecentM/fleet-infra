@@ -24,6 +24,48 @@ spec:
     - websecure
 
   routes:
+    - kind: Rule
+      match: Host(`n8n.cluster.arpa`) && PathPrefix(`/webhook/`)
+      services:
+        - name: n8n
+          namespace: app-n8n
+          port: http
+
+    - kind: Rule
+      match: Host(`n8n.cluster.arpa`) && PathPrefix(`/webhook-test/`)
+      services:
+        - name: n8n
+          namespace: app-n8n
+          port: http
+
+    - kind: Rule
+      match: Host(`n8n.cluster.arpa`) && PathPrefix(`/webhook-waiting/`)
+      services:
+        - name: n8n
+          namespace: app-n8n
+          port: http
+
+    - kind: Rule
+      match: Host(`n8n.cluster.arpa`) && PathPrefix(`/form/`)
+      services:
+        - name: n8n
+          namespace: app-n8n
+          port: http
+
+    - kind: Rule
+      match: Host(`n8n.cluster.arpa`) && PathPrefix(`/form-test/`)
+      services:
+        - name: n8n
+          namespace: app-n8n
+          port: http
+
+    - kind: Rule
+      match: Host(`n8n.cluster.arpa`) && PathPrefix(`/form-waiting/`)
+      services:
+        - name: n8n
+          namespace: app-n8n
+          port: http
+
     - match: Host(`n8n.cluster.arpa`)
       kind: Rule
       middlewares:
@@ -32,7 +74,7 @@ spec:
       services:
         - name: n8n
           namespace: app-n8n
-          port: 5678
+          port: http
   tls:
     secretName: traefik-tls
 ---
