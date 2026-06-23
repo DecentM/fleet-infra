@@ -20,7 +20,6 @@
 const { issueCookie } = require('n8n/dist/auth/jwt')
 const { UserRepository, GLOBAL_MEMBER_ROLE } = require('@n8n/db')
 const { Container } = require('@n8n/di')
-const Layer = require('router/lib/layer')
 
 const LOG_PREFIX = '[n8n-sso]'
 
@@ -116,14 +115,19 @@ const makeMiddleware = (server) => {
 }
 
 const spliceAfterCookieParser = (app, middleware) => {
+  // Register via the official API so Express builds the Layer correctly.
+  // app._router is guaranteed populated by hook time (since init()), and
+  // letting Express construct the Layer avoids the manual-construction
+  // crash we hit on n8n 2.27.x (router/lib/layer internals changed shape).
+  app.use(middleware)
+
+  // n8n.ready fires after all routes are registered, so app.use() appends
+  // to the end of the stack — too late to gate auth. Pop it off and splice
+  // it in right after cookieParser so req.cookies is populated for us.
   const stack = app._router.stack
   const cookieParserIdx = stack.findIndex((l) => l.name === 'cookieParser')
-  // n8n.ready fires after all routes are registered, so a plain app.use()
-  // would append to the end of the stack — too late to gate auth. Splice
-  // directly in after cookieParser so req.cookies is populated for us.
-  const insertAt = cookieParserIdx >= 0 ? cookieParserIdx + 1 : stack.length
-  const layer = new Layer('/', {}, middleware)
-  layer.route = undefined
+  const layer = stack.pop()
+  const insertAt = cookieParserIdx >= 0 ? cookieParserIdx + 1 : 0
   stack.splice(insertAt, 0, layer)
   console.log(
     `${LOG_PREFIX} middleware inserted at stack position ${insertAt} (cookieParser at ${cookieParserIdx})`,
@@ -135,8 +139,8 @@ module.exports = {
     ready: [
       async function (server, _config) {
         try {
-          const middleware = makeMiddleware(server)
-          spliceAfterCookieParser(server.app, middleware)
+          const ssoMiddleware = makeMiddleware(server)
+          spliceAfterCookieParser(server.app, ssoMiddleware)
           console.log(`${LOG_PREFIX} hook registered`)
         } catch (error) {
           console.error(`${LOG_PREFIX} failed to register hook`, error)
