@@ -44,8 +44,6 @@ spec:
       middlewares:
         - name: authelia-forwardauth
           namespace: app-servarr
-        - name: flood-themepark
-          namespace: app-servarr
         - name: flood-strip-csp
           namespace: app-servarr
       services:
@@ -79,8 +77,6 @@ spec:
       middlewares:
         - name: authelia-forwardauth
           namespace: app-servarr
-        - name: sonarr-themepark
-          namespace: app-servarr
       services:
         - name: sonarr
           namespace: app-servarr
@@ -112,8 +108,6 @@ spec:
       middlewares:
         - name: authelia-forwardauth
           namespace: app-servarr
-        - name: prowlarr-themepark
-          namespace: app-servarr
       services:
         - name: prowlarr
           namespace: app-servarr
@@ -144,8 +138,6 @@ spec:
       priority: 1
       middlewares:
         - name: authelia-forwardauth
-          namespace: app-servarr
-        - name: radarr-themepark
           namespace: app-servarr
       services:
         - name: radarr
@@ -200,8 +192,6 @@ spec:
       kind: Rule
       middlewares:
         - name: authelia-forwardauth
-          namespace: app-servarr
-        - name: bazarr-themepark
           namespace: app-servarr
       services:
         - name: bazarr

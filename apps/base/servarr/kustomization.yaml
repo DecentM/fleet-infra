@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - ingressroutes.yaml
-  - themepark-middlewares.yaml
   - secrets
   - sonarr
   - rtorrent-flood

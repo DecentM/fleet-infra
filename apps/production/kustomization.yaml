@@ -20,7 +20,3 @@ resources:
 patches:
   - path: patches/photoprism.yaml
   - path: patches/spectrum-mc-rp-tunnel.yaml
-  - path: patches/themepark-theme.yaml
-    target:
-      kind: Middleware
-      labelSelector: "themepark.dev/managed=true"
