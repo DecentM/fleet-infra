@@ -216,6 +216,10 @@ spec:
               - videos.decentm.com
             subject: "group:peertube-users"
             policy: two_factor
+          - domain:
+              - n8n.cluster.arpa
+            subject: "group:n8n-users"
+            policy: two_factor
 
           - domain:
               - "*"
