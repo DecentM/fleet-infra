@@ -17,6 +17,7 @@ resources:
   - ../base/authelia
   - ../base/peertube
   - ../base/tdarr
+  - ../base/n8n
 patches:
   - path: patches/photoprism.yaml
   - path: patches/spectrum-mc-rp-tunnel.yaml

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: n8n-config
+  namespace: app-n8n
+data:
+  N8N_HOST: n8n.cluster.arpa
+  N8N_PORT: "5678"
+  N8N_PROTOCOL: https
+  N8N_EDITOR_BASE_URL: https://n8n.cluster.arpa/
+  WEBHOOK_URL: https://n8n.cluster.arpa/
+  DB_TYPE: postgresdb
+  GENERIC_TIMEZONE: UTC
+  N8N_LOG_LEVEL: info
+  N8N_METRICS: "false"
+  EXECUTIONS_MODE: regular
+  N8N_RUNNERS_ENABLED: "false"
+  EXTERNAL_HOOK_FILES: /hooks/hooks.js
+  N8N_SKIP_AUTH_ON_OAUTH_CALLBACK: "false"
