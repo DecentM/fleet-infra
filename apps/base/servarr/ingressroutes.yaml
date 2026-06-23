@@ -44,8 +44,6 @@ spec:
       middlewares:
         - name: authelia-forwardauth
           namespace: app-servarr
-        - name: flood-strip-csp
-          namespace: app-servarr
       services:
         - name: rtorrent-flood-web
           namespace: app-servarr
