@@ -88,6 +88,10 @@ spec:
       volumes:
         - name: prosody-data
           emptyDir: {}
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
 ---
 apiVersion: v1
 kind: Service

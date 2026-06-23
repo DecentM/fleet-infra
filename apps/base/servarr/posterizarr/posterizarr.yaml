@@ -140,6 +140,10 @@ spec:
           hostPath:
             path: /mnt/spike/storage/k8s/namespaces/app-servarr/posterizarr/manualassets
             type: DirectoryOrCreate
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

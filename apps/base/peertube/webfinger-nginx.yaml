@@ -24,6 +24,10 @@ spec:
         runAsUser: 101
         runAsGroup: 101
         fsGroup: 101
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
       containers:
         - name: nginx
           image: nginx:1.27-alpine

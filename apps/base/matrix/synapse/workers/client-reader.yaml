@@ -281,6 +281,10 @@ spec:
             items:
               - key: discord-registration.yaml
                 path: discord-registration.yaml
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
 ---
 # ClusterIP service for load balancing (nginx routes to this)
 apiVersion: v1

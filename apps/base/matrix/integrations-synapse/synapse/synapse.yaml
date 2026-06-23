@@ -231,6 +231,10 @@ spec:
             items:
               - key: meowlnir-registration.yml
                 path: meowlnir-registration.yml
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
 ---
 apiVersion: v1
 kind: Service

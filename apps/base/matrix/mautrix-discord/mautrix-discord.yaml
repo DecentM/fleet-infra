@@ -171,3 +171,7 @@ spec:
           emptyDir: {}
         - name: data
           emptyDir: {}
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"

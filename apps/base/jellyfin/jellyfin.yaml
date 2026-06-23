@@ -94,6 +94,10 @@ spec:
         - name: cluster-ca-bundle
           configMap:
             name: cluster-ca-bundle
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

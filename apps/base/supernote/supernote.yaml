@@ -144,6 +144,10 @@ spec:
             claimName: mariadb-data
         - name: initdb
           emptyDir: {}
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
 ---
 apiVersion: v1
 kind: Service
@@ -233,6 +237,10 @@ spec:
         - name: redis-data
           persistentVolumeClaim:
             claimName: redis-data
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
 ---
 apiVersion: v1
 kind: Service
@@ -298,6 +306,10 @@ spec:
         - name: cluster-ca-bundle
           configMap:
             name: cluster-ca-bundle
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
 ---
 apiVersion: v1
 kind: Service
@@ -470,6 +482,10 @@ spec:
           configMap:
             name: supernote-entrypoint
             defaultMode: 0755
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
 ---
 # Three Services - one per backend port. Traefik routes path-based to each.
 # nginx (8080) is intentionally absent: Traefik replaces it.

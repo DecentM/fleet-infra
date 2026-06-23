@@ -76,6 +76,10 @@ spec:
         - name: synapse-admin-config
           configMap:
             name: synapse-admin-config
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
 ---
 apiVersion: v1
 kind: Service

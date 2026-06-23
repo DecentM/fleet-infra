@@ -249,6 +249,10 @@ spec:
             items:
               - key: signing.key
                 path: borooka.ee.signing.key
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
 ---
 # Headless Service for StatefulSet stable DNS
 # Provides: synapse-event-persister-{0,1}.synapse-event-persister-headless.app-matrix.svc.cluster.local

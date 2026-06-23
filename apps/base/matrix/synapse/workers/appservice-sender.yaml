@@ -282,6 +282,10 @@ spec:
             items:
               - key: discord-registration.yaml
                 path: discord-registration.yaml
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
 ---
 apiVersion: v1
 kind: Service

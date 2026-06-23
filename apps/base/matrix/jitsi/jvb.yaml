@@ -30,6 +30,10 @@ spec:
       # Required for WebRTC media traffic to work efficiently
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
       # Wait for Prosody to be ready
       initContainers:
         - name: wait-for-prosody

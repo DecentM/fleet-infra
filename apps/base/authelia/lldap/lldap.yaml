@@ -86,6 +86,10 @@ spec:
             limits:
               cpu: 500m
               memory: 256Mi
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
   volumeClaimTemplates:
     - metadata:
         name: data

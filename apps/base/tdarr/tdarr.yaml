@@ -82,6 +82,10 @@ spec:
         - name: transcode
           emptyDir:
             sizeLimit: 30Gi
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

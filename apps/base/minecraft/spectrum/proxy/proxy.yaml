@@ -134,6 +134,10 @@ spec:
             items:
               - key: PROXY_SECRET
                 path: forwarding-secret
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
 ---
 apiVersion: v1
 kind: Service

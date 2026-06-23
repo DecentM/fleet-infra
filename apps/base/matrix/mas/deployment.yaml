@@ -172,3 +172,7 @@ spec:
                 path: rsa_private_key.pem
         - name: tmp
           emptyDir: {}
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"

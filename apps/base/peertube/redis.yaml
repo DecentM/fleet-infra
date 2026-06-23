@@ -24,6 +24,10 @@ spec:
         runAsUser: 999
         runAsGroup: 999
         fsGroup: 999
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
       containers:
         - name: redis
           image: redis:7.4.8-alpine3.21

@@ -113,6 +113,10 @@ spec:
           hostPath:
             path: /mnt/spike/mass-storage/downloads
             type: Directory
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

@@ -61,6 +61,10 @@ spec:
             claimName: warp-data
 
       dnsPolicy: ClusterFirst
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
       restartPolicy: Always
 ---
 apiVersion: v1

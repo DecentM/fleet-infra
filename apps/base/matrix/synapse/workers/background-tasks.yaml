@@ -247,6 +247,10 @@ spec:
             items:
               - key: signing.key
                 path: borooka.ee.signing.key
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
 ---
 # ClusterIP Service for replication
 apiVersion: v1

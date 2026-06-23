@@ -59,6 +59,10 @@ spec:
           ports:
             - containerPort: 22300
               name: http
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
 ---
 apiVersion: v1
 kind: Service

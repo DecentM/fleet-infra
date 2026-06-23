@@ -74,6 +74,10 @@ spec:
       volumes:
         - name: data
           emptyDir: {}
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
 ---
 # ClusterIP Service for general access
 apiVersion: v1

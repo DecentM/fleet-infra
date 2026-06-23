@@ -18,6 +18,10 @@ spec:
         app: spectrum-survival
     spec:
       terminationGracePeriodSeconds: 130
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
       containers:
         - name: survival
           image: ghcr.io/decentm/minecraft-servers:spectrum-35e37a89f01fd6f5232d8263ebcb02c55f83de62

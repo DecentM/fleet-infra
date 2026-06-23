@@ -49,6 +49,10 @@ spec:
           args:
             - "--chromium-disable-javascript=true"
             - "--chromium-allow-list=file:///tmp/.*"
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
 ---
 apiVersion: v1
 kind: Service

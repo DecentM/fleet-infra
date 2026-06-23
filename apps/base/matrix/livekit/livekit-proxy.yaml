@@ -96,6 +96,10 @@ spec:
           emptyDir: {}
         - name: tmp
           emptyDir: {}
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
 ---
 apiVersion: v1
 kind: Service
