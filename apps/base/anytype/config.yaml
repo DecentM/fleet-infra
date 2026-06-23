@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: anytype-config
+  namespace: app-anytype
+data:
+  ANYTYPE_BOT_NAME: anytype-bot
+  ANYTYPE_LISTEN_ADDRESS: 0.0.0.0:31009
+  ANYTYPE_LOG_LEVEL: INFO

@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: anytype
+  namespace: app-anytype
+spec:
+  selector:
+    app: anytype
+  ports:
+    - protocol: TCP
+      name: http
+      port: 31009
+      targetPort: 31009
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anytype
+  namespace: app-anytype
+spec:
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: anytype
+  strategy:
+    type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: anytype
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: anytype
+          image: ghcr.io/wellcaffeinated/anytype-docker:1.0.2
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          envFrom:
+            - configMapRef:
+                name: anytype-config
+          ports:
+            - containerPort: 31009
+              name: http
+          volumeMounts:
+            - mountPath: /home/anytype
+              name: anytype-data
+      volumes:
+        - name: anytype-data
+          persistentVolumeClaim:
+            claimName: anytype-data
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: anytype-data
+  namespace: app-anytype
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: longhorn-local
