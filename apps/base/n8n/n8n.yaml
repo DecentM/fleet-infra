@@ -102,3 +102,7 @@ spec:
         - name: n8n-hooks
           configMap:
             name: n8n-hooks
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
