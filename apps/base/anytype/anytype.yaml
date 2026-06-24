@@ -9,8 +9,8 @@ spec:
   ports:
     - protocol: TCP
       name: http
-      port: 31009
-      targetPort: 31009
+      port: 8080
+      targetPort: 8080
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -49,10 +49,10 @@ spec:
             - configMapRef:
                 name: anytype-config
           ports:
-            - containerPort: 31009
+            - containerPort: 8080
               name: http
           volumeMounts:
-            - mountPath: /home/anytype
+            - mountPath: /data
               name: anytype-data
       volumes:
         - name: anytype-data
