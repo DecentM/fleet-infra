@@ -45,9 +45,16 @@ spec:
           args:
             - |
               mkdir -p /home/anytype/.anytype
-              printf '{"accountKey":"%s"}' "$ANYTYPE_ACCOUNT_KEY" \
+              printf '{"accountId":"%s","accountKey":"%s"}' \
+                "$ANYTYPE_ACCOUNT_ID" \
+                "$ANYTYPE_ACCOUNT_KEY" \
                 > /home/anytype/.anytype/config.json
           env:
+            - name: ANYTYPE_ACCOUNT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: anytype-secrets
+                  key: ANYTYPE_ACCOUNT_ID
             - name: ANYTYPE_ACCOUNT_KEY
               valueFrom:
                 secretKeyRef:
