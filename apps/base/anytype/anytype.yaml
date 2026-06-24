@@ -55,7 +55,7 @@ spec:
                   key: ANYTYPE_ACCOUNT_KEY
           volumeMounts:
             - mountPath: /home/anytype
-              name: anytype-config
+              name: anytype-data
       containers:
         - name: anytype
           image: ghcr.io/wellcaffeinated/anytype-docker:1.0.2
@@ -74,16 +74,12 @@ spec:
             - containerPort: 8080
               name: http
           volumeMounts:
-            - mountPath: /data
-              name: anytype-data
             - mountPath: /home/anytype
-              name: anytype-config
+              name: anytype-data
       volumes:
         - name: anytype-data
           persistentVolumeClaim:
             claimName: anytype-data
-        - name: anytype-config
-          emptyDir: {}
       dnsConfig:
         options:
           - name: ndots

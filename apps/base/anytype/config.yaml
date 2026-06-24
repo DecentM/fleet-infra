@@ -7,4 +7,4 @@ data:
   ANYTYPE_BOT_NAME: anytype-bot
   ANYTYPE_LISTEN_ADDRESS: 0.0.0.0:8080
   ANYTYPE_LOG_LEVEL: INFO
-  DATA_PATH: /data
+  DATA_PATH: /home/anytype/data
