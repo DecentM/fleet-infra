@@ -2,5 +2,3 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: app-anytype
-  labels:
-    trust.cert-manager.io/inject-bundle: "true"
