@@ -34,6 +34,28 @@ spec:
     spec:
       securityContext:
         fsGroup: 1000
+      initContainers:
+        - name: write-config
+          image: busybox:1.37.0
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              mkdir -p /home/anytype/.anytype
+              printf '{"accountKey":"%s"}' "$ANYTYPE_ACCOUNT_KEY" \
+                > /home/anytype/.anytype/config.json
+          env:
+            - name: ANYTYPE_ACCOUNT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: anytype-secrets
+                  key: ANYTYPE_ACCOUNT_KEY
+          volumeMounts:
+            - mountPath: /home/anytype
+              name: anytype-config
       containers:
         - name: anytype
           image: ghcr.io/wellcaffeinated/anytype-docker:1.0.2
@@ -54,10 +76,14 @@ spec:
           volumeMounts:
             - mountPath: /data
               name: anytype-data
+            - mountPath: /home/anytype
+              name: anytype-config
       volumes:
         - name: anytype-data
           persistentVolumeClaim:
             claimName: anytype-data
+        - name: anytype-config
+          emptyDir: {}
       dnsConfig:
         options:
           - name: ndots
