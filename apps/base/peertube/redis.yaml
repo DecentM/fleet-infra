@@ -30,7 +30,7 @@ spec:
             value: "1"
       containers:
         - name: redis
-          image: redis:7.4.8-alpine3.21
+          image: redis:7.4.9-alpine3.21
           imagePullPolicy: IfNotPresent
           resources:
             requests:
