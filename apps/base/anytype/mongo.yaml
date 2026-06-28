@@ -30,8 +30,6 @@ spec:
       labels:
         app: anytype-mongo
     spec:
-      securityContext:
-        fsGroup: 999
       containers:
         - name: mongo
           image: mongo:7.0.28
@@ -40,14 +38,6 @@ spec:
             - --replSet
             - rs0
             - --bind_ip_all
-          env:
-            - name: MONGO_INITDB_ROOT_USERNAME
-              value: root
-            - name: MONGO_INITDB_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: anytype-mongo-secrets
-                  key: root-password
           ports:
             - name: mongo
               containerPort: 27017
