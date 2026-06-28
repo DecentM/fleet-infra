@@ -1,0 +1,234 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: anytype-filenode-networkstore
+  namespace: app-anytype
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn-local
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anytype-filenode
+  namespace: app-anytype
+  labels:
+    app: anytype-filenode
+spec:
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: anytype-filenode
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: anytype-filenode
+    spec:
+      initContainers:
+        - name: wait-for-coordinator
+          image: busybox:1.37.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z anytype-coordinator.app-anytype.svc 4001; do
+                echo "waiting for coordinator..."
+                sleep 2
+              done
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 32Mi
+        - name: wait-for-redis
+          image: busybox:1.37.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z anytype-redis.app-anytype.svc 6379; do
+                echo "waiting for redis..."
+                sleep 2
+              done
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 32Mi
+        - name: config-templating
+          image: oaudry/envsubst:1.7
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - envsubst < /config-template/filenode.yaml > /config-processed/config.yml
+          env:
+            - name: S3_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: anytype-s3-secrets
+                  key: bucket
+            - name: S3_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: anytype-s3-secrets
+                  key: endpoint
+            - name: S3_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: anytype-s3-secrets
+                  key: region
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          volumeMounts:
+            - name: config-template
+              mountPath: /config-template
+              readOnly: true
+            - name: config-processed
+              mountPath: /config-processed
+      containers:
+        - name: filenode
+          image: ghcr.io/anyproto/any-sync-filenode:v0.11.1
+          imagePullPolicy: IfNotPresent
+          args:
+            - -c
+            - /config/config.yml
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: anytype-s3-secrets
+                  key: access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: anytype-s3-secrets
+                  key: secret-access-key
+          ports:
+            - name: grpc
+              containerPort: 4003
+              protocol: TCP
+            - name: quic
+              containerPort: 4013
+              protocol: UDP
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            tcpSocket:
+              port: grpc
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 12
+          livenessProbe:
+            tcpSocket:
+              port: grpc
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            failureThreshold: 5
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: config-processed
+              mountPath: /config
+              readOnly: true
+            - name: networkstore
+              mountPath: /networkStore
+      volumes:
+        - name: config-template
+          configMap:
+            name: anytype-filenode-config
+        - name: config-processed
+          emptyDir: {}
+        - name: networkstore
+          persistentVolumeClaim:
+            claimName: anytype-filenode-networkstore
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: anytype-filenode
+  namespace: app-anytype
+spec:
+  type: ClusterIP
+  selector:
+    app: anytype-filenode
+  ports:
+    - name: grpc
+      port: 4003
+      targetPort: grpc
+      protocol: TCP
+    - name: quic
+      port: 4013
+      targetPort: 4013
+      protocol: UDP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: anytype-filenode-ts
+  namespace: app-anytype
+  labels:
+    tailscale.com/proxy-class: privileged-proxy
+  annotations:
+    tailscale.com/hostname: anytype-file
+spec:
+  type: LoadBalancer
+  loadBalancerClass: tailscale
+  selector:
+    app: anytype-filenode
+  ports:
+    - name: grpc
+      port: 4003
+      targetPort: grpc
+      protocol: TCP
+    - name: quic
+      port: 4013
+      targetPort: 4013
+      protocol: UDP

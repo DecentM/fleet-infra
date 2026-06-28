@@ -1,0 +1,106 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: anytype-mongo-data
+  namespace: app-anytype
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn-local
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anytype-mongo
+  namespace: app-anytype
+  labels:
+    app: anytype-mongo
+spec:
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: anytype-mongo
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: anytype-mongo
+    spec:
+      securityContext:
+        fsGroup: 999
+      containers:
+        - name: mongo
+          image: mongo:7.0.28
+          imagePullPolicy: IfNotPresent
+          args:
+            - --replSet
+            - rs0
+            - --bind_ip_all
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: root
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: anytype-mongo-secrets
+                  key: root-password
+          ports:
+            - name: mongo
+              containerPort: 27017
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          readinessProbe:
+            exec:
+              command:
+                - mongosh
+                - --eval
+                - "db.adminCommand('ping')"
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            failureThreshold: 12
+          livenessProbe:
+            exec:
+              command:
+                - mongosh
+                - --eval
+                - "db.adminCommand('ping')"
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            failureThreshold: 5
+          volumeMounts:
+            - name: mongo-data
+              mountPath: /data/db
+      volumes:
+        - name: mongo-data
+          persistentVolumeClaim:
+            claimName: anytype-mongo-data
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: anytype-mongo
+  namespace: app-anytype
+spec:
+  type: ClusterIP
+  selector:
+    app: anytype-mongo
+  ports:
+    - name: mongo
+      port: 27017
+      targetPort: mongo
+      protocol: TCP
+

@@ -1,0 +1,157 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: anytype-syncnode-anystorage
+  namespace: app-anytype
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn-local
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anytype-syncnode
+  namespace: app-anytype
+  labels:
+    app: anytype-syncnode
+spec:
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: anytype-syncnode
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: anytype-syncnode
+    spec:
+      initContainers:
+        - name: wait-for-coordinator
+          image: busybox:1.37.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z anytype-coordinator.app-anytype.svc 4001; do
+                echo "waiting for coordinator..."
+                sleep 2
+              done
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 32Mi
+      containers:
+        - name: syncnode
+          image: ghcr.io/anyproto/any-sync-node:v0.11.1
+          imagePullPolicy: IfNotPresent
+          args:
+            - -c
+            - /config/config.yml
+          ports:
+            - name: grpc
+              containerPort: 4004
+              protocol: TCP
+            - name: quic
+              containerPort: 4014
+              protocol: UDP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          readinessProbe:
+            tcpSocket:
+              port: grpc
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 12
+          livenessProbe:
+            tcpSocket:
+              port: grpc
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            failureThreshold: 5
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
+            - name: anystorage
+              mountPath: /anyStorage
+      volumes:
+        - name: config
+          secret:
+            secretName: anytype-syncnode-config
+        - name: anystorage
+          persistentVolumeClaim:
+            claimName: anytype-syncnode-anystorage
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: anytype-syncnode
+  namespace: app-anytype
+spec:
+  type: ClusterIP
+  selector:
+    app: anytype-syncnode
+  ports:
+    - name: grpc
+      port: 4004
+      targetPort: grpc
+      protocol: TCP
+    - name: quic
+      port: 4014
+      targetPort: 4014
+      protocol: UDP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: anytype-syncnode-ts
+  namespace: app-anytype
+  labels:
+    tailscale.com/proxy-class: privileged-proxy
+  annotations:
+    tailscale.com/hostname: anytype-sync
+spec:
+  type: LoadBalancer
+  loadBalancerClass: tailscale
+  selector:
+    app: anytype-syncnode
+  ports:
+    - name: grpc
+      port: 4004
+      targetPort: grpc
+      protocol: TCP
+    - name: quic
+      port: 4014
+      targetPort: 4014
+      protocol: UDP
