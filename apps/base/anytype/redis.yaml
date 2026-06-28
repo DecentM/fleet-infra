@@ -39,8 +39,6 @@ spec:
           args:
             - --port
             - "6379"
-            - --requirepass
-            - $(REDIS_PASSWORD)
             - --dir
             - /data
             - --appendonly
@@ -49,16 +47,8 @@ spec:
             - 256mb
             - --maxmemory-policy
             - noeviction
-            - --protected-mode
-            - "no"
             - --loadmodule
             - /opt/redis-stack/lib/redisbloom.so
-          env:
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: anytype-redis-secrets
-                  key: password
           ports:
             - name: redis
               containerPort: 6379
@@ -77,9 +67,6 @@ spec:
                 - --raw
                 - -p
                 - "6379"
-                - --no-auth-warning
-                - -a
-                - $(REDIS_PASSWORD)
                 - incr
                 - ping
             initialDelaySeconds: 5
@@ -92,9 +79,6 @@ spec:
                 - --raw
                 - -p
                 - "6379"
-                - --no-auth-warning
-                - -a
-                - $(REDIS_PASSWORD)
                 - incr
                 - ping
             initialDelaySeconds: 30

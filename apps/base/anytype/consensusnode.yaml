@@ -33,6 +33,8 @@ spec:
       labels:
         app: anytype-consensusnode
     spec:
+      securityContext:
+        fsGroup: 1000
       initContainers:
         - name: wait-for-coordinator
           image: busybox:1.37.0

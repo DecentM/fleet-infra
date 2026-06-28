@@ -12,3 +12,4 @@ resources:
   - syncnode.yaml
   - heart-server.yaml
   - ingress.yaml
+

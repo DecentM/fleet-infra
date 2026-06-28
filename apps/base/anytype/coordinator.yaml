@@ -33,6 +33,8 @@ spec:
       labels:
         app: anytype-coordinator
     spec:
+      securityContext:
+        fsGroup: 1000
       initContainers:
         - name: wait-for-mongo
           image: busybox:1.37.0

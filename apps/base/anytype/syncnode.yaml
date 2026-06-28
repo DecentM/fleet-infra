@@ -1,6 +1,19 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  name: anytype-syncnode-networkstore
+  namespace: app-anytype
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn-local
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
   name: anytype-syncnode-anystorage
   namespace: app-anytype
 spec:
@@ -33,6 +46,8 @@ spec:
       labels:
         app: anytype-syncnode
     spec:
+      securityContext:
+        fsGroup: 1000
       initContainers:
         - name: wait-for-coordinator
           image: busybox:1.37.0
@@ -101,6 +116,8 @@ spec:
               readOnly: true
             - name: anystorage
               mountPath: /anyStorage
+            - name: networkstore
+              mountPath: /networkStore
       volumes:
         - name: config
           secret:
@@ -108,6 +125,9 @@ spec:
         - name: anystorage
           persistentVolumeClaim:
             claimName: anytype-syncnode-anystorage
+        - name: networkstore
+          persistentVolumeClaim:
+            claimName: anytype-syncnode-networkstore
       dnsConfig:
         options:
           - name: ndots
