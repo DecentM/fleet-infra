@@ -29,18 +29,13 @@ spec:
           imagePullPolicy: IfNotPresent
           command: ["/bin/sh", "-c"]
           args:
-            - mkdir -p /config/.config/rtorrent && sed -e 's/__TORRENTING_PORT_START__/'"${TORRENTING_PORT_START}"'/g' -e 's/__TORRENTING_PORT_END__/'"${TORRENTING_PORT_END}"'/g' /rtorrent-rc/rtorrent.rc > /config/.config/rtorrent/rtorrent.rc
+            - mkdir -p /config/.config/rtorrent && sed 's/__TORRENTING_PORT__/'"${TORRENTING_PORT}"'/g' /rtorrent-rc/rtorrent.rc > /config/.config/rtorrent/rtorrent.rc
           env:
-            - name: TORRENTING_PORT_START
+            - name: TORRENTING_PORT
               valueFrom:
                 configMapKeyRef:
                   name: rtorrent-flood-config
-                  key: TORRENTING_PORT_START
-            - name: TORRENTING_PORT_END
-              valueFrom:
-                configMapKeyRef:
-                  name: rtorrent-flood-config
-                  key: TORRENTING_PORT_END
+                  key: TORRENTING_PORT
           volumeMounts:
             - name: rtorrent-config
               mountPath: /config
@@ -75,6 +70,8 @@ spec:
           ports:
             - containerPort: 3001
               name: http
+            - containerPort: 30689
+              name: torrent
           resources:
             requests:
               cpu: 20m

@@ -1,6 +1,6 @@
 import = /etc/rtorrent/rtorrent.rc
 
-network.port_range.set = __TORRENTING_PORT_START__-__TORRENTING_PORT_END__
+network.port_range.set = __TORRENTING_PORT__-__TORRENTING_PORT__
 network.port_random.set = no
 directory.default.set = /downloads
 protocol.encryption.set = allow_incoming,try_outgoing,enable_retry
