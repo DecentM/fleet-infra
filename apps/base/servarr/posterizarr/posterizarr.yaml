@@ -64,7 +64,7 @@ spec:
             - name: config
               mountPath: /config
         - name: fix-permissions
-          image: busybox:1.37.0
+          image: busybox:1.38.0
           imagePullPolicy: IfNotPresent
           securityContext:
             runAsUser: 0
