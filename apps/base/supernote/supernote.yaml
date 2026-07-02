@@ -64,7 +64,7 @@ spec:
         # Fetch the official Supernote DB schema and drop it into
         # /docker-entrypoint-initdb.d so the mariadb image runs it on first boot.
         - name: fetch-init-sql
-          image: busybox:1.37.0
+          image: busybox:1.38.0
           imagePullPolicy: IfNotPresent
           command:
             - sh

@@ -38,7 +38,7 @@ spec:
       # Wait for Redis to be ready
       initContainers:
         - name: wait-for-redis
-          image: busybox:1.37
+          image: busybox:1.38
           command:
             - sh
             - -c
