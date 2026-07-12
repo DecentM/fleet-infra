@@ -15,7 +15,7 @@ spec:
       autovacuum_max_workers: "3"
   storage:
     storageClass: longhorn-local
-    size: 45Gi
+    size: 50Gi
   monitoring:
     enablePodMonitor: true
   bootstrap:
