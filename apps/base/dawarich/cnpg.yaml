@@ -15,3 +15,5 @@ spec:
     initdb:
       database: dawarich
       owner: dawarich
+      postInitApplicationSQL:
+        - CREATE EXTENSION IF NOT EXISTS postgis;
