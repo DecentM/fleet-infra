@@ -18,17 +18,13 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/hostname: cadance
-      securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
       dnsConfig:
         options:
           - name: ndots
             value: "1"
       containers:
         - name: mariadb
-          image: mariadb:11-ubi
+          image: mariadb:11.8.8
           imagePullPolicy: IfNotPresent
           resources:
             requests:
