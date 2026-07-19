@@ -107,6 +107,8 @@ spec:
               value: "https://location.borooka.ee/users/auth/openid_connect/callback"
             - name: OIDC_PROVIDER_NAME
               value: "Authelia"
+            - name: OIDC_PKCE_ENABLED
+              value: "true"
             - name: ALLOW_EMAIL_PASSWORD_REGISTRATION
               value: "false"
             - name: ALLOW_EMAIL_PASSWORD_LOGIN
@@ -237,6 +239,8 @@ spec:
               value: "https://location.borooka.ee/users/auth/openid_connect/callback"
             - name: OIDC_PROVIDER_NAME
               value: "Authelia"
+            - name: OIDC_PKCE_ENABLED
+              value: "true"
             - name: ALLOW_EMAIL_PASSWORD_REGISTRATION
               value: "false"
             - name: ALLOW_EMAIL_PASSWORD_LOGIN
