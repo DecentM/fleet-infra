@@ -35,7 +35,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: photoprism
-          image: photoprism/photoprism:251130-ce
+          image: photoprism/photoprism:260601-ce
           resources:
             requests:
               cpu: 20m
