@@ -43,7 +43,7 @@ spec:
               memory: 512Mi
             limits:
               cpu: "2"
-              memory: 2Gi
+              memory: 4Gi
           readinessProbe:
             tcpSocket:
               port: 2342
