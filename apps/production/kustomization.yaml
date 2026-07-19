@@ -14,6 +14,7 @@ resources:
   - ../base/warp-proxy
   - ../base/matrix
   - ../base/authelia
+  - ../base/dawarich
   - ../base/peertube
   - ../base/tdarr
   - ../base/n8n

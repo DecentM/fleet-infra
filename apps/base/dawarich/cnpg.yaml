@@ -1,0 +1,17 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: dawarich-db
+  namespace: app-dawarich
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgis:17.10-3.6.4-202607171056-standard-bookworm@sha256:fefd2c9274d400f0e3db98cf5b73ad2c5466e01b9dee6ef4c3e9a1655786bb78
+  storage:
+    storageClass: longhorn-local
+    size: 10Gi
+  monitoring:
+    enablePodMonitor: true
+  bootstrap:
+    initdb:
+      database: dawarich
+      owner: dawarich

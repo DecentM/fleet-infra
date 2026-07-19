@@ -1,0 +1,318 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dawarich-app
+  namespace: app-dawarich
+  labels:
+    app: dawarich-app
+spec:
+  revisionHistoryLimit: 2
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dawarich-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: dawarich-app
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
+      containers:
+        - name: dawarich-app
+          image: freikin/dawarich:1.10.0
+          imagePullPolicy: IfNotPresent
+          command: ["web-entrypoint.sh"]
+          args: ["bin/rails", "server", "-p", "3000", "-b", "::"]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 2Gi
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 20
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 20
+          env:
+            - name: RAILS_ENV
+              value: "production"
+            - name: SELF_HOSTED
+              value: "true"
+            - name: STORE_GEODATA
+              value: "true"
+            - name: APPLICATION_HOSTS
+              value: "location.borooka.ee"
+            - name: APPLICATION_PROTOCOL
+              value: "https"
+            - name: DOMAIN
+              value: "location.borooka.ee"
+            - name: TIME_ZONE
+              value: "Europe/London"
+            - name: REDIS_URL
+              value: "redis://dawarich-redis.app-dawarich.svc:6379"
+            - name: DATABASE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-db-app
+                  key: host
+            - name: DATABASE_PORT
+              value: "5432"
+            - name: DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-db-app
+                  key: dbname
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-db-app
+                  key: username
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-db-app
+                  key: password
+            - name: SECRET_KEY_BASE
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-secrets
+                  key: SECRET_KEY_BASE
+            - name: OIDC_ISSUER
+              value: "https://auth.borooka.ee"
+            - name: OIDC_CLIENT_ID
+              value: "dawarich"
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-oidc-secrets
+                  key: client-secret
+            - name: OIDC_REDIRECT_URI
+              value: "https://location.borooka.ee/users/auth/openid_connect/callback"
+            - name: OIDC_PROVIDER_NAME
+              value: "Authelia"
+            - name: ALLOW_EMAIL_PASSWORD_REGISTRATION
+              value: "false"
+            - name: ALLOW_EMAIL_PASSWORD_LOGIN
+              value: "false"
+          ports:
+            - containerPort: 3000
+              name: http
+          volumeMounts:
+            - name: dawarich-public
+              mountPath: /var/app/public
+            - name: dawarich-watched
+              mountPath: /var/app/tmp/imports/watched
+            - name: dawarich-storage
+              mountPath: /var/app/storage
+      volumes:
+        - name: dawarich-public
+          persistentVolumeClaim:
+            claimName: dawarich-public
+        - name: dawarich-watched
+          persistentVolumeClaim:
+            claimName: dawarich-watched
+        - name: dawarich-storage
+          persistentVolumeClaim:
+            claimName: dawarich-storage
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dawarich-sidekiq
+  namespace: app-dawarich
+  labels:
+    app: dawarich-sidekiq
+spec:
+  revisionHistoryLimit: 2
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dawarich-sidekiq
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: dawarich-sidekiq
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: cadance
+      containers:
+        - name: dawarich-sidekiq
+          image: freikin/dawarich:1.10.0
+          imagePullPolicy: IfNotPresent
+          command: ["sidekiq-entrypoint.sh"]
+          args: ["sidekiq"]
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1536Mi
+          livenessProbe:
+            exec:
+              command: ["pgrep", "-f", "sidekiq"]
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 5
+          env:
+            - name: RAILS_ENV
+              value: "production"
+            - name: SELF_HOSTED
+              value: "true"
+            - name: STORE_GEODATA
+              value: "true"
+            - name: APPLICATION_HOSTS
+              value: "location.borooka.ee"
+            - name: APPLICATION_PROTOCOL
+              value: "https"
+            - name: DOMAIN
+              value: "location.borooka.ee"
+            - name: TIME_ZONE
+              value: "Europe/London"
+            - name: REDIS_URL
+              value: "redis://dawarich-redis.app-dawarich.svc:6379"
+            - name: DATABASE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-db-app
+                  key: host
+            - name: DATABASE_PORT
+              value: "5432"
+            - name: DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-db-app
+                  key: dbname
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-db-app
+                  key: username
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-db-app
+                  key: password
+            - name: SECRET_KEY_BASE
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-secrets
+                  key: SECRET_KEY_BASE
+            - name: OIDC_ISSUER
+              value: "https://auth.borooka.ee"
+            - name: OIDC_CLIENT_ID
+              value: "dawarich"
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-oidc-secrets
+                  key: client-secret
+            - name: OIDC_REDIRECT_URI
+              value: "https://location.borooka.ee/users/auth/openid_connect/callback"
+            - name: OIDC_PROVIDER_NAME
+              value: "Authelia"
+            - name: ALLOW_EMAIL_PASSWORD_REGISTRATION
+              value: "false"
+            - name: ALLOW_EMAIL_PASSWORD_LOGIN
+              value: "false"
+            - name: BACKGROUND_PROCESSING_CONCURRENCY
+              value: "3"
+          volumeMounts:
+            - name: dawarich-public
+              mountPath: /var/app/public
+            - name: dawarich-watched
+              mountPath: /var/app/tmp/imports/watched
+            - name: dawarich-storage
+              mountPath: /var/app/storage
+      volumes:
+        - name: dawarich-public
+          persistentVolumeClaim:
+            claimName: dawarich-public
+        - name: dawarich-watched
+          persistentVolumeClaim:
+            claimName: dawarich-watched
+        - name: dawarich-storage
+          persistentVolumeClaim:
+            claimName: dawarich-storage
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dawarich
+  namespace: app-dawarich
+spec:
+  ports:
+    - name: http
+      port: 3000
+      targetPort: http
+  selector:
+    app: dawarich-app
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dawarich-public
+  namespace: app-dawarich
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dawarich-watched
+  namespace: app-dawarich
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dawarich-storage
+  namespace: app-dawarich
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: longhorn-local

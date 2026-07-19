@@ -104,3 +104,22 @@ identity_providers:
         grant_types:
           - authorization_code
         token_endpoint_auth_method: none
+
+      - client_id: dawarich
+        client_name: Dawarich
+        public: false
+        client_secret: {{ secret "/secrets/authelia-client-dawarich/client-secret" | msquote }}
+        authorization_policy: two_factor
+        require_pkce: true
+        pkce_challenge_method: S256
+        redirect_uris:
+          - https://location.borooka.ee/users/auth/openid_connect/callback
+        scopes:
+          - openid
+          - profile
+          - email
+        response_types:
+          - code
+        grant_types:
+          - authorization_code
+        token_endpoint_auth_method: client_secret_basic
