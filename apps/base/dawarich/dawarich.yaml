@@ -89,6 +89,36 @@ spec:
                 secretKeyRef:
                   name: dawarich-db-app
                   key: password
+            - name: SMTP_SERVER
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-smtp-secrets
+                  key: SMTP_SERVER
+            - name: SMTP_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-smtp-secrets
+                  key: SMTP_PORT
+            - name: SMTP_DOMAIN
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-smtp-secrets
+                  key: SMTP_DOMAIN
+            - name: SMTP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-smtp-secrets
+                  key: SMTP_USERNAME
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-smtp-secrets
+                  key: SMTP_PASSWORD
+            - name: SMTP_FROM
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-smtp-secrets
+                  key: SMTP_FROM
             - name: SECRET_KEY_BASE
               valueFrom:
                 secretKeyRef:
@@ -221,6 +251,36 @@ spec:
                 secretKeyRef:
                   name: dawarich-db-app
                   key: password
+            - name: SMTP_SERVER
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-smtp-secrets
+                  key: SMTP_SERVER
+            - name: SMTP_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-smtp-secrets
+                  key: SMTP_PORT
+            - name: SMTP_DOMAIN
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-smtp-secrets
+                  key: SMTP_DOMAIN
+            - name: SMTP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-smtp-secrets
+                  key: SMTP_USERNAME
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-smtp-secrets
+                  key: SMTP_PASSWORD
+            - name: SMTP_FROM
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich-smtp-secrets
+                  key: SMTP_FROM
             - name: SECRET_KEY_BASE
               valueFrom:
                 secretKeyRef:
