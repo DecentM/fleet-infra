@@ -222,6 +222,10 @@ spec:
               - location.borooka.ee
             subject: "group:dawarich-users"
             policy: two_factor
+          - domain:
+              - nutritrace.cluster.arpa
+            subject: "group:nutritrace-users"
+            policy: two_factor
 
           - domain:
               - "*"
