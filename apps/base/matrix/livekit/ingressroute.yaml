@@ -1,0 +1,110 @@
+# LiveKit Traefik IngressRoute
+# Replaces the nginx livekit-proxy Deployment/Service with native Traefik routing.
+# Routes path-based requests to LiveKit services:
+#   /livekit/jwt/* → lk-jwt-service:8080 (JWT token generation for Element Call)
+#   /livekit/sfu/* → livekit-svc:7880    (WebRTC SFU, WebSocket, long-lived connections)
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: livekit-cors
+  namespace: app-matrix
+spec:
+  headers:
+    accessControlAllowOriginList:
+      - "*"
+    accessControlAllowMethods:
+      - GET
+      - POST
+      - OPTIONS
+    accessControlAllowHeaders:
+      - Origin
+      - X-Requested-With
+      - Content-Type
+      - Accept
+      - Authorization
+      - Sec-WebSocket-Key
+      - Sec-WebSocket-Version
+      - Sec-WebSocket-Extensions
+      - Sec-WebSocket-Protocol
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: livekit-jwt-stripprefix
+  namespace: app-matrix
+spec:
+  stripPrefix:
+    prefixes:
+      - /livekit/jwt
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: livekit-sfu-stripprefix
+  namespace: app-matrix
+spec:
+  stripPrefix:
+    prefixes:
+      - /livekit/sfu
+---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: livekit-transport-default
+  namespace: app-matrix
+spec:
+  forwardingTimeouts:
+    dialTimeout: 30s
+    responseHeaderTimeout: 60s
+    idleConnTimeout: 90s
+  maxIdleConnsPerHost: 16
+---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: livekit-transport-websocket
+  namespace: app-matrix
+spec:
+  forwardingTimeouts:
+    dialTimeout: 30s
+    responseHeaderTimeout: 86400s
+    idleConnTimeout: 90s
+  maxIdleConnsPerHost: 16
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: livekit-public
+  namespace: app-matrix
+spec:
+  entryPoints:
+    - tunnel
+  routes:
+    # --- Priority 20: JWT service ---
+    - match: Host(`livekit.decentm.com`) && PathPrefix(`/livekit/jwt`)
+      kind: Rule
+      priority: 20
+      middlewares:
+        - name: livekit-jwt-stripprefix
+          namespace: app-matrix
+        - name: livekit-cors
+          namespace: app-matrix
+      services:
+        - name: lk-jwt-service
+          port: 8080
+          serversTransport: livekit-transport-default
+
+    # --- Priority 10: SFU (WebSocket, long-lived connections) ---
+    - match: Host(`livekit.decentm.com`) && PathPrefix(`/livekit/sfu`)
+      kind: Rule
+      priority: 10
+      middlewares:
+        - name: livekit-sfu-stripprefix
+          namespace: app-matrix
+        - name: livekit-cors
+          namespace: app-matrix
+      services:
+        - name: livekit-svc
+          port: 7880
+          serversTransport: livekit-transport-websocket
