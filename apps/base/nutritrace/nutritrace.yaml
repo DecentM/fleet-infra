@@ -41,8 +41,7 @@ spec:
             periodSeconds: 5
             failureThreshold: 30
           readinessProbe:
-            httpGet:
-              path: /api/health
+            tcpSocket:
               port: 3001
             initialDelaySeconds: 10
             periodSeconds: 10
