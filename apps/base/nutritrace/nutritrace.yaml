@@ -32,27 +32,30 @@ spec:
             limits:
               cpu: "1"
               memory: 2Gi
+          # startup probe waits for just the port to open cause nutritrace
+          # response 503 until the first user has been created
           startupProbe:
-            httpGet:
-              path: /api/health
-              port: http
+            tcpSocket:
+              port: 3001
             initialDelaySeconds: 5
             periodSeconds: 5
             failureThreshold: 30
           readinessProbe:
             httpGet:
               path: /api/health
-              port: http
+              port: 3001
             initialDelaySeconds: 10
             periodSeconds: 10
-            failureThreshold: 3
+            timeoutSeconds: 3
+            failureThreshold: 6
           livenessProbe:
             httpGet:
               path: /api/health
-              port: http
+              port: 3001
             initialDelaySeconds: 15
             periodSeconds: 30
-            failureThreshold: 3
+            timeoutSeconds: 5
+            failureThreshold: 20
           envFrom:
             - configMapRef:
                 name: nutritrace-config
