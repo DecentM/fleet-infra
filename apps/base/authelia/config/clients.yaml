@@ -39,7 +39,6 @@ identity_providers:
           - code
         grant_types:
           - authorization_code
-          - refresh_token
         token_endpoint_auth_method: client_secret_basic
 
       - client_id: photoprism
@@ -123,3 +122,22 @@ identity_providers:
         grant_types:
           - authorization_code
         token_endpoint_auth_method: client_secret_basic
+
+      - client_id: nutritrace
+        client_name: NutriTrace
+        public: false
+        client_secret: {{ secret "/secrets/authelia-client-nutritrace/client-secret" | msquote }}
+        authorization_policy: one_factor
+        require_pkce: true
+        pkce_challenge_method: S256
+        redirect_uris:
+          - https://nutritrace.cluster.arpa/api/auth/oidc/callback/1
+        scopes:
+          - openid
+          - profile
+          - email
+        response_types:
+          - code
+        grant_types:
+          - authorization_code
+        token_endpoint_auth_method: client_secret_post

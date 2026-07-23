@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - secrets
+  - nutritrace.yaml
+  - ingressroute.yaml
+configMapGenerator:
+  - name: nutritrace-config
+    namespace: app-nutritrace
+    envs:
+      - config/nutritrace.env
