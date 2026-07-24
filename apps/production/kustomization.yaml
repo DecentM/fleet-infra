@@ -17,7 +17,6 @@ resources:
   - ../base/dawarich
   - ../base/peertube
   - ../base/tdarr
-  - ../base/nutritrace
 patches:
   - path: patches/photoprism.yaml
   - path: patches/spectrum-mc-rp-tunnel.yaml

@@ -100,7 +100,6 @@ spec:
         authelia-client-photoprism: {}  # /secrets/authelia-client-photoprism/
         authelia-client-paperless-ngx: {}  # /secrets/authelia-client-paperless-ngx/
         authelia-client-dawarich: {}  # /secrets/authelia-client-dawarich/
-        authelia-client-nutritrace: {}  # /secrets/authelia-client-nutritrace/
 
     configMap:
       theme: dark
@@ -221,10 +220,6 @@ spec:
           - domain:
               - location.borooka.ee
             subject: "group:dawarich-users"
-            policy: two_factor
-          - domain:
-              - nutritrace.cluster.arpa
-            subject: "group:nutritrace-users"
             policy: two_factor
 
           - domain:
